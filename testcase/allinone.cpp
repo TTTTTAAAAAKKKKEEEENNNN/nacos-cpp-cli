@@ -12,11 +12,13 @@ void testVaArgs2();
 void testlogPrint();
 void testDeleteConfig();
 void testPublishConfig();
+void testStringEqual();
 
 int main()
 {
 	Debug::set_debug_level(DEBUG);
 	HTTPCli::HTTP_GLOBAL_INIT();
+	testStringEqual();
 	testlogPrint();
 	testDebug();
 	testVaArgs();
