@@ -1,5 +1,5 @@
 #include <string.h>
-#include "HTTPCli.h"
+#include "http/HTTPCli.h"
 #include "Debug.h"
 
 using namespace std;
@@ -46,7 +46,28 @@ static size_t receiveHeaderCallback(
 HTTPCli::HTTPCli()
 {
 	/* init the curl session */ 
-	curlHandle = curl_easy_init();
+	pthread_key_create(&pthreadKey, HTTPCli::destroyCurlHandle);
+}
+
+CURL *HTTPCli::getCurlHandle()
+{
+	CURL *curlHandle = pthread_getspecific(pthreadKey);
+	if (curlHandle == NULL)
+	{
+		curlHandle = curl_easy_init();
+		pthread_setspecific(pthreadKey, reinterpret_cast<void*>(curlHandle));
+	}
+	return curlHandle;
+}
+
+void HTTPCli::destroyCurlHandle(void* arg)
+{
+	CURL *curlHandle = reinterpret_cast<CURL*>(arg);
+	if (curlHandle != NULL)
+	{
+		curl_easy_cleanup(curlHandle);
+		curlHandle = NULL;
+	}
 }
 
 void HTTPCli::HTTPBasicSettings(CURL *curlHandle)
@@ -78,10 +99,11 @@ HttpResult HTTPCli::httpGet
 	const String &path,
 	list<String> &headers,
 	list<String> &paramValues,
-	String &encoding,
+	const String &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
@@ -154,25 +176,24 @@ HttpResult HTTPCli::httpPost
 	const String &path,
 	list<String> &headers,
 	list<String> &paramValues,
-	String &encoding,
+	const String &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
 	String encodedParms = encodingParams(paramValues);
-	
-	if (encodedParms.compare("") != 0)
-	{
-		Url += "?" + encodedParms;
-	}
+
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
+	log_debug("Post data:%s\n", encodedParms.c_str());
 	
 	/* specify URL to get */ 
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
 
 	curl_easy_setopt(curlHandle, CURLOPT_CUSTOMREQUEST, "POST");
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, encodedParms.c_str());
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 
@@ -231,10 +252,11 @@ HttpResult HTTPCli::httpDelete
 	const String &path,
 	list<String> &headers,
 	list<String> &paramValues,
-	String &encoding,
+	const String &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
@@ -306,11 +328,7 @@ HttpResult HTTPCli::httpDelete
 
 HTTPCli::~HTTPCli()
 {
-	if (curlHandle != NULL)
-	{
-		curl_easy_cleanup(curlHandle);
-		curlHandle = NULL;
-	}
+	pthread_key_delete(pthreadKey);
 }
 
 void HTTPCli::HTTP_GLOBAL_INIT()

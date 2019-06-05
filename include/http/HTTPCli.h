@@ -3,6 +3,7 @@
 
 #include <list>
 #include <map>
+#include <pthread.h>
 #include <curl/curl.h>
 #include "NacosString.h"
 #include "NacosExceptions.h"
@@ -39,7 +40,11 @@ public:
 class HTTPCli
 {
 private:
-	CURL *curlHandle = NULL;
+	//CURL *curlHandle;
+	pthread_key_t pthreadKey;
+
+	CURL *getCurlHandle();
+	static void destroyCurlHandle(void* arg);
 public:
 	static String encodingParams(std::list<String> &params);
 	static void HTTPBasicSettings(CURL *curlHandle);
@@ -51,21 +56,21 @@ public:
 		const String &path,
 		std::list<String> &headers,
 		std::list<String> &paramValues,
-		String &encoding,
+		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpDelete(
 		const String &path,
 		std::list<String> &headers,
 		std::list<String> &paramValues,
-		String &encoding,
+		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpPost(
 		const String &path,
 		std::list<String> &headers,
 		std::list<String> &paramValues,
-		String &encoding,
+		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 };

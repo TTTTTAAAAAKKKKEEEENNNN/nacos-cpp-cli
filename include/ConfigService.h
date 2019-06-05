@@ -2,6 +2,7 @@
 #define __CFG_SVC_H_
 #include "NacosExceptions.h"
 #include "NacosString.h"
+#include "listen/Listener.h"
 
 class ConfigService
 {
@@ -30,7 +31,7 @@ public:
 	 * @param listener listener
 	 * @throws NacosException NacosException
 	 */
-	//virtual void addListener(String dataId, String group, Listener listener) throw(NacosException) = 0;
+	virtual void addListener(const String &dataId, const String &group, Listener *listener) throw(NacosException) = 0;
 
 	/**
 	 * Publish config.
@@ -41,7 +42,7 @@ public:
 	 * @return Whether publish
 	 * @throws NacosException NacosException
 	 */
-	//virtual boolean publishConfig(String dataId, String group, String content) throw(NacosException) = 0;
+	virtual bool publishConfig(const String &dataId, const String &group, const String &content) throw(NacosException) = 0;
 
 	/**
 	 * Remove config
@@ -69,6 +70,7 @@ public:
 	 */
 	//virtual String getServerStatus() = 0;
 
+	virtual ~ConfigService() {};
 };
 
 #endif

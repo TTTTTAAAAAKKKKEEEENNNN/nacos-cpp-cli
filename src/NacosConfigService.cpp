@@ -1,5 +1,6 @@
 #include "NacosConfigService.h"
-#include "HTTPCli.h"
+#include "http/HTTPCli.h"
+#include "http/ServerHttpAgent.h"
 #include "Constants.h"
 #include "Parameters.h"
 #include "ParamUtils.h"
@@ -7,18 +8,42 @@
 
 using namespace std;
 
+NacosConfigService::NacosConfigService(Properties &props) throw (NacosException)
+{
+	httpcli = new HTTPCli();
+	encoding = "UTF-8";
+	namesp = "";//TODO:According to Ali's logic
+	svrListMgr = new ServerListManager(props);
+	httpAgent = new ServerHttpAgent(httpcli, encoding, svrListMgr, namesp);
+	listenWorker = new ListenWorker(httpAgent);
+}
+
 NacosConfigService::~NacosConfigService()
 {
-	if (httpcli != NULL)
+
+	if (listenWorker != NULL)
 	{
-		delete httpcli;
-		httpcli = NULL;
+		listenWorker->stopListening();
+		delete listenWorker;
+		listenWorker = NULL;
+	}
+
+	if (httpAgent != NULL)
+	{
+		delete httpAgent;
+		httpAgent = NULL;
 	}
 	
 	if (svrListMgr != NULL)
 	{
 		delete svrListMgr;
 		svrListMgr = NULL;
+	}
+	
+	if (httpcli != NULL)
+	{
+		delete httpcli;
+		httpcli = NULL;
 	}
 }
 
@@ -48,8 +73,7 @@ bool NacosConfigService::removeConfig
 	const String &group
 ) throw (NacosException)
 {
-	String tag = "";
-	return removeConfigInner(namesp, dataId, group, tag);
+	return removeConfigInner(namesp, dataId, group, NULLSTR);
 }
 
 String NacosConfigService::getConfigInner
@@ -62,15 +86,14 @@ String NacosConfigService::getConfigInner
 {
 	std::list<String> headers;
 	std::list<String> paramValues;
-	String serverAddr = svrListMgr->getCurrentServerAddr();
 	//Get the request url
-	String url = serverAddr + "/" + DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
-	
+	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+
 	HttpResult res;
-	
+
 	paramValues.push_back("dataId");
 	paramValues.push_back(dataId);
-	if (group.compare("") != 0)
+	if (!isNull(group))
 	{
 		paramValues.push_back("group");
 		paramValues.push_back(group);
@@ -80,17 +103,16 @@ String NacosConfigService::getConfigInner
 		paramValues.push_back("group");
 		paramValues.push_back(Constants::DEFAULT_GROUP);
 	}
-	
-	if (tenant.compare("") != 0)
+
+	if (!isNull(tenant))
 	{
 		paramValues.push_back("tenant");
 		paramValues.push_back(tenant);
 	}
-	
-	log_debug("Assembled URL:%s\n", url.c_str());
+
 	try
 	{
-		res = httpcli->httpGet(url, headers, paramValues, encoding, timeoutMs);
+		res = httpAgent->httpGet(url, headers, paramValues, httpAgent->getEncode(), timeoutMs);
 	}
 	catch (NetworkException e)
 	{
@@ -109,15 +131,14 @@ bool NacosConfigService::removeConfigInner
 {
 	std::list<String> headers;
 	std::list<String> paramValues;
-	String serverAddr = svrListMgr->getCurrentServerAddr();
 	//Get the request url
-	String url = serverAddr + "/" + DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
 	
 	HttpResult res;
 	
 	paramValues.push_back("dataId");
 	paramValues.push_back(dataId);
-	if (group.compare("") != 0)
+	if (!isNull(group))
 	{
 		paramValues.push_back("group");
 		paramValues.push_back(group);
@@ -128,16 +149,15 @@ bool NacosConfigService::removeConfigInner
 		paramValues.push_back(Constants::DEFAULT_GROUP);
 	}
 	
-	if (tenant.compare("") != 0)
+	if (!isNull(tenant))
 	{
 		paramValues.push_back("tenant");
 		paramValues.push_back(tenant);
 	}
-	
-	log_debug("Assembled URL:%s\n", url.c_str());
+
 	try
 	{
-		res = httpcli->httpDelete(url, headers, paramValues, encoding, POST_TIMEOUT);
+		res = httpAgent->httpDelete(url, headers, paramValues, httpAgent->getEncode(), POST_TIMEOUT);
 	}
 	catch (NetworkException e)
 	{
@@ -173,13 +193,12 @@ bool NacosConfigService::publishConfigInner
 	std::list<String> headers;
 	std::list<String> paramValues;
 	String parmGroupid;
-	String serverAddr = svrListMgr->getCurrentServerAddr();
 	//Get the request url
-	String url = serverAddr + "/" + DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
 
 	HttpResult res;
 
-	if (group.compare("") != 0)
+	if (!isNull(group))
 	{
 		parmGroupid = group;
 	}
@@ -196,34 +215,33 @@ bool NacosConfigService::publishConfigInner
 	paramValues.push_back("content");
 	paramValues.push_back(content);
 
-	if (tenant.compare("") != 0)
+	if (!isNull(tenant))
 	{
 		paramValues.push_back("tenant");
 		paramValues.push_back(tenant);
 	}
 	
-	if (appName.compare("") != 0)
+	if (!isNull(appName))
 	{
 		paramValues.push_back("appName");
 		paramValues.push_back(appName);
 	}
 	
-	if (tag.compare("") != 0)
+	if (!isNull(tag))
 	{
 		paramValues.push_back("tag");
 		paramValues.push_back(tag);
 	}
 	
-	if (betaIps.compare("") != 0)
+	if (!isNull(betaIps))
 	{
 		headers.push_back("betaIps");
 		headers.push_back(betaIps);
 	}
-	
-	log_debug("Assembled URL:%s\n", url.c_str());
+
 	try
 	{
-		res = httpcli->httpPost(url, headers, paramValues, encoding, POST_TIMEOUT);
+		res = httpAgent->httpPost(url, headers, paramValues, httpAgent->getEncode(), POST_TIMEOUT);
 	}
 	catch (NetworkException e)
 	{
@@ -243,10 +261,26 @@ bool NacosConfigService::publishConfigInner
 	}
 }
 
-NacosConfigService::NacosConfigService(Properties &props) throw (NacosException)
+void NacosConfigService::addListener
+(
+	const String &dataId,
+	const String &group,
+	Listener *listener
+) throw(NacosException)
 {
-	httpcli = new HTTPCli();
-	encoding = "UTF-8";
-	namesp = "";//TODO:According to Ali's logic
-	svrListMgr = new ServerListManager(props);
+	Cachedata cachedata;
+	cachedata.tenant = namesp;
+	cachedata.dataId = dataId;
+	if (!isNull(group))
+	{
+		cachedata.group = group;
+	}
+	else
+	{
+		cachedata.group = Constants::DEFAULT_GROUP;
+	}
+	cachedata.dataMD5 = "";
+	cachedata.listener = listener;
+	listenWorker->addListener(cachedata);
+	listenWorker->startListening();
 }

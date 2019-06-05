@@ -1,10 +1,12 @@
-#include "HTTPCli.h"
+#include "http/HTTPCli.h"
 #include "Debug.h"
+#include "DebugAssertion.h"
 #include <iostream>
+
 using namespace std;
 #define DEFAULT_ENCODING "UTF-8"
 
-void testNormalHttpRequest()
+bool testNormalHttpRequest()
 {
 	cout << "in function testNormalHttpRequest" << endl;
 	String path = "http://127.0.0.1:8848/nacos/v1/ns/operator/servers";
@@ -26,6 +28,7 @@ void testNormalHttpRequest()
 		cout <<
 		"Request failed with curl code:"<<e.errorcode() << endl <<
 		"Reason:" << e.what() << endl;
+		return false;
 	}
 	
 	cout << "Http Request returned with code:" << callres.code << endl;
@@ -38,9 +41,10 @@ void testNormalHttpRequest()
 	}
 	
 	cout << "Content:" << callres.content << endl;
+	return true;
 }
 
-void testNoServerRequest()
+bool testNoServerRequest()
 {
 	cout << "in function testNoServerRequest" << endl;
 	String path = "http://127.0.0.1:9999/nacos/v1/ns/operator/servers";
@@ -59,9 +63,11 @@ void testNoServerRequest()
 	}
 	catch (NetworkException e)
 	{
+		//should throw a exception
 		cout <<
 		"Request failed with curl code:"<<e.errorcode() << endl <<
 		"Reason:" << e.what() << endl;
+		return true;
 	}
 	
 	cout << "Http Request returned with code:" << callres.code << endl;
@@ -74,4 +80,5 @@ void testNoServerRequest()
 	}
 	
 	cout << "Content:" << callres.content << endl;
+	return false;
 }

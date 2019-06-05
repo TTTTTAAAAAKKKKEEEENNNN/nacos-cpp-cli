@@ -6,8 +6,8 @@
 class NacosException : public std::exception
 {
 private:
-	String _errmsg;
 	int _errcode;
+	String _errmsg;
 public:
 	/**
 	* server error（server异常，如超时）
@@ -28,8 +28,8 @@ public:
 class NetworkException : public std::exception
 {
 private:
-	String _errmsg;
 	int _curlerrcode;
+	String _errmsg;
 public:
 	NetworkException(int errorcode, const char *errormsg) throw() : _curlerrcode(errorcode), _errmsg(errormsg) {};
 	NetworkException(int errorcode, const String &errormsg) throw() : _curlerrcode(errorcode), _errmsg(errormsg) {};

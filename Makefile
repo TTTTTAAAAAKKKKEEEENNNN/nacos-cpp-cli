@@ -1,16 +1,20 @@
-SRCS = $(wildcard *.c *.cpp ../lib/*.c ../lib/*.cpp src/*.c src/*.cpp testcase/*.c testcase/*.cpp)
+SRCS = $(wildcard *.c *.cpp ../lib/*.c ../lib/*.cpp src/*.c src/*.cpp)
+SRCS += $(wildcard src/http/*.c src/http/*.cpp)
+SRCS += $(wildcard src/listen/*.c src/listen/*.cpp)
+SRCS += $(wildcard test/*.c test/*.cpp test/testcase/*.c test/testcase/*.cpp)
 OBJS = $(SRCS:.c = .o)
 CC = g++
 INCLUDES = -Iinclude \
+			-Itest \
 			-I.
-LIBS = -lcurl
+LIBS = -lcurl -lpthread
 CCFLAGS = -g -Wall -O0
 OUTPUT = nacos-cli.out
 
 all : $(OUTPUT)
 
 $(OUTPUT) : $(OBJS)
-	$(CC) $^ -o $@ $(INCLUDES) $(LIBS)
+	$(CC) $^ -o $@ $(INCLUDES) $(LIBS) $(CCFLAGS)
 %.o : %.c
 	$(CC) -c $< $(CCFLAGS)
 %.o : %.cpp

@@ -1,13 +1,15 @@
 #include <iostream>
+#include <stdlib.h>
 #include "NacosConfigService.h"
 #include "PropertyKeyConst.h"
+#include "DebugAssertion.h"
 #include "Debug.h"
 
 using namespace std;
 
-void testDeleteConfig()
+bool testPublishConfig()
 {
-	cout << "in function testDeleteConfig" << endl;
+	cout << "in function testPublishConfig" << endl;
 	Properties props;
 	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1:8848";
 	NacosConfigService *n = new NacosConfigService(props);
@@ -21,17 +23,20 @@ void testDeleteConfig()
 
 		try
 		{
-			bSucc = n->removeConfig(key_s, NULLSTR);
+			bSucc = n->publishConfig(key_s, NULLSTR, val_s);
 		}
 		catch (NacosException e)
 		{
 			cout <<
 			"Request failed with curl code:"<<e.errorcode() << endl <<
 			"Reason:" << e.what() << endl;
+
+			ReleaseResource(n);
+			return false;
 		}
-		cout << "Delete Key:" << key_s << " with value:" << val_s << " result:" << bSucc << endl;
+		cout << "Publishing Key:" << key_s << " with value:" << val_s << " result:" << bSucc << endl;
 	}
 
-	delete n;
-	n = NULL;
+	ReleaseResource(n);
+	return true;
 }
