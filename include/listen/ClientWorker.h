@@ -1,5 +1,5 @@
-#ifndef __LISTEN_WORKER_H_
-#define __LISTEN_WORKER_H_
+#ifndef __CLIENT_WORKER_H_
+#define __CLIENT_WORKER_H_
 #include <map>
 #include <pthread.h>
 #include "NacosString.h"
@@ -22,7 +22,7 @@ public:
 	};
 };
 
-class ListenWorker
+class ClientWorker
 {
 private:
 	//dataID||group||tenant -> Cachedata* Mapping
@@ -35,11 +35,11 @@ private:
 
 	static void *listenerThread(void *watcher);
 
-	//You just can't construct a ListenWorker object without any parameter
-	ListenWorker();
+	//You just can't construct a ClientWorker object without any parameter
+	ClientWorker();
 public:
-	ListenWorker(HttpAgent *_httpAgent);
-	~ListenWorker();
+	ClientWorker(HttpAgent *_httpAgent);
+	~ClientWorker();
 	void startListening();
 	void stopListening();
 	void addListener(const Cachedata &cachedata);

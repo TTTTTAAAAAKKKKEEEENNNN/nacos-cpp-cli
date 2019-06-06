@@ -47,6 +47,7 @@ private:
 	static void destroyCurlHandle(void* arg);
 public:
 	static String encodingParams(std::list<String> &params);
+	static void assembleHeaders(std::list<String> &assembledHeaders, std::list<String> &headers);
 	static void HTTPBasicSettings(CURL *curlHandle);
 	static void HTTP_GLOBAL_INIT();
 	static void HTTP_GLOBAL_DEINIT();

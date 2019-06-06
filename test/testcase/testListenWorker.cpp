@@ -5,7 +5,7 @@
 #include "DebugAssertion.h"
 #include "listen/Listener.h"
 #include "http/ServerHttpAgent.h"
-#include "NacosConfigService.h"
+#include "config/NacosConfigService.h"
 #include "PropertyKeyConst.h"
 
 using namespace std;
@@ -27,7 +27,7 @@ bool testAddListener()
 {
 	cout << "in function testAddListener" << endl;
 	Properties props;
-	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1:8849";
+	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1:8848";
 	NacosConfigService *n = NULL;
 	KeyChangeListener *thelistener = new KeyChangeListener();
 	thelistener->setKey("k");

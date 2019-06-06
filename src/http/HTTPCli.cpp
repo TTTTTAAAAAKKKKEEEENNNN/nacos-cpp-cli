@@ -38,7 +38,7 @@ static size_t receiveHeaderCallback(
 	}
 	size_t realsize = size * nmemb;
 	
-	log_debug("Headercontents: %s", (char*)contents);
+	log_debug("receivedHeaders: %s", (char*)contents);
 
 	return realsize;
 }
@@ -94,6 +94,19 @@ String HTTPCli::encodingParams(list<String> &params)
 	return encodedParms;
 }
 
+void HTTPCli::assembleHeaders(list<String> &assembledHeaders, list<String> &headers)
+{
+	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
+	{
+		String curHeader = "";
+		curHeader.append(*it);
+		curHeader += ": ";
+		it++;
+		curHeader.append(*it);
+		assembledHeaders.push_back(curHeader);
+	}
+}
+
 HttpResult HTTPCli::httpGet
 (
 	const String &path,
@@ -114,7 +127,19 @@ HttpResult HTTPCli::httpGet
 		Url += "?" + encodedParms;
 	}
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
-	
+
+	/*Headers look like:
+		foo
+		bar
+		bax
+		lol
+	We convert it into sth like with assembleHeaders():
+		foo: bar
+		bax: lol
+	*/
+	list<String> assembledHeaders;
+	assembleHeaders(assembledHeaders, headers);
+
 	/* specify URL to get */ 
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
 
@@ -135,7 +160,7 @@ HttpResult HTTPCli::httpGet
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
+	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}
@@ -185,8 +210,20 @@ HttpResult HTTPCli::httpPost
 
 	String Url = path;
 	String encodedParms = encodingParams(paramValues);
-
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
+
+	/*Headers look like:
+		foo
+		bar
+		bax
+		lol
+	We convert it into sth like with assembleHeaders():
+		foo: bar
+		bax: lol
+	*/
+	list<String> assembledHeaders;
+	assembleHeaders(assembledHeaders, headers);
+
 	log_debug("Post data:%s\n", encodedParms.c_str());
 	
 	/* specify URL to get */ 
@@ -211,11 +248,12 @@ HttpResult HTTPCli::httpPost
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
+	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
+		log_debug("RequestHeaders:%s\n", it->c_str());
 	}
-	
+
 	if (headerlist != NULL)
 	{
 		curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headerlist);
@@ -267,7 +305,19 @@ HttpResult HTTPCli::httpDelete
 		Url += "?" + encodedParms;
 	}
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
-	
+
+	/*Headers look like:
+		foo
+		bar
+		bax
+		lol
+	We convert it into sth like with assembleHeaders():
+		foo: bar
+		bax: lol
+	*/
+	list<String> assembledHeaders;
+	assembleHeaders(assembledHeaders, headers);
+
 	/* specify URL to get */ 
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
 	
@@ -290,7 +340,7 @@ HttpResult HTTPCli::httpDelete
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
+	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}

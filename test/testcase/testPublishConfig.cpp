@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
-#include "NacosConfigService.h"
+#include "config/NacosConfigService.h"
 #include "PropertyKeyConst.h"
 #include "DebugAssertion.h"
 #include "Debug.h"

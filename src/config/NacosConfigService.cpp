@@ -1,4 +1,4 @@
-#include "NacosConfigService.h"
+#include "config/NacosConfigService.h"
 #include "http/HTTPCli.h"
 #include "http/ServerHttpAgent.h"
 #include "Constants.h"
@@ -15,17 +15,17 @@ NacosConfigService::NacosConfigService(Properties &props) throw (NacosException)
 	namesp = "";//TODO:According to Ali's logic
 	svrListMgr = new ServerListManager(props);
 	httpAgent = new ServerHttpAgent(httpcli, encoding, svrListMgr, namesp);
-	listenWorker = new ListenWorker(httpAgent);
+	clientWorker = new ClientWorker(httpAgent);
 }
 
 NacosConfigService::~NacosConfigService()
 {
 
-	if (listenWorker != NULL)
+	if (clientWorker != NULL)
 	{
-		listenWorker->stopListening();
-		delete listenWorker;
-		listenWorker = NULL;
+		clientWorker->stopListening();
+		delete clientWorker;
+		clientWorker = NULL;
 	}
 
 	if (httpAgent != NULL)
@@ -281,6 +281,6 @@ void NacosConfigService::addListener
 	}
 	cachedata.dataMD5 = "";
 	cachedata.listener = listener;
-	listenWorker->addListener(cachedata);
-	listenWorker->startListening();
+	clientWorker->addListener(cachedata);
+	clientWorker->startListening();
 }

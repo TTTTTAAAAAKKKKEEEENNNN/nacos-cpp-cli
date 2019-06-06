@@ -1,8 +1,8 @@
 #ifndef __NACOS_CFG_SVC_H_
 #define __NACOS_CFG_SVC_H_
-#include "ConfigService.h"
+#include "config/ConfigService.h"
 #include "http/HTTPAgent.h"
-#include "listen/ListenWorker.h"
+#include "listen/ClientWorker.h"
 #include "NacosString.h"
 #include "ServerListManager.h"
 #include "Properties.h"
@@ -16,7 +16,7 @@ private:
 	HttpAgent *httpAgent = NULL;
 	HTTPCli *httpcli = NULL;
 	ServerListManager *svrListMgr = NULL;
-	ListenWorker *listenWorker = NULL;
+	ClientWorker *clientWorker = NULL;
 
 	//Private Methods
 	NacosConfigService();

@@ -1,10 +1,12 @@
-#include "listen/ListenWorker.h"
+#include <sys/time.h>
+#include <unistd.h>
+#include "listen/ClientWorker.h"
 #include "listen/Listener.h"
 #include "Debug.h"
 #include "Constants.h"
 #include "Parameters.h"
 
-ListenWorker::ListenWorker(HttpAgent *_httpAgent)
+ClientWorker::ClientWorker(HttpAgent *_httpAgent)
 {
 	threadId = 0;
 	stopThread = true;
@@ -12,25 +14,47 @@ ListenWorker::ListenWorker(HttpAgent *_httpAgent)
 	httpAgent = _httpAgent;
 }
 
-ListenWorker::~ListenWorker()
+ClientWorker::~ClientWorker()
 {
 	stopListening();
 }
 
-void *ListenWorker::listenerThread(void *parm)
+int64_t getCurrentTimeInMs()
+{
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+
+	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+void *ClientWorker::listenerThread(void *parm)
 {
 	log_debug("Entered watch thread...\n");
-	ListenWorker *thelistener = (ListenWorker*)parm;
+	ClientWorker *thelistener = (ClientWorker*)parm;
 
 	while (!thelistener->stopThread)
 	{
-		thelistener->performWatch();
+		int64_t start_time = getCurrentTimeInMs();
+		log_debug("Start watching at %u...\n", start_time);
+		String changedKeys = thelistener->performWatch();
+		
+		log_debug("Watch function exit at %ull...\n", getCurrentTimeInMs());
+		while (getCurrentTimeInMs() - start_time < 30 * 1000)
+		{
+			log_debug("In the waiting loop at %ull...\n", getCurrentTimeInMs());
+			if (thelistener->stopThread)
+			{
+				return 0;
+			}
+
+			sleep(1);
+		}
 	}
 	
 	return 0;
 }
 
-void ListenWorker::startListening()
+void ClientWorker::startListening()
 {
 	log_debug("Starting the thread...\n");
 	stopThread = false;
@@ -38,7 +62,7 @@ void ListenWorker::startListening()
 	log_debug("Started thread with id:%d...\n", threadId);
 }
 
-void ListenWorker::stopListening()
+void ClientWorker::stopListening()
 {
 	log_debug("Stopping the thread...\n");
 	if (stopThread)//Stop in progress
@@ -52,7 +76,7 @@ void ListenWorker::stopListening()
 	log_info("The thread is stopped successfully...\n");
 }
 
-void ListenWorker::addListener(const Cachedata &cachedata)
+void ClientWorker::addListener(const Cachedata &cachedata)
 {
 	String key = cachedata.dataId + "||" + cachedata.group + "||" + cachedata.tenant;
 	log_debug("Adding listener with key: %s\n", key.c_str());
@@ -74,7 +98,7 @@ void ListenWorker::addListener(const Cachedata &cachedata)
 	log_debug("Key %s is added successfully!\n", key.c_str());
 }
 
-void ListenWorker::removeListener(const Cachedata &cachedata)
+void ClientWorker::removeListener(const Cachedata &cachedata)
 {
 	String key = cachedata.dataId + "||" + cachedata.group + "||" + cachedata.tenant;
 	pthread_mutex_lock(&watchListMutex);
@@ -94,7 +118,7 @@ void ListenWorker::removeListener(const Cachedata &cachedata)
 	pthread_mutex_unlock(&watchListMutex);
 }
 
-String ListenWorker::performWatch()
+String ClientWorker::performWatch()
 {
 	String postData;
 	std::map<String, Cachedata *> copyOfDataBeingWatched;
@@ -141,11 +165,22 @@ String ListenWorker::performWatch()
 	log_debug("Assembled postData:%s\n", postData.c_str());
 
 	//Get the request url
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	//TODO:move /listener to constant
+	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH + "/listener";
 	HttpResult res;
 
 	//TODO:constant for 30 * 1000
-	res = httpAgent->httpPost(url, headers, paramValues, httpAgent->getEncode(), timeout);
+	try
+	{
+		res = httpAgent->httpPost(url, headers, paramValues, httpAgent->getEncode(), timeout);
+	}
+	catch (NetworkException e)
+	{
+		log_warn("Request failed with: %s\n", e.what());
+		String result = "";
+		return result;
+	}
 
+	log_debug("Received the message below from server:\n%s\n", res.content.c_str());
 	return res.content;
 }
