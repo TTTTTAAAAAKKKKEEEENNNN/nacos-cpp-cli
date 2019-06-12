@@ -49,5 +49,6 @@ bool testAddListener()
 
 	getchar();
 	ReleaseResource(n);
+	SHOULD_BE_TRUE(bSucc, "Publish should succeed");
 	return true;
 }

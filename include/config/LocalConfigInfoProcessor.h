@@ -1,8 +1,11 @@
 #ifndef _LOC_CFG_INF_PROCESSOR_H_
 #define _LOC_CFG_INF_PROCESSOR_H_
-#include <sys/stat.h>
+#include <stdio.h>
+#include "NacosExceptions.h"
 #include "NacosString.h"
 #include "ParamUtils.h"
+#include "config/SnapShotSwitch.h"
+#include "config/IOUtils.h"
 
 /**
  * Local Disaster Recovery Directory Tool
@@ -12,24 +15,13 @@
 class LocalConfigInfoProcessor
 {
 public:
-	static bool checkNotExistOrNotFile(const String &serverName)
-	{
-		stat thestat = {0};
-		stat(localPath.c_str(), &thestat);
-		if (errno != 0 || !(thestat & S_IFREG))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+	
+
 	static String getFailover(const String &serverName, const String &dataId, const String &group, const String &tenant)
 	{
 		String localPath = getFailoverFile(serverName, dataId, group, tenant);
 
-		if (checkNotExistOrNotFile(localPath))
+		if (IOUtils::checkNotExistOrNotFile(localPath))
 		{
 			return NULLSTR;
 		}
@@ -41,81 +33,98 @@ public:
 			log_error("[%s] get failover error, file: %s, exception:%s", serverName, localPath, ioe.what());
 			return NULLSTR;
 		}
-	}
+	};
 
     /**
      * 获取本地缓存文件内容。NULL表示没有本地文件或抛出异常。
      */
-    static public String getSnapshot(String name, String dataId, String group, String tenant) {
-        if (!SnapShotSwitch.getIsSnapShot()) {
-            return null;
+    static String getSnapshot
+	(
+		const String &name,
+		const String &dataId,
+		const String &group,
+		const String &tenant
+	)
+	{
+        if (!SnapShotSwitch::getIsSnapShot()) {
+            return NULLSTR;
         }
         File file = getSnapshotFile(name, dataId, group, tenant);
-        if (!file.exists() || !file.isFile()) {
-            return null;
+        if (IOUtils::checkNotExistOrNotFile(localPath)) {
+            return NULLSTR;
         }
 
         try {
             return readFile(file);
         } catch (IOException ioe) {
-            LOGGER.error("[" + name + "]+get snapshot error, " + file, ioe);
-            return null;
+            log_error("[%s]+get snapshot error, file:%s what:%s\n",name.c_str() , file.c_str(), ioe.what());
+            return NULLSTR;
         }
     }
 
-	static private String readFile(const String &file) throws IOException
+	static String readFile(const String &file) throw(IOException)
 	{
-		if (checkNotExistOrNotFile(file))
+		if (IOUtils::checkNotExistOrNotFile(file))
 		{
 			return NULLSTR;
 		}
 
-		if (JVMUtil.isMultiInstance()) {
-		return ConcurrentDiskUtil.getFileContent(file, Constants.ENCODE);
+		if (JVMUtil.isMultiInstance())
+		{
+			return ConcurrentDiskUtil::getFileContent(file, Constants::ENCODE);
 		}
 		else
 		{
-			FILE 
+			return IOUtils::readStringFromFile(file, Constants::ENCODE);
 		}
 	}
 
-    static public void saveSnapshot(String envName, String dataId, String group, String tenant, String config) {
-        if (!SnapShotSwitch.getIsSnapShot()) {
-            return;
-        }
-        File file = getSnapshotFile(envName, dataId, group, tenant);
-        if (null == config) {
-            try {
-                IOUtils.delete(file);
-            } catch (IOException ioe) {
-                LOGGER.error("[" + envName + "] delete snapshot error, " + file, ioe);
-            }
-        } else {
-            try {
-                File parentFile = file.getParentFile();
-                if (!parentFile.exists()) {
-                    boolean isMdOk = parentFile.mkdirs();
-                    if (!isMdOk) {
-                        LOGGER.error("[{}] save snapshot error", envName);
-                    }
-                }
+	static void saveSnapshot(const String &envName, const String &dataId, const String &group, const String &tenant, const String &config)
+	{
+		if (!SnapShotSwitch::getIsSnapShot())
+		{
+			return;
+		}
 
-                if (JVMUtil.isMultiInstance()) {
-                    ConcurrentDiskUtil.writeFileContent(file, config,
-                        Constants.ENCODE);
-                } else {
-                    IOUtils.writeStringToFile(file, config, Constants.ENCODE);
-                }
-            } catch (IOException ioe) {
-                LOGGER.error("[" + envName + "] save snapshot error, " + file, ioe);
-            }
-        }
-    }
+		String file = getSnapshotFile(envName, dataId, group, tenant);
+		if (isNull(config))
+		{
+			int remove_result = remove(file.c_str());
+			if (remove_result)//error happens when removing the file
+			{
+				log_error("[%s] delete snapshot error, remove() returns %d, errno = %d\n",
+				envName.c_str(), remove_result, errno);
+			}
+		}
+		else
+		{
+			String parentFile = IOUtils::getParentFile(file);
+			if (IOUtils::checkNotExistOrNotDir(parentFile))
+			{
+				IOUtils::recursivelyCreate(parentFile);
+				boolean isMdOk = parentFile.mkdirs();
+
+				//LOGGER.error("[{}] save snapshot error", envName);
+			}
+
+			if (JVMUtil::isMultiInstance())
+			{
+				ConcurrentDiskUtil.writeFileContent(file, config,
+				Constants.ENCODE);
+			}
+			else
+			{
+				IOUtils::writeStringToFile(file, config, Constants.ENCODE);
+			}
+
+			//LOGGER.error("[" + envName + "] save snapshot error, " + file, ioe);
+		}
+	}
 
     /**
      * 清除snapshot目录下所有缓存文件。
      */
-    static public void cleanAllSnapshot() {
+    static void cleanAllSnapshot() {
         try {
             File rootFile = new File(LOCAL_SNAPSHOT_PATH);
             File[] files = rootFile.listFiles();
@@ -132,7 +141,7 @@ public:
         }
     }
 
-    static public void cleanEnvSnapshot(String envName) {
+    static void cleanEnvSnapshot(const String &envName) {
         File tmp = new File(LOCAL_SNAPSHOT_PATH, envName + "_nacos");
         tmp = new File(tmp, "snapshot");
         try {
@@ -158,16 +167,17 @@ public:
 		return Failoverfile;
 	}
 
-    static File getSnapshotFile(String envName, String dataId, String group, String tenant) {
-        File tmp = new File(LOCAL_SNAPSHOT_PATH, envName + "_nacos");
-        if (StringUtils.isBlank(tenant)) {
-            tmp = new File(tmp, "snapshot");
+    static String getSnapshotFile(const String &envName, const String &dataId, const String &group, const String &tenant)
+	{
+		String filename = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
+        if (isNull(tenant)) {
+            filename += "/snapshot";
         } else {
-            tmp = new File(tmp, "snapshot-tenant");
-            tmp = new File(tmp, tenant);
+            filename += "/snapshot-tenant/" + tenant;
         }
-
-        return new File(new File(tmp, group), dataId);
+		
+		filename += "/" + group + "/" + dataId;
+        return filename;
     }
 
     static String LOCAL_FILEROOT_PATH;

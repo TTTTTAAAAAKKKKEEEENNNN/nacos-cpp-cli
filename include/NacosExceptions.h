@@ -37,4 +37,17 @@ public:
 	const char* what() const throw() { return _errmsg.c_str(); };
 	const int errorcode() const throw() { return _curlerrcode; };
 };
+
+class IOException : public std::exception
+{
+private:
+	int _errcode;
+	String _errmsg;
+public:
+	IOException(int errorcode, const char *errormsg) throw() : _errcode(errorcode), _errmsg(errormsg) {};
+	IOException(int errorcode, const String &errormsg) throw() : _errcode(errorcode), _errmsg(errormsg) {};
+	~IOException() throw() {};
+	const char* what() const throw() { return _errmsg.c_str(); };
+	const int errorcode() const throw() { return _errcode; };
+};
 #endif

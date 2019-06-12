@@ -16,6 +16,10 @@ bool testDeleteConfig();
 bool testPublishConfig();
 bool testStringEqual();
 bool testAddListener();
+bool testReadWriteFile();
+bool testGetFileSize();
+bool testFileExists();
+bool testCreateAndRemove();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -35,7 +39,11 @@ TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Test Listener function for nacos", testAddListener)
+//TEST_ITEM("Test Listener function for nacos", testAddListener)
+TEST_ITEM("Read&Write file test", testReadWriteFile)
+TEST_ITEM("GetFileSize, should work well", testGetFileSize)
+TEST_ITEM("Check whether file exists or not", testFileExists)
+TEST_ITEM("Create&Remove file", testCreateAndRemove)
 TEST_ITEM_END
 
 int main()
