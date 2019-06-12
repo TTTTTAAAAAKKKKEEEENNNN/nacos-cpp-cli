@@ -48,13 +48,32 @@ public:
 	static bool checkNotExistOrNotFile(const String &pathname)
 	{
 		struct stat thestat = {0};
-		stat(pathname.c_str(), &thestat);
-		if (errno != 0 || !S_ISREG(thestat.st_mode))
+		int res = stat(pathname.c_str(), &thestat);
+
+		if (res != 0)
 		{
+			if (errno == ENOENT)
+			{
+				//a. the file doesn't exist
+				return true;
+			}
+			else
+			{
+				//Maybe something's wrong with the permission
+				//Anyway, we have no access to this file
+				return true;
+			}
+		}
+
+		if (!S_ISREG(thestat.st_mode))
+		{
+			//b. the file is not a regular file
 			return true;
 		}
 		else
 		{
+			
+			//This IS a regular file
 			return false;
 		}
 	};
@@ -65,13 +84,31 @@ public:
 	static bool checkNotExistOrNotDir(const String &pathname)
 	{
 		struct stat thestat = {0};
-		stat(pathname.c_str(), &thestat);
-		if (errno != 0 || !S_ISDIR(thestat.st_mode))
+		int res = stat(pathname.c_str(), &thestat);
+		
+		if (res != 0)
 		{
+			if (errno == ENOENT)
+			{
+				//a. the file doesn't exist
+				return true;
+			}
+			else
+			{
+				//Maybe something's wrong with the permission
+				//Anyway, we have no access to this file
+				return true;
+			}
+		}
+
+		if (!S_ISDIR(thestat.st_mode))
+		{
+			//b. the file is not a directory
 			return true;
 		}
 		else
 		{
+			//This IS a directory
 			return false;
 		}
 	};
@@ -85,7 +122,7 @@ public:
 		{
 			return NULLSTR;
 		}
-		String parentFile = thefile.substr(0, parentFilePos - 1);
+		String parentFile = thefile.substr(0, parentFilePos);
 		return parentFile;
 	};
 
@@ -95,8 +132,9 @@ public:
 	{
 		struct stat thestat;
 
-		if (stat(file.c_str(), &thestat) == -1)
+		if (stat(file.c_str(), &thestat) == -1 && errno != ENOENT)
 		{
+			//Something's wrong, and it's not "FileNotExist", we should record this and exit
 			log_error("Failed to stat() file, errno: %d\n", errno);
 			return false;
 		}
@@ -116,7 +154,7 @@ public:
 				struct stat subfilestat;
 				String subfilepath = file + "/" + direntp->d_name;
 
-				if (stat(subfilepath.c_str(), &subfilestat) == -1)
+				if (stat(subfilepath.c_str(), &subfilestat) == -1 && errno != ENOENT)
 				{
 					log_error("Failed to stat() file, errno: %d\n", errno);
 					closedir(curdir);

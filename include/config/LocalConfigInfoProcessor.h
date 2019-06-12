@@ -15,8 +15,6 @@
 class LocalConfigInfoProcessor
 {
 public:
-	
-
 	static String getFailover(const String &serverName, const String &dataId, const String &group, const String &tenant)
 	{
 		String localPath = getFailoverFile(serverName, dataId, group, tenant);

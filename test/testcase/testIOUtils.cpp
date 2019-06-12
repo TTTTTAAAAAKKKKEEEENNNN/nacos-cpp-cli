@@ -46,6 +46,7 @@ bool testFileExists()
 	String writeFile = tmpPath + "/testfile";
 	IOUtils::recursivelyRemove(tmpPath);
 
+	cout << "Cwd:" << cwd << endl;
 	SHOULD_BE_TRUE(IOUtils::checkNotExistOrNotFile(cwd), "The source folder should be a folder, not a file");
 	SHOULD_BE_FALSE(IOUtils::checkNotExistOrNotDir(cwd), "The source folder should be a folder");
 
@@ -64,6 +65,10 @@ bool testCreateAndRemove()
 	String tmpPath = cwd + "/tmp/123/456/789/2312/afda/4__dsa/dd_";
 	String rmpath = cwd + "/tmp/123";
 	IOUtils::recursivelyCreate(tmpPath);
+	SHOULD_BE_FALSE(IOUtils::checkNotExistOrNotDir(tmpPath), "We have created a dir, it should exist");
 	IOUtils::recursivelyRemove(rmpath);
+	SHOULD_BE_TRUE(IOUtils::checkNotExistOrNotFile(cwd + "/tmp"), "Removed everything except the tmp folder");
+	String easterEgg = cwd + "/tmp/Liao/Sijia";
+	IOUtils::recursivelyCreate(easterEgg);
 	return true;
 }
