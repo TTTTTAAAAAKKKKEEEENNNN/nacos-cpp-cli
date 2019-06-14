@@ -21,6 +21,11 @@ bool testReadWriteFile();
 bool testGetFileSize();
 bool testFileExists();
 bool testCreateAndRemove();
+bool testCleanDirectory();
+bool testSaveSnapshot();
+bool testCleanTestenvCacheAndGetTestenv();
+bool testCleanPrdCacheAndGetPrdenv();
+bool testCleanAllCache();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -36,15 +41,20 @@ TEST_ITEM("Test printing logs with va_args2", testVaArgs2)
 TEST_ITEM("Test printing logs", testlogPrint)
 TEST_ITEM("Delete config from server", testDeleteConfig)
 TEST_ITEM("Test for string characteristics", testStringEqual)
+TEST_ITEM("Test Listener function for nacos", testAddListener)
+TEST_ITEM("Read&Write file test", testReadWriteFile)
+TEST_ITEM("GetFileSize, should work well", testGetFileSize)
+TEST_ITEM("Check whether file exists or not", testFileExists)
+TEST_ITEM("Create&Remove file", testCreateAndRemove)
+TEST_ITEM("Create a directory with subdirectories, and clean it", testCleanDirectory)
+TEST_ITEM("Save snapshot", testSaveSnapshot)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-//TEST_ITEM("Test Listener function for nacos", testAddListener)
-//TEST_ITEM("Read&Write file test", testReadWriteFile)
-//TEST_ITEM("GetFileSize, should work well", testGetFileSize)
-//TEST_ITEM("Check whether file exists or not", testFileExists)
-TEST_ITEM("Create&Remove file", testCreateAndRemove)
+TEST_ITEM("Save cache in test and prod env, then clean test env, should only get config from prod env", testCleanTestenvCacheAndGetTestenv)
+TEST_ITEM("Save cache in test and prod env, then clean prod env, should only get config from test env", testCleanPrdCacheAndGetPrdenv)
+TEST_ITEM("Save cache in test and prod env, then clean all, should not get any data", testCleanAllCache)
 TEST_ITEM_END
 
 int main()
@@ -55,7 +65,7 @@ int main()
 		cout << "===========================" << endl;
 		TestData *curtest = &testList[i];
 		TESTFN testfunction = curtest->testFn;
-		cout << "Testing " << curtest->testName << " ...";
+		cout << "Testing " << curtest->testName << " ..." << endl;
 		bool pass = testfunction();
 		if (!pass)
 		{

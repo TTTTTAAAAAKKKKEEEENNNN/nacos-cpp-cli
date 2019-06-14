@@ -72,3 +72,18 @@ bool testCreateAndRemove()
 	IOUtils::recursivelyCreate(easterEgg);
 	return true;
 }
+
+bool testCleanDirectory()
+{
+	cout << "in function testCleanDirectory" << endl;
+
+	String cwd = IOUtils::getCwd();
+	String tmpPath = cwd + "/tmp/testcleandir/456/789/2312/afda/4__dsa/dd_";
+	String cleanPath = cwd + "/tmp/testcleandir";
+	IOUtils::recursivelyCreate(tmpPath);
+	SHOULD_BE_FALSE(IOUtils::checkNotExistOrNotDir(tmpPath), "We have created a dir, it should exist");
+	IOUtils::cleanDirectory(cleanPath);
+	SHOULD_BE_TRUE(IOUtils::checkNotExistOrNotDir(tmpPath), "Subdirectories of the dir is cleaned, it should not exist");
+	SHOULD_BE_FALSE(IOUtils::checkNotExistOrNotDir(cleanPath), "The dir is cleaned, but itself should exist");
+	return true;
+}

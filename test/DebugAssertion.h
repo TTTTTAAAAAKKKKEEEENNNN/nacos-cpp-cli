@@ -21,10 +21,10 @@ do \
 { \
 	if (!(assertion)) \
 	{ \
-		cout << (message) << " failed" << endl; \
+		cout << (message) << "...:failed" << endl; \
 		return false; \
 	} \
-	cout << (message) << " passed" << endl; \
+	cout << (message) << "...:passed" << endl; \
 } while(0);
 
 #define SHOULD_BE_FALSE(assertion, message) SHOULD_BE_TRUE(!(assertion), (message))

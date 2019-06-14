@@ -138,8 +138,11 @@ void LocalConfigInfoProcessor::cleanEnvSnapshot(const String &envName)
 {
 	String tmp = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
 	tmp += "/snapshot";
+	//I think we should remove -tenant also, so for one envname, cache for all tenants within the environment will be purged
+	String tmp_tenant = tmp + "-tenant";
 	IOUtils::cleanDirectory(tmp);
-	log_info("success delete %s-snapshot", envName.c_str());
+	IOUtils::cleanDirectory(tmp_tenant);
+	log_info("success delete %s-snapshot: %s\n", envName.c_str(), tmp.c_str());
 };
 
 String LocalConfigInfoProcessor::getFailoverFile(const String &serverName, const String &dataId, const String &group, const String &tenant)
