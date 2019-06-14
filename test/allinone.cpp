@@ -1,5 +1,6 @@
-#include "DebugAssertion.h"
 #include <iostream>
+#include "DebugAssertion.h"
+#include "init/init.h"
 
 using namespace std;
 
@@ -48,8 +49,7 @@ TEST_ITEM_END
 
 int main()
 {
-	Debug::set_debug_level(DEBUG);
-	HTTPCli::HTTP_GLOBAL_INIT();
+	Init::doInit();
 	for (size_t i = 0; i < sizeof(testList) / sizeof(TestData); i++)
 	{
 		cout << "===========================" << endl;
@@ -68,6 +68,6 @@ int main()
 	}
 	cout << "===========================" << endl;
 
-	HTTPCli::HTTP_GLOBAL_DEINIT();
+	Init::doDeinit();
 	return 0;
 }

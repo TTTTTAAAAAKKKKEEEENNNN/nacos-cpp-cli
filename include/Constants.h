@@ -115,6 +115,8 @@ public:
 	const static String SERVICE_INFO_SPLITER;
 
 	const static String NULL_STRING;
+
+	const static String FILE_SEPARATOR;
 };
 
 

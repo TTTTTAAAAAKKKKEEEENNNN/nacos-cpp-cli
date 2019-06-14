@@ -1,206 +1,43 @@
 #ifndef __IO_UTILS_H_
 #define __IO_UTILS_H_
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
-#include<unistd.h>
+#include <list>
 #include "NacosString.h"
+#include "NacosExceptions.h"
 
-class IOUtils {
+class IOUtils
+{
 private:
 public:
-	static size_t getFileSize(const String &file)
-	{
-		struct stat statbuf;
+	static size_t getFileSize(const String &file);
 
-		if (stat(file.c_str(), &statbuf) == -1)
-		{
-			return 0;
-		}
+	static String readStringFromFile(const String &file, const String &encoding) throw (IOException);
 
-		return statbuf.st_size;
-	}
-
-	static String readStringFromFile(const String &file, const String &encoding) throw (IOException)
-	{
-		size_t toRead = getFileSize(file);
-		FILE *fp = fopen(file.c_str(), "rb");
-		char buf[toRead + 1];
-		fread(buf, toRead, 1, fp);
-		buf[toRead] = '\0';
-		fclose(fp);
-		return String(buf);
-	};
-
-	static void writeStringToFile(const String &file, const String &data, const String &encoding) throw (IOException)
-	{
-		FILE *fp = fopen(file.c_str(), "wb");
-		fwrite(data.c_str(), data.size(), 1, fp);
-		fclose(fp);
-	};
+	static void writeStringToFile(const String &file, const String &data, const String &encoding) throw (IOException);
 
 	//Returns true if:
 	//a. the file doesn't exist
 	//b. the file is not a regular file
-	static bool checkNotExistOrNotFile(const String &pathname)
-	{
-		struct stat thestat = {0};
-		int res = stat(pathname.c_str(), &thestat);
-
-		if (res != 0)
-		{
-			if (errno == ENOENT)
-			{
-				//a. the file doesn't exist
-				return true;
-			}
-			else
-			{
-				//Maybe something's wrong with the permission
-				//Anyway, we have no access to this file
-				return true;
-			}
-		}
-
-		if (!S_ISREG(thestat.st_mode))
-		{
-			//b. the file is not a regular file
-			return true;
-		}
-		else
-		{
-			
-			//This IS a regular file
-			return false;
-		}
-	};
+	static bool checkNotExistOrNotFile(const String &pathname);
 
 	//Returns true if:
 	//a. the file doesn't exist
 	//b. the file is not a directory
-	static bool checkNotExistOrNotDir(const String &pathname)
-	{
-		struct stat thestat = {0};
-		int res = stat(pathname.c_str(), &thestat);
-		
-		if (res != 0)
-		{
-			if (errno == ENOENT)
-			{
-				//a. the file doesn't exist
-				return true;
-			}
-			else
-			{
-				//Maybe something's wrong with the permission
-				//Anyway, we have no access to this file
-				return true;
-			}
-		}
-
-		if (!S_ISDIR(thestat.st_mode))
-		{
-			//b. the file is not a directory
-			return true;
-		}
-		else
-		{
-			//This IS a directory
-			return false;
-		}
-	};
+	static bool checkNotExistOrNotDir(const String &pathname);
 
 	//TODO:To provide compability across different platforms
-	static String getParentFile(const String &thefile)
-	{
-		size_t parentFilePos = thefile.rfind('/');
-		//Invalid Directory/Filename, returning empty
-		if (parentFilePos == std::string::npos || parentFilePos == 0)
-		{
-			return NULLSTR;
-		}
-		String parentFile = thefile.substr(0, parentFilePos);
-		return parentFile;
-	};
+	static String getParentFile(const String &thefile);
 
 	//Upon success, return true
 	//Upon failure, return false
-	static bool recursivelyRemove(const String &file)
-	{
-		struct stat thestat;
+	static bool recursivelyRemove(const String &file);
 
-		if (stat(file.c_str(), &thestat) == -1 && errno != ENOENT)
-		{
-			//Something's wrong, and it's not "FileNotExist", we should record this and exit
-			log_error("Failed to stat() file, errno: %d\n", errno);
-			return false;
-		}
+	static bool cleanDirectory(const String &file);
 
-		if (S_ISDIR(thestat.st_mode))
-		{
-			DIR *curdir = opendir(file.c_str());
-			struct dirent *direntp = readdir(curdir);
-			while (direntp != NULL)
-			{
-				if (!strcmp(direntp->d_name, ".") || !strcmp(direntp->d_name, ".."))
-				{
-					//skip this dir and parent
-					direntp = readdir(curdir);
-					continue;
-				}
-				struct stat subfilestat;
-				String subfilepath = file + "/" + direntp->d_name;
-
-				if (stat(subfilepath.c_str(), &subfilestat) == -1 && errno != ENOENT)
-				{
-					log_error("Failed to stat() file, errno: %d\n", errno);
-					closedir(curdir);
-					return false;
-				}
-				if (S_ISREG(subfilestat.st_mode))
-				{
-					remove(subfilepath.c_str());
-				}
-				else if (S_ISDIR(subfilestat.st_mode))
-				{
-					recursivelyRemove(subfilepath);
-				}
-				//get to the next entry
-				direntp = readdir(curdir);
-			}
-			closedir(curdir);
-			remove(file.c_str());
-		}
-		else if (S_ISREG(thestat.st_mode))
-		{
-			remove(file.c_str());
-		}
-
-		return true;
-	};
-
-	static void recursivelyCreate(const String &file)
-	{
-		String parentFile = getParentFile(file);
-		if (!isNull(parentFile))
-		{
-			recursivelyCreate(parentFile);
-		}
-
-		if (checkNotExistOrNotDir(file))
-		{
-			mkdir(file.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-		}
-	};
+	static void recursivelyCreate(const String &file);
 	
-	static String getCwd()
-	{
-		char temp[PATH_MAX];
-		return ( getcwd(temp, sizeof(temp)) ? String( temp ) : String("") );
-	}
+	static String getCwd();
+
+	static std::list<String> listFiles(const String &path);
 };
 
 #endif

@@ -112,3 +112,5 @@ const int Constants::WRITE_REDIRECT_CODE = 307;
 const String Constants::SERVICE_INFO_SPLITER = "@@";
 
 const String Constants::NULL_STRING = "null";
+
+const String Constants::FILE_SEPARATOR = "/";
