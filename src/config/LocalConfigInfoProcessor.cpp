@@ -28,7 +28,7 @@ String LocalConfigInfoProcessor::getFailover(const String &serverName, const Str
 	{
 		return readFile(localPath);
 	} catch (IOException ioe) {
-		log_error("[%s] get failover error, file: %s, exception:%s", serverName, localPath, ioe.what());
+		log_error("[%s] get failover error, file: %s, exception:%s", serverName.c_str(), localPath.c_str(), ioe.what());
 		return NULLSTR;
 	}
 };
