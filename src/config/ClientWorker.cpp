@@ -38,10 +38,10 @@ void *ClientWorker::listenerThread(void *parm)
 		log_debug("Start watching at %u...\n", start_time);
 		String changedKeys = thelistener->performWatch();
 		
-		log_debug("Watch function exit at %ull...\n", getCurrentTimeInMs());
+		log_debug("Watch function exit at %u...\n", getCurrentTimeInMs());
 		while (getCurrentTimeInMs() - start_time < 30 * 1000)
 		{
-			log_debug("In the waiting loop at %ull...\n", getCurrentTimeInMs());
+			log_debug("In the waiting loop at %u...\n", getCurrentTimeInMs());
 			if (thelistener->stopThread)
 			{
 				return 0;

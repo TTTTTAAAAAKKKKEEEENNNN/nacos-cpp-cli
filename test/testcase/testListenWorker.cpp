@@ -35,6 +35,8 @@ bool testAddListener()
 	try
 	{
 		n = new NacosConfigService(props);
+		n->addListener("k4", NULLSTR, thelistener);
+		n->addListener("k2", NULLSTR, thelistener);
 		n->addListener("k", NULLSTR, thelistener);
 		bSucc = n->publishConfig("k", NULLSTR, "hahaha");
 	}

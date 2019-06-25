@@ -271,6 +271,8 @@ void NacosConfigService::addListener
 	Cachedata cachedata;
 	cachedata.tenant = namesp;
 	cachedata.dataId = dataId;
+	//TODO:give a constant to this hard-coded number
+	String cfgcontent = getConfig(dataId, group, 3000);
 	if (!isNull(group))
 	{
 		cachedata.group = group;

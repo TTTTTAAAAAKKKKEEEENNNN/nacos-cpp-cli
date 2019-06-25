@@ -3,6 +3,7 @@ SRCS += $(wildcard src/http/*.c src/http/*.cpp)
 SRCS += $(wildcard src/listen/*.c src/listen/*.cpp)
 SRCS += $(wildcard src/config/*.c src/config/*.cpp)
 SRCS += $(wildcard src/init/*.c src/init/*.cpp)
+SRCS += $(wildcard src/md5/*.c src/md5/*.cpp)
 SRCS += $(wildcard test/*.c test/*.cpp test/testcase/*.c test/testcase/*.cpp)
 OBJS = $(SRCS:.c = .o)
 CC = g++
