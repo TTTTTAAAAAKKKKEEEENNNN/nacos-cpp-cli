@@ -54,6 +54,11 @@ void *ClientWorker::listenerThread(void *parm)
 	return 0;
 }
 
+std::list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
+{
+	
+}
+
 void ClientWorker::startListening()
 {
 	log_debug("Starting the thread...\n");
@@ -126,26 +131,22 @@ String ClientWorker::performWatch()
 	for (std::map<String, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
 	{
 		Cachedata *curCachedata = it->second;
-		//Copy the keys being watched
-		Cachedata *copyOfCurWatchData = new Cachedata();
-		*copyOfCurWatchData = *curCachedata;
-		copyOfDataBeingWatched[it->first] = copyOfCurWatchData;
 
-		postData += copyOfCurWatchData->dataId;
+		postData += curCachedata->dataId;
 		postData += Constants::WORD_SEPARATOR;
-		postData += copyOfCurWatchData->group;
+		postData += curCachedata->group;
 		postData += Constants::WORD_SEPARATOR;
 		
-		if (!isNull(copyOfCurWatchData->tenant))
+		if (!isNull(curCachedata->tenant))
 		{
-			postData += copyOfCurWatchData->dataMD5;
+			postData += curCachedata->dataMD5;
 			postData += Constants::WORD_SEPARATOR;
-			postData += copyOfCurWatchData->tenant;
+			postData += curCachedata->tenant;
 			postData += Constants::LINE_SEPARATOR;
 		}
 		else
 		{
-			postData += copyOfCurWatchData->dataMD5;
+			postData += curCachedata->dataMD5;
 			postData += Constants::LINE_SEPARATOR;
 		}
 	}

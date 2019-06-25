@@ -5,6 +5,7 @@
 #include "Parameters.h"
 #include "ParamUtils.h"
 #include "Debug.h"
+#include "md5/md5.h"
 
 using namespace std;
 
@@ -281,7 +282,17 @@ void NacosConfigService::addListener
 	{
 		cachedata.group = Constants::DEFAULT_GROUP;
 	}
-	cachedata.dataMD5 = "";
+
+	if (!isNull(cfgcontent))
+	{
+		MD5 md5;
+		md5.update(cfgcontent);
+		cachedata.dataMD5 = md5.toString();
+	}
+	else
+	{
+		cachedata.dataMD5 = "";
+	}
 	cachedata.listener = listener;
 	clientWorker->addListener(cachedata);
 	clientWorker->startListening();
