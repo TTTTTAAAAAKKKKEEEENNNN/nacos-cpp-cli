@@ -2,9 +2,13 @@
 #include <unistd.h>
 #include "listen/ClientWorker.h"
 #include "listen/Listener.h"
+#include "utils/url.h"
+#include "utils/ParamUtils.h"
 #include "Debug.h"
 #include "Constants.h"
 #include "Parameters.h"
+
+using namespace std;
 
 ClientWorker::ClientWorker(HttpAgent *_httpAgent)
 {
@@ -54,9 +58,13 @@ void *ClientWorker::listenerThread(void *parm)
 	return 0;
 }
 
-std::list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
+list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
 {
-	
+	String changedKeyList = urldecode(ReturnedKeys);
+
+	list<String> explodedList;
+	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR)
+	return explodedList;
 }
 
 void ClientWorker::startListening()
@@ -123,10 +131,9 @@ void ClientWorker::removeListener(const Cachedata &cachedata)
 	pthread_mutex_unlock(&watchListMutex);
 }
 
-String ClientWorker::performWatch()
+String ClientWorker::checkListenedKeys()
 {
 	String postData;
-	std::map<String, Cachedata *> copyOfDataBeingWatched;
 	pthread_mutex_lock(&watchListMutex);
 	for (std::map<String, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
 	{
@@ -184,4 +191,10 @@ String ClientWorker::performWatch()
 
 	log_debug("Received the message below from server:\n%s\n", res.content.c_str());
 	return res.content;
+}
+
+String ClientWorker::performWatch()
+{
+	String changedData = checkListenedKeys();
+	list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
 }

@@ -28,6 +28,7 @@ static size_t receiveHeaderCallback(
 )
 {
 	char *content_s = (char*)contents;
+	//Parse the 'HeaderName: HeaderContent' format
 	char *pos = strchr(content_s, ':');
 	if (pos != NULL)//Skip status
 	{

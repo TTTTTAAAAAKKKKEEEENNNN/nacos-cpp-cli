@@ -7,7 +7,7 @@
 #include <errno.h>
 #include "NacosExceptions.h"
 #include "NacosString.h"
-#include "ParamUtils.h"
+#include "utils/ParamUtils.h"
 #include "config/SnapShotSwitch.h"
 #include "config/JVMUtil.h"
 #include "config/ConcurrentDiskUtil.h"

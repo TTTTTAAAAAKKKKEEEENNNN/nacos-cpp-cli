@@ -22,6 +22,7 @@ private:
 
 	//You just can't construct a ClientWorker object without any parameter
 	ClientWorker();
+	std::list<String> parseListenedKeys(const String &ReturnedKeys);
 public:
 	ClientWorker(HttpAgent *_httpAgent);
 	~ClientWorker();

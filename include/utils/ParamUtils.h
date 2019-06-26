@@ -1,8 +1,11 @@
 #ifndef __PARMUTILS_H_
 #define __PARMUTILS_H_
 #include <map>
+#include <list>
 #include "NacosString.h"
 #include "NacosExceptions.h"
+
+using namespace std;
 
 class ParamUtils
 {
@@ -44,6 +47,26 @@ public:
             throw NacosException(NacosException::CLIENT_INVALID_PARAM, "content invalid");
 		}
 	};
+	
+	static void Explode(list<String> &explodedList, const String &stringToExplode, char separator)
+	{
+		size_t start_pos = 0;
+		size_t cur_pos = 0;
+		cur_pos = stringToExplode.find(separator, start_pos);
+
+		//break the string with separator
+		while (cur_pos != string::npos)
+		{
+			String cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
+			explodedList.push_back(cur_addr);
+			start_pos = cur_pos + 1;
+			cur_pos = stringToExplode.find(separator, start_pos);
+		}
+
+		//deal with the last string
+		String last_addr = stringToExplode.substr(start_pos);
+		explodedList.push_back(last_addr);
+	}
 };
 
 #endif

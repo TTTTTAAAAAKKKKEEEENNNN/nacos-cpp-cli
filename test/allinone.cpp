@@ -27,6 +27,8 @@ bool testCleanTestenvCacheAndGetTestenv();
 bool testCleanPrdCacheAndGetPrdenv();
 bool testCleanAllCache();
 bool testMD5();
+bool testURLEncodeAndDecode();
+bool testStringExplode();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -56,7 +58,9 @@ TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Test Listener function for nacos", testAddListener)
+//TEST_ITEM("Test Listener function for nacos", testAddListener)
+//TEST_ITEM("Test urlencode/urldecode of libcurl", testURLEncodeAndDecode)
+TEST_ITEM("Test explode function", testStringExplode)
 TEST_ITEM_END
 
 int main()
