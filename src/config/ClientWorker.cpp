@@ -115,7 +115,7 @@ void ClientWorker::removeListener(const Cachedata &cachedata)
 {
 	String key = cachedata.dataId + "||" + cachedata.group + "||" + cachedata.tenant;
 	pthread_mutex_lock(&watchListMutex);
-	std::map<String, Cachedata *>::iterator it = watchList.find(key);
+	map<String, Cachedata *>::iterator it = watchList.find(key);
 	//Check whether the cachedata being removed exists
 	if (it == watchList.end())
 	{
@@ -135,7 +135,7 @@ String ClientWorker::checkListenedKeys()
 {
 	String postData;
 	pthread_mutex_lock(&watchListMutex);
-	for (std::map<String, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
+	for (map<String, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
 	{
 		Cachedata *curCachedata = it->second;
 
@@ -159,8 +159,8 @@ String ClientWorker::checkListenedKeys()
 	}
 	pthread_mutex_unlock(&watchListMutex);
 
-	std::list<String> headers;
-	std::list<String> paramValues;
+	list<String> headers;
+	list<String> paramValues;
 
 	//TODO:put it into constants list
 	long timeout = 30000;
@@ -196,5 +196,17 @@ String ClientWorker::checkListenedKeys()
 String ClientWorker::performWatch()
 {
 	String changedData = checkListenedKeys();
-	list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
+	list<String> changedKeys = ClientWorker::parseListenedKeys(changedData);
+	pthread_mutex_lock(&watchListMutex);
+	for (std::list<String>::iterator it = changedKeys.begin(); it != changedKeys.end(); it++)
+	{
+		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(key);
+		//check whether the data being watched still exists
+		if (cacheDataIt != watchList.end())
+		{
+			Cachedata *cachedq = cacheDataIt->second;
+			cachedq->listener.receiveConfigInfo();
+		}
+	}
+	pthread_mutex_unlock(&watchListMutex);
 }
