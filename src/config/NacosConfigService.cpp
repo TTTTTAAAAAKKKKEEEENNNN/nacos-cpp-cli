@@ -105,16 +105,10 @@ bool NacosConfigService::removeConfigInner
 	
 	paramValues.push_back("dataId");
 	paramValues.push_back(dataId);
-	if (!isNull(group))
-	{
-		paramValues.push_back("group");
-		paramValues.push_back(group);
-	}
-	else
-	{
-		paramValues.push_back("group");
-		paramValues.push_back(Constants::DEFAULT_GROUP);
-	}
+	
+	String parmGroupid = ParamUtils::null2defaultGroup(group);
+	paramValues.push_back("group");
+	paramValues.push_back(parmGroupid);
 	
 	if (!isNull(tenant))
 	{
@@ -165,14 +159,7 @@ bool NacosConfigService::publishConfigInner
 
 	HttpResult res;
 
-	if (!isNull(group))
-	{
-		parmGroupid = group;
-	}
-	else
-	{
-		parmGroupid = Constants::DEFAULT_GROUP;
-	}
+	parmGroupid = ParamUtils::null2defaultGroup(group);
 	paramValues.push_back("group");
 	paramValues.push_back(parmGroupid);
 	

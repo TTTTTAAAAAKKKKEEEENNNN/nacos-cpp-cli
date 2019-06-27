@@ -4,6 +4,7 @@
 #include "listen/ClientWorker.h"
 #include "listen/Listener.h"
 #include "utils/url.h"
+#include "utils/GroupKey.h"
 #include "md5/md5.h"
 #include "utils/ParamUtils.h"
 #include "Debug.h"
@@ -17,6 +18,7 @@ ClientWorker::ClientWorker(HttpAgent *_httpAgent)
 	threadId = 0;
 	stopThread = true;
 	pthread_mutex_init(&watchListMutex, NULL);
+	pthread_mutex_init(&stopThreadMutex, NULL);
 	httpAgent = _httpAgent;
 }
 
@@ -111,34 +113,77 @@ vector<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
 
 	vector<String> explodedList;
 	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR);
+
+	log_debug("Parsing----------------------\n");
+	for (int i = 0; i < explodedList.size(); i++)
+	{
+		log_debug("%d : %s\n", i, explodedList[i].c_str());
+	}
+	log_debug("Parsing---------------------e\n");
+	//If the server returns a string with a trailing \x01, actually there is no data after that
+	//but ParamUtils::Explode will return an extra item with empty string, we need to remove that
+	//from the list so it won't disrupt subsequent operations
+	log_debug("extra data:%s\n", explodedList[explodedList.size() - 1].c_str());
+	if (explodedList.size() >= 1 && ParamUtils::isBlank(explodedList[explodedList.size() - 1]))
+	{
+		log_debug("remove extra data\n");
+		explodedList.pop_back();
+	}
 	return explodedList;
 }
 
 void ClientWorker::startListening()
 {
-	log_debug("Starting the thread...\n");
+	//Already started, skip this
+	if (!stopThread)
+	{
+		log_debug("The thread is already started or the starting is in progress...\n");
+		return;
+	}
+
+	pthread_mutex_lock(&stopThreadMutex);
+	if (!stopThread)
+	{
+		pthread_mutex_unlock(&stopThreadMutex);
+		log_debug("The thread is already started or the starting is in progress...\n");
+		return;
+	}
+
 	stopThread = false;
+	pthread_mutex_unlock(&stopThreadMutex);
+
+	log_debug("Starting the thread...\n");
 	pthread_create(&threadId, NULL, listenerThread, (void*)this);
 	log_debug("Started thread with id:%d...\n", threadId);
 }
-
+	
 void ClientWorker::stopListening()
 {
-	log_debug("Stopping the thread...\n");
 	if (stopThread)//Stop in progress
 	{
 		log_debug("The thread is already stopped or the stop is in progress...\n");
 		return;
 	}
 
+	pthread_mutex_lock(&stopThreadMutex);
+	if (stopThread)//Stop in progress
+	{
+		pthread_mutex_unlock(&stopThreadMutex);
+		log_debug("The thread is already stopped or the stop is in progress...\n");
+		return;
+	}
+
 	stopThread = true;
+	pthread_mutex_unlock(&stopThreadMutex);
+
 	pthread_join(threadId,NULL);
 	log_info("The thread is stopped successfully...\n");
+
 }
 
 void ClientWorker::addListener(const Cachedata &cachedata)
 {
-	String key = cachedata.dataId + "||" + cachedata.group + "||" + cachedata.tenant;
+	String key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
 	log_debug("Adding listener with key: %s\n", key.c_str());
 	pthread_mutex_lock(&watchListMutex);
 
@@ -160,7 +205,7 @@ void ClientWorker::addListener(const Cachedata &cachedata)
 
 void ClientWorker::removeListener(const Cachedata &cachedata)
 {
-	String key = cachedata.dataId + "||" + cachedata.group + "||" + cachedata.tenant;
+	String key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
 	pthread_mutex_lock(&watchListMutex);
 	map<String, Cachedata *>::iterator it = watchList.find(key);
 	//Check whether the cachedata being removed exists
@@ -244,24 +289,27 @@ void ClientWorker::performWatch()
 {
 	MD5 md5;
 	String changedData = checkListenedKeys();
-	vector<String> changedKeys = ClientWorker::parseListenedKeys(changedData);
+	vector<String> changedList = ClientWorker::parseListenedKeys(changedData);
 	pthread_mutex_lock(&watchListMutex);
-	for (std::vector<String>::iterator it = changedKeys.begin(); it != changedKeys.end(); it++)
+	for (std::vector<String>::iterator it = changedList.begin(); it != changedList.end(); it++)
 	{
-		log_debug("Processing key:%s\n", it->c_str());
-		vector<String> keyGroup;
-		ParamUtils::Explode(keyGroup, *it, Constants::WORD_SEPARATOR);
-		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(keyGroup[0]);
+		String dataId, group, tenant;
+		ParamUtils::parseString2KeyGroupTenant(*it, dataId, group, tenant);
+		log_debug("Processing item:%s, dataId = %s, group = %s, tenant = %s\n",
+					it->c_str(), dataId.c_str(), group.c_str(), tenant.c_str());
+		
+		String key = GroupKey::getKeyTenant(dataId, group, tenant);
+		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(key);
 		//check whether the data being watched still exists
 		if (cacheDataIt != watchList.end())
 		{
-			log_debug("Found entry for:%s\n", keyGroup[0].c_str());
+			log_debug("Found entry for:%s\n", key.c_str());
 			Cachedata *cachedq = cacheDataIt->second;
 			//TODO:Constant
 			String updatedcontent = ClientWorker::getServerConfig(cachedq->tenant, cachedq->dataId,	cachedq->group, 3000);
-			log_debug("Data fetched from the server: %s with key: %s\n", updatedcontent.c_str(), keyGroup[0].c_str());
+			log_debug("Data fetched from the server: %s\n", updatedcontent.c_str());
 			md5.reset();
-			md5.update(cachedq->dataMD5.c_str());
+			md5.update(updatedcontent.c_str());
 			cachedq->dataMD5 = md5.toString();
 			log_debug("MD5 got for that data: %s\n", cachedq->dataMD5.c_str());
 			cachedq->listener->receiveConfigInfo(updatedcontent);

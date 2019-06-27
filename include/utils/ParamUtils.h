@@ -4,12 +4,64 @@
 #include <vector>
 #include "NacosString.h"
 #include "NacosExceptions.h"
-
-using namespace std;
+#include "Constants.h"
+#include "Debug.h"
 
 class ParamUtils
 {
 public:
+	static String trim(const String &content)
+	{
+		int start = 0;
+		int end = content.size() - 1;
+
+		while (start < end && isBlank(content[start]))
+		{
+			start++;
+		}
+
+		while (start < end && isBlank(content[end]))
+		{
+			end--;
+		}
+
+		return String(content.substr(start, end - start + 1));
+	}
+
+	static String null2defaultGroup(const String &group)
+	{
+		return (isNull(group)) ? Constants::DEFAULT_GROUP : ParamUtils::trim(group);
+	}
+
+	static void parseString2KeyGroupTenant(const String &stringToParse, String &dataId, String &group, String &tenant)
+	{
+		std::vector<String> KGT;//KeyGroupTenant
+		Explode(KGT, stringToParse, Constants::WORD_SEPARATOR);
+		dataId = KGT[0];
+		group = KGT[1];
+		if (KGT.size() == 3)//with tenant
+		{
+			tenant = KGT[2];
+		}
+		else
+		{
+			tenant = NULLSTR;
+		}
+	}
+	
+	static bool isBlank(char character)
+	{
+		switch (character)
+		{
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				return true;
+			default:
+				return false;
+		}
+	}
 	static bool isBlank(const String &content)
 	{
 		//TODO:Apply ParamUtils.Java's logic to here, support whitespaces in other countries/zones
@@ -20,16 +72,8 @@ public:
 		
 		for (size_t i = 0; i < content.size(); i++)
 		{
-			switch (content[i])
-			{
-				case ' ':
-				case '\t':
-				case '\r':
-				case '\n':
-					continue;
-				default:
-					return false;
-			}
+			if (!isBlank(content[i]))
+				return false;
 		}
 		
 		return true;
@@ -48,20 +92,20 @@ public:
 		}
 	};
 	
-	//A little trick here
-	static void Explode(vector<String> &explodedList, const String &stringToExplode, const String separator)
+	//A little trick here for String constants
+	static void Explode(std::vector<String> &explodedList, const String &stringToExplode, const String &separator)
 	{
-		Explode(explodedList, stringToExplode, separator.c_str()[0]);
+		Explode(explodedList, stringToExplode, separator[0]);
 	}
 
-	static void Explode(vector<String> &explodedList, const String &stringToExplode, char separator)
+	static void Explode(std::vector<String> &explodedList, const String &stringToExplode, char separator)
 	{
 		size_t start_pos = 0;
 		size_t cur_pos = 0;
 		cur_pos = stringToExplode.find(separator, start_pos);
 
 		//break the string with separator
-		while (cur_pos != string::npos)
+		while (cur_pos != std::string::npos)
 		{
 			String cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
 			explodedList.push_back(cur_addr);

@@ -18,7 +18,9 @@ private:
 	HttpAgent *httpAgent = NULL;
 	//Listener thread related info
 	pthread_t threadId;
+
 	bool stopThread;
+	pthread_mutex_t stopThreadMutex;
 
 	static void *listenerThread(void *watcher);
 

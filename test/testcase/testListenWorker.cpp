@@ -19,7 +19,7 @@ public:
 	String getKey() const {return key;};
 	void receiveConfigInfo(const String &configInfo)
 	{
-		cout << key << " changed to " << configInfo << endl;
+		cout << "in receiveConfigInfo: " << key << " changed to " << configInfo << endl;
 	}
 };
 

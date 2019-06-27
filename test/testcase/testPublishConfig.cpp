@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <unistd.h>
 #include "config/NacosConfigService.h"
 #include "PropertyKeyConst.h"
 #include "DebugAssertion.h"
@@ -14,16 +15,28 @@ bool testPublishConfig()
 	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1:8848";
 	NacosConfigService *n = new NacosConfigService(props);
 	bool bSucc;
-	for (int i = 5; i < 50; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		char key_s[200];
 		char val_s[200];
 		sprintf(key_s, "Key%d", i);
 		sprintf(val_s, "v__%d", i);
+		String ss = "";
 
 		try
 		{
 			bSucc = n->publishConfig(key_s, NULLSTR, val_s);
+			int retry = 0;
+			ss = n->getConfig(key_s, NULLSTR, 1000);
+			while (!(ss == val_s) && retry++ < 10)
+			{
+				ss = n->getConfig(key_s, NULLSTR, 1000);
+			}
+
+			if (!(ss == val_s))
+			{
+				throw NacosException(0, "getConfig() failed.");
+			}
 		}
 		catch (NacosException e)
 		{

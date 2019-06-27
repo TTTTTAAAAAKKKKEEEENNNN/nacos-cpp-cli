@@ -1,5 +1,6 @@
 #include <string.h>
 #include "http/HTTPCli.h"
+#include "utils/url.h"
 #include "Debug.h"
 
 using namespace std;
@@ -58,6 +59,14 @@ CURL *HTTPCli::getCurlHandle()
 		curlHandle = curl_easy_init();
 		pthread_setspecific(pthreadKey, reinterpret_cast<void*>(curlHandle));
 	}
+	else//TODO:Temporary solution for 400 response when performing multiple post request with one curl handle
+	{
+		curl_easy_cleanup(curlHandle);
+		curlHandle = NULL;
+		pthread_setspecific(pthreadKey, reinterpret_cast<void*>(curlHandle));
+		return getCurlHandle();
+	}//TODO:END:Temporary solution for 400 response when performing multiple post request with one curl handle
+
 	return curlHandle;
 }
 
@@ -87,9 +96,9 @@ String HTTPCli::encodingParams(list<String> &params)
 		{
 			encodedParms.append("&");
 		}
-		encodedParms.append(*it);
+		encodedParms.append(urlencode(*it));
 		it++;
-		encodedParms.append("="+*it);
+		encodedParms.append("="+urlencode(*it));
 	}
 
 	return encodedParms;
@@ -127,7 +136,7 @@ HttpResult HTTPCli::httpGet
 	{
 		Url += "?" + encodedParms;
 	}
-	log_debug("Assembled URL with parms:%s\n", Url.c_str());
+	log_debug("HTTPGET-Assembled URL with parms:%s\n", Url.c_str());
 
 	/*Headers look like:
 		foo
@@ -188,11 +197,13 @@ HttpResult HTTPCli::httpGet
 		throw NetworkException(curlres, curl_easy_strerror(curlres));
 	}
 	
-	log_debug("%lu bytes retrieved\n", (unsigned long)strbuf.length());
 	long response_code;
     curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
 	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
 	httpresp.curlcode = curlres;
+	log_debug("HTTPGET-%lu bytes retrieved\n", (unsigned long)strbuf.length());
+	log_debug("HTTPGET-content:%s\n", strbuf.c_str());
+	log_debug("HTTPGET-resp-code:%d\n", response_code);
 
 	return httpresp;
 }
@@ -211,7 +222,7 @@ HttpResult HTTPCli::httpPost
 
 	String Url = path;
 	String encodedParms = encodingParams(paramValues);
-	log_debug("Assembled URL with parms:%s\n", Url.c_str());
+	log_debug("HTTPPOST-Assembled URL with parms:%s\n", Url.c_str());
 
 	/*Headers look like:
 		foo
@@ -232,6 +243,7 @@ HttpResult HTTPCli::httpPost
 
 	curl_easy_setopt(curlHandle, CURLOPT_CUSTOMREQUEST, "POST");
 	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, encodedParms.c_str());
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDSIZE, encodedParms.size());
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 
@@ -252,7 +264,7 @@ HttpResult HTTPCli::httpPost
 	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
-		log_debug("RequestHeaders:%s\n", it->c_str());
+		log_debug("HTTPPOST-RequestHeaders:%s\n", it->c_str());
 	}
 
 	if (headerlist != NULL)
@@ -277,11 +289,14 @@ HttpResult HTTPCli::httpPost
 		throw NetworkException(curlres, curl_easy_strerror(curlres));
 	}
 	
-	log_debug("%lu bytes retrieved\n", (unsigned long)strbuf.length());
 	long response_code;
     curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
 	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
 	httpresp.curlcode = curlres;
+
+	log_debug("HTTPPOST-%lu bytes retrieved\n", (unsigned long)strbuf.length());
+	log_debug("HTTPPOST-content:%s\n", strbuf.c_str());
+	log_debug("HTTPPOST-resp-code:%d\n", response_code);
 
 	return httpresp;
 }
@@ -367,12 +382,15 @@ HttpResult HTTPCli::httpDelete
 		curlres, curl_easy_strerror(curlres));
 		throw NetworkException(curlres, curl_easy_strerror(curlres));
 	}
-	
-	log_debug("%lu bytes retrieved\n", (unsigned long)strbuf.length());
+
 	long response_code;
     curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
 	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
 	httpresp.curlcode = curlres;
+
+	log_debug("HTTPDELETE-%lu bytes retrieved\n", (unsigned long)strbuf.length());
+	log_debug("HTTPDELETE-content:%s\n", strbuf.c_str());
+	log_debug("HTTPDELETE-resp-code:%d\n", response_code);
 
 	return httpresp;
 }
