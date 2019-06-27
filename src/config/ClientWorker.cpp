@@ -5,6 +5,7 @@
 #include "listen/Listener.h"
 #include "utils/url.h"
 #include "utils/GroupKey.h"
+#include "http/httpStatCode.h"
 #include "md5/md5.h"
 #include "utils/ParamUtils.h"
 #include "Debug.h"
@@ -77,7 +78,13 @@ String ClientWorker::getServerConfig
 	{
 		throw NacosException(NacosException::SERVER_ERROR, e.what());
 	}
-	return res.content;
+
+	switch (res.code)
+	{
+		case HTTP_OK: return res.content;
+		case HTTP_NOT_FOUND: return NULLSTR;
+	}
+	return NULLSTR;
 }
 
 void *ClientWorker::listenerThread(void *parm)
@@ -114,19 +121,12 @@ vector<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
 	vector<String> explodedList;
 	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR);
 
-	log_debug("Parsing----------------------\n");
-	for (int i = 0; i < explodedList.size(); i++)
-	{
-		log_debug("%d : %s\n", i, explodedList[i].c_str());
-	}
-	log_debug("Parsing---------------------e\n");
 	//If the server returns a string with a trailing \x01, actually there is no data after that
 	//but ParamUtils::Explode will return an extra item with empty string, we need to remove that
 	//from the list so it won't disrupt subsequent operations
 	log_debug("extra data:%s\n", explodedList[explodedList.size() - 1].c_str());
 	if (explodedList.size() >= 1 && ParamUtils::isBlank(explodedList[explodedList.size() - 1]))
 	{
-		log_debug("remove extra data\n");
 		explodedList.pop_back();
 	}
 	return explodedList;
