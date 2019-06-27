@@ -54,13 +54,13 @@ TEST_ITEM("Save cache in test and prod env, then clean test env, should only get
 TEST_ITEM("Save cache in test and prod env, then clean prod env, should only get config from test env", testCleanPrdCacheAndGetPrdenv)
 TEST_ITEM("Save cache in test and prod env, then clean all, should not get any data", testCleanAllCache)
 TEST_ITEM("Test MD5", testMD5)
+TEST_ITEM("Test urlencode/urldecode of libcurl", testURLEncodeAndDecode)
+TEST_ITEM("Test explode function", testStringExplode)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-//TEST_ITEM("Test Listener function for nacos", testAddListener)
-//TEST_ITEM("Test urlencode/urldecode of libcurl", testURLEncodeAndDecode)
-TEST_ITEM("Test explode function", testStringExplode)
+TEST_ITEM("Test Listener function for nacos", testAddListener)
 TEST_ITEM_END
 
 int main()

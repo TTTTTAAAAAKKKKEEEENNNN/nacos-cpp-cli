@@ -1,7 +1,7 @@
 #ifndef __PARMUTILS_H_
 #define __PARMUTILS_H_
 #include <map>
-#include <list>
+#include <vector>
 #include "NacosString.h"
 #include "NacosExceptions.h"
 
@@ -48,7 +48,13 @@ public:
 		}
 	};
 	
-	static void Explode(list<String> &explodedList, const String &stringToExplode, char separator)
+	//A little trick here
+	static void Explode(vector<String> &explodedList, const String &stringToExplode, const String separator)
+	{
+		Explode(explodedList, stringToExplode, separator.c_str()[0]);
+	}
+
+	static void Explode(vector<String> &explodedList, const String &stringToExplode, char separator)
 	{
 		size_t start_pos = 0;
 		size_t cur_pos = 0;

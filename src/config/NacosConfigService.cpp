@@ -85,41 +85,7 @@ String NacosConfigService::getConfigInner
 	long timeoutMs
 ) throw (NacosException)
 {
-	std::list<String> headers;
-	std::list<String> paramValues;
-	//Get the request url
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
-
-	HttpResult res;
-
-	paramValues.push_back("dataId");
-	paramValues.push_back(dataId);
-	if (!isNull(group))
-	{
-		paramValues.push_back("group");
-		paramValues.push_back(group);
-	}
-	else
-	{
-		paramValues.push_back("group");
-		paramValues.push_back(Constants::DEFAULT_GROUP);
-	}
-
-	if (!isNull(tenant))
-	{
-		paramValues.push_back("tenant");
-		paramValues.push_back(tenant);
-	}
-
-	try
-	{
-		res = httpAgent->httpGet(url, headers, paramValues, httpAgent->getEncode(), timeoutMs);
-	}
-	catch (NetworkException e)
-	{
-		throw NacosException(NacosException::SERVER_ERROR, e.what());
-	}
-	return res.content;
+	return clientWorker->getServerConfig(tenant, dataId, group,	timeoutMs);
 }
 
 bool NacosConfigService::removeConfigInner

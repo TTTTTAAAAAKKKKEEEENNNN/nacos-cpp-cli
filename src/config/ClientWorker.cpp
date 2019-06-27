@@ -1,8 +1,10 @@
 #include <sys/time.h>
 #include <unistd.h>
+#include <vector>
 #include "listen/ClientWorker.h"
 #include "listen/Listener.h"
 #include "utils/url.h"
+#include "md5/md5.h"
 #include "utils/ParamUtils.h"
 #include "Debug.h"
 #include "Constants.h"
@@ -31,6 +33,51 @@ int64_t getCurrentTimeInMs()
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
+String ClientWorker::getServerConfig
+(
+	const String &tenant,
+	const String &dataId,
+	const String &group,
+	long timeoutMs
+) throw (NacosException)
+{
+	std::list<String> headers;
+	std::list<String> paramValues;
+	//Get the request url
+	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+
+	HttpResult res;
+
+	paramValues.push_back("dataId");
+	paramValues.push_back(dataId);
+	if (!isNull(group))
+	{
+		paramValues.push_back("group");
+		paramValues.push_back(group);
+	}
+	else
+	{
+		paramValues.push_back("group");
+		paramValues.push_back(Constants::DEFAULT_GROUP);
+	}
+
+	if (!isNull(tenant))
+	{
+		paramValues.push_back("tenant");
+		paramValues.push_back(tenant);
+	}
+
+	try
+	{
+		res = httpAgent->httpGet(url, headers, paramValues, httpAgent->getEncode(), timeoutMs);
+	}
+	catch (NetworkException e)
+	{
+		throw NacosException(NacosException::SERVER_ERROR, e.what());
+	}
+	return res.content;
+}
+
 void *ClientWorker::listenerThread(void *parm)
 {
 	log_debug("Entered watch thread...\n");
@@ -40,7 +87,7 @@ void *ClientWorker::listenerThread(void *parm)
 	{
 		int64_t start_time = getCurrentTimeInMs();
 		log_debug("Start watching at %u...\n", start_time);
-		String changedKeys = thelistener->performWatch();
+		thelistener->performWatch();
 		
 		log_debug("Watch function exit at %u...\n", getCurrentTimeInMs());
 		while (getCurrentTimeInMs() - start_time < 30 * 1000)
@@ -58,12 +105,12 @@ void *ClientWorker::listenerThread(void *parm)
 	return 0;
 }
 
-list<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
+vector<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
 {
 	String changedKeyList = urldecode(ReturnedKeys);
 
-	list<String> explodedList;
-	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR)
+	vector<String> explodedList;
+	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR);
 	return explodedList;
 }
 
@@ -193,19 +240,31 @@ String ClientWorker::checkListenedKeys()
 	return res.content;
 }
 
-String ClientWorker::performWatch()
+void ClientWorker::performWatch()
 {
+	MD5 md5;
 	String changedData = checkListenedKeys();
-	list<String> changedKeys = ClientWorker::parseListenedKeys(changedData);
+	vector<String> changedKeys = ClientWorker::parseListenedKeys(changedData);
 	pthread_mutex_lock(&watchListMutex);
-	for (std::list<String>::iterator it = changedKeys.begin(); it != changedKeys.end(); it++)
+	for (std::vector<String>::iterator it = changedKeys.begin(); it != changedKeys.end(); it++)
 	{
-		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(key);
+		log_debug("Processing key:%s\n", it->c_str());
+		vector<String> keyGroup;
+		ParamUtils::Explode(keyGroup, *it, Constants::WORD_SEPARATOR);
+		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(keyGroup[0]);
 		//check whether the data being watched still exists
 		if (cacheDataIt != watchList.end())
 		{
+			log_debug("Found entry for:%s\n", keyGroup[0].c_str());
 			Cachedata *cachedq = cacheDataIt->second;
-			cachedq->listener.receiveConfigInfo();
+			//TODO:Constant
+			String updatedcontent = ClientWorker::getServerConfig(cachedq->tenant, cachedq->dataId,	cachedq->group, 3000);
+			log_debug("Data fetched from the server: %s with key: %s\n", updatedcontent.c_str(), keyGroup[0].c_str());
+			md5.reset();
+			md5.update(cachedq->dataMD5.c_str());
+			cachedq->dataMD5 = md5.toString();
+			log_debug("MD5 got for that data: %s\n", cachedq->dataMD5.c_str());
+			cachedq->listener->receiveConfigInfo(updatedcontent);
 		}
 	}
 	pthread_mutex_unlock(&watchListMutex);

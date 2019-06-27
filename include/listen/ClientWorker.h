@@ -1,11 +1,13 @@
 #ifndef __CLIENT_WORKER_H_
 #define __CLIENT_WORKER_H_
 #include <map>
+#include <vector>
 #include <pthread.h>
 #include "NacosString.h"
 #include "http/HttpAgent.h"
 #include "listen/Listener.h"
 #include "listen/CacheData.h"
+#include "NacosExceptions.h"
 
 class ClientWorker
 {
@@ -22,7 +24,8 @@ private:
 
 	//You just can't construct a ClientWorker object without any parameter
 	ClientWorker();
-	std::list<String> parseListenedKeys(const String &ReturnedKeys);
+	std::vector<String> parseListenedKeys(const String &ReturnedKeys);
+	String checkListenedKeys();
 public:
 	ClientWorker(HttpAgent *_httpAgent);
 	~ClientWorker();
@@ -30,7 +33,8 @@ public:
 	void stopListening();
 	void addListener(const Cachedata &cachedata);
 	void removeListener(const Cachedata &cachedata);
-	String performWatch();
+	void performWatch();
+	String getServerConfig(const String &tenant, const String &dataId, const String &group, long timeoutMs) throw (NacosException);
 };
 
 #endif
