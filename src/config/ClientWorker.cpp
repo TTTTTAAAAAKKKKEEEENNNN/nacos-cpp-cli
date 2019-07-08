@@ -99,16 +99,6 @@ void *ClientWorker::listenerThread(void *parm)
 		thelistener->performWatch();
 		
 		log_debug("Watch function exit at %u...\n", getCurrentTimeInMs());
-		while (getCurrentTimeInMs() - start_time < 30 * 1000)
-		{
-			log_debug("In the waiting loop at %u...\n", getCurrentTimeInMs());
-			if (thelistener->stopThread)
-			{
-				return 0;
-			}
-
-			sleep(1);
-		}
 	}
 	
 	return 0;
@@ -306,7 +296,7 @@ void ClientWorker::performWatch()
 			log_debug("Found entry for:%s\n", key.c_str());
 			Cachedata *cachedq = cacheDataIt->second;
 			//TODO:Constant
-			String updatedcontent = ClientWorker::getServerConfig(cachedq->tenant, cachedq->dataId,	cachedq->group, 3000);
+			String updatedcontent = getServerConfig(cachedq->tenant, cachedq->dataId, cachedq->group, 3000);
 			log_debug("Data fetched from the server: %s\n", updatedcontent.c_str());
 			md5.reset();
 			md5.update(updatedcontent.c_str());
