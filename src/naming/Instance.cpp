@@ -1,16 +1,20 @@
 #include "naming/Instance.h"
 #include "Debug.h"
 
+Instance::Instance()
+{
+	weight = 1.0D;
+	healthy = true;
+	enabled = true;
+	ephemeral = true;
+}
 
 String Instance::toString()
 {
-	return "instanceId:" + instanceId + " ip:" + ip;
-	/*int port;
-	double weight = 1.0D;
-	bool healthy = true;
-	bool enabled = true;
-	bool ephemeral = true;
-	String clusterName;
-	String serviceName;
-	std::map<String, String> metadata;*/
+	return "instanceId:" + instanceId + " ip:" + ip + " port:" + NacosString::valueOf(port) +
+	" weight:" + NacosString::valueOf(weight) + " healthy:" + NacosString::valueOf(healthy) +
+	" enabled:" + NacosString::valueOf(enabled) + " ephemeral:" + NacosString::valueOf(ephemeral) +
+	" clusterName:" + clusterName + " serviceName:" + serviceName;
+
+	//TODO: display metadata
 }

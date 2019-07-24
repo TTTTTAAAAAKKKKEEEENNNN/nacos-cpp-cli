@@ -6,6 +6,7 @@
 class Instance
 {
 public:
+	Instance();
 	/**
 	* unique id of this instance.
 	*/
@@ -24,24 +25,24 @@ public:
 	/**
 	* instance weight
 	*/
-	double weight = 1.0D;
+	double weight;
 
 	/**
 	* instance health status
 	*/
-	bool healthy = true;
+	bool healthy;
 
 	/**
 	* If instance is enabled to accept request
 	*/
-	bool enabled = true;
+	bool enabled;
 
 	/**
 	* If instance is ephemeral
 	*
 	* @since 1.0.0
 	*/
-	bool ephemeral = true;
+	bool ephemeral;
 
 	/**
 	* cluster information of instance
