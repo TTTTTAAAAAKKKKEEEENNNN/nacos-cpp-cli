@@ -57,6 +57,8 @@ public:
 	* user extended attributes
 	*/
 	std::map<String, String> metadata;
+
+	String toString();
 };
 
 #endif
