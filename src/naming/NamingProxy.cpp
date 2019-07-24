@@ -32,7 +32,7 @@ NamingProxy::~NamingProxy()
 void NamingProxy::registerService(const String &serviceName, const String &groupName, Instance instance) throw (NacosException)
 {
 	log_info("[REGISTER-SERVICE] %s registering service %s with instance: %s\n",
-	namespaceId.c_str(), serviceName.c_str(), instance.toString());
+	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
 
 	map<String, String> params;
 	params[CommonParams::NAMESPACE_ID] = namespaceId;
@@ -54,7 +54,7 @@ void NamingProxy::registerService(const String &serviceName, const String &group
 void NamingProxy::deregisterService(const String &serviceName, Instance instance) throw (NacosException)
 {
 	log_info("[DEREGISTER-SERVICE] %s deregistering service %s with instance: %s\n",
-	namespaceId.c_str(), serviceName.c_str(), instance.toString());
+	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
 
 	map<String, String> params;
 	params[CommonParams::NAMESPACE_ID] = namespaceId;
