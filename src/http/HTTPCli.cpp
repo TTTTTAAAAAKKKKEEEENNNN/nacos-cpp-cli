@@ -39,7 +39,7 @@ static size_t receiveHeaderCallback(
 		(*respheaders)[k] = v;
 	}
 	size_t realsize = size * nmemb;
-	
+
 	log_debug("receivedHeaders: %s", (char*)contents);
 
 	return realsize;
@@ -47,7 +47,7 @@ static size_t receiveHeaderCallback(
 
 HTTPCli::HTTPCli()
 {
-	/* init the curl session */ 
+	/* init the curl session */
 	pthread_key_create(&pthreadKey, HTTPCli::destroyCurlHandle);
 }
 
@@ -104,6 +104,21 @@ String HTTPCli::encodingParams(list<String> &params)
 	return encodedParms;
 }
 
+String HTTPCli::encodingParams(map<String, String> &params)
+{
+	String encodedParms = "";
+	for (map<String, String>::iterator it = params.begin(); it != params.end(); it++)
+	{
+		if (encodedParms.compare("") != 0)
+		{
+			encodedParms.append("&");
+		}
+		encodedParms.append(it->first + "=" + it->second);
+	}
+
+	return encodedParms;
+}
+
 void HTTPCli::assembleHeaders(list<String> &assembledHeaders, list<String> &headers)
 {
 	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
@@ -126,15 +141,42 @@ HttpResult HTTPCli::httpGet
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpGetInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+HttpResult HTTPCli::httpGet
+(
+	const String &path,
+	list<String> &headers,
+	map<String, String> &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpGetInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+HttpResult HTTPCli::httpGetInternal
+(
+	const String &path,
+	list<String> &headers,
+	const String &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
-	String encodedParms = encodingParams(paramValues);
-	
-	if (encodedParms.compare("") != 0)
+
+	if (paramValues.compare("") != 0)
 	{
-		Url += "?" + encodedParms;
+		Url += "?" + paramValues;
 	}
 	log_debug("HTTPGET-Assembled URL with parms:%s\n", Url.c_str());
 
@@ -150,20 +192,20 @@ HttpResult HTTPCli::httpGet
 	list<String> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
-	/* specify URL to get */ 
+	/* specify URL to get */
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
 
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
-	/* send all data to this function  */ 
+	/* send all data to this function  */
 	String strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
-	
+
 	/* Get response headers from the response */
 	std::map<String, String> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
-	
+
 	//TODO:Time out in a more precise way
 	curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, readTimeoutMs / 1000);
 
@@ -174,14 +216,14 @@ HttpResult HTTPCli::httpGet
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}
-	
+
 	if (headerlist != NULL)
 	{
 		curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headerlist);
 	}
 
 
-	/* get it! */ 
+	/* get it! */
 	curlres = curl_easy_perform(curlHandle);
 
 	/*Since the headerlist is not needed anymore, free it to prevent mem leak*/
@@ -196,7 +238,7 @@ HttpResult HTTPCli::httpGet
 		curlres, curl_easy_strerror(curlres));
 		throw NetworkException(curlres, curl_easy_strerror(curlres));
 	}
-	
+
 	long response_code;
     curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
 	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
@@ -208,6 +250,14 @@ HttpResult HTTPCli::httpGet
 	return httpresp;
 }
 
+/*httpPost, post data are passed in list form like this:
+	foo
+	bar
+	bax
+	lol
+We convert it into sth like this:
+	foo=bar&bax=lol
+*/
 HttpResult HTTPCli::httpPost
 (
 	const String &path,
@@ -217,11 +267,40 @@ HttpResult HTTPCli::httpPost
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpPostInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+//httpPost, post data are passed in map form
+HttpResult HTTPCli::httpPost
+(
+	const String &path,
+	list<String> &headers,
+	map<String, String> &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpPostInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+//Implement of httpPost
+HttpResult HTTPCli::httpPostInternal
+(
+	const String &path,
+	list<String> &headers,
+	const String &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
-	String encodedParms = encodingParams(paramValues);
 	log_debug("HTTPPOST-Assembled URL with parms:%s\n", Url.c_str());
 
 	/*Headers look like:
@@ -236,25 +315,25 @@ HttpResult HTTPCli::httpPost
 	list<String> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
-	log_debug("Post data:%s\n", encodedParms.c_str());
-	
-	/* specify URL to get */ 
+	log_debug("Post data:%s\n", paramValues.c_str());
+
+	/* specify URL to get */
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
 
 	curl_easy_setopt(curlHandle, CURLOPT_CUSTOMREQUEST, "POST");
-	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, encodedParms.c_str());
-	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDSIZE, encodedParms.size());
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, paramValues.c_str());
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDSIZE, paramValues.size());
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 
 	String strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
-	
+
 	/* Get response headers from the response */
 	std::map<String, String> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
-	
+
 	//TODO:Time out in a more precise way
 	curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, readTimeoutMs / 1000);
 
@@ -273,7 +352,7 @@ HttpResult HTTPCli::httpPost
 	}
 
 
-	/* get it! */ 
+	/* get it! */
 	curlres = curl_easy_perform(curlHandle);
 
 	/*Since the headerlist is not needed anymore, free it to prevent mem leak*/
@@ -288,7 +367,7 @@ HttpResult HTTPCli::httpPost
 		curlres, curl_easy_strerror(curlres));
 		throw NetworkException(curlres, curl_easy_strerror(curlres));
 	}
-	
+
 	long response_code;
     curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
 	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
@@ -310,16 +389,40 @@ HttpResult HTTPCli::httpDelete
 	long readTimeoutMs
 ) throw (NetworkException)
 {
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpDeleteInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+HttpResult HTTPCli::httpDelete
+(
+	const String &path,
+	list<String> &headers,
+	map<String, String> &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	String parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpDeleteInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+HttpResult HTTPCli::httpDeleteInternal
+(
+	const String &path,
+	list<String> &headers,
+	const String &paramValues,
+	const String &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
 	String Url = path;
-	String encodedParms = encodingParams(paramValues);
-	
-	if (encodedParms.compare("") != 0)
-	{
-		Url += "?" + encodedParms;
-	}
+
+	Url += "?" + paramValues;
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
 
 	/*Headers look like:
@@ -334,9 +437,9 @@ HttpResult HTTPCli::httpDelete
 	list<String> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
-	/* specify URL to get */ 
+	/* specify URL to get */
 	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
-	
+
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 	/* Set to DELETE, since this is a delete request*/
@@ -345,11 +448,11 @@ HttpResult HTTPCli::httpDelete
 	String strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
-	
+
 	/* Get response headers from the response */
 	std::map<String, String> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
-	
+
 	//TODO:Time out in a more precise way
 	curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, readTimeoutMs / 1000);
 
@@ -360,14 +463,14 @@ HttpResult HTTPCli::httpDelete
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}
-	
+
 	if (headerlist != NULL)
 	{
 		curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headerlist);
 	}
 
 
-	/* get it! */ 
+	/* get it! */
 	curlres = curl_easy_perform(curlHandle);
 
 	/*Since the headerlist is not needed anymore, free it to prevent mem leak*/

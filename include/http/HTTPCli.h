@@ -19,10 +19,10 @@ public:
 	{
 		headers.insert(_headers.begin(), _headers.end());
 	}
-	
+
 	HttpResult(long _code, const String &_content): code(_code), content(_content) {}
 	HttpResult() { code = -1; content.assign(""); headers.clear(); }
-	
+
 	HttpResult operator = (HttpResult asignee)
 	{
 		if (this != &asignee)
@@ -45,8 +45,33 @@ private:
 
 	CURL *getCurlHandle();
 	static void destroyCurlHandle(void* arg);
+	HttpResult httpGetInternal
+	(
+		const String &path,
+		std::list<String> &headers,
+		const String &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
+	HttpResult httpPostInternal
+	(
+		const String &path,
+		std::list<String> &headers,
+		const String &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
+	HttpResult httpDeleteInternal
+	(
+		const String &path,
+		std::list<String> &headers,
+		const String &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
 public:
 	static String encodingParams(std::list<String> &params);
+	static String encodingParams(std::map<String, String> &params);
 	static void assembleHeaders(std::list<String> &assembledHeaders, std::list<String> &headers);
 	static void HTTPBasicSettings(CURL *curlHandle);
 	static void HTTP_GLOBAL_INIT();
@@ -60,10 +85,24 @@ public:
 		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
+	HttpResult httpGet(
+		const String &path,
+		std::list<String> &headers,
+		std::map<String, String> &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
 	HttpResult httpDelete(
 		const String &path,
 		std::list<String> &headers,
 		std::list<String> &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
+	HttpResult httpDelete(
+		const String &path,
+		std::list<String> &headers,
+		std::map<String, String> &paramValues,
 		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
@@ -74,6 +113,19 @@ public:
 		const String &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
+	HttpResult httpPost(
+		const String &path,
+		std::list<String> &headers,
+		std::map<String, String> &paramValues,
+		const String &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
+
+	static String getPrefix() { return  "http://"; };//TODO:changeable according to env variable
+	static const int GET = 0;
+	static const int PUT = 1;
+	static const int POST = 3;
+	static const int DELETE = 4;
 };
 
 #endif
