@@ -9,20 +9,48 @@ private:
 	int _errcode;
 	String _errmsg;
 public:
-	/**
-	* server error（server异常，如超时）
-	*/
-    const static int SERVER_ERROR = 500;
-	/**
-	* invalid param（参数错误）
-	*/
-	const static int CLIENT_INVALID_PARAM = -400;
-
 	NacosException(int errorcode, const char *errormsg) throw();
 	NacosException(int errorcode, const String &errormsg) throw();
 	~NacosException() throw() {};
 	const char* what() const throw() { return _errmsg.c_str(); };
 	const int errorcode() const throw() { return _errcode; };
+
+	static const int CLIENT_INVALID_PARAM = -400;
+	/**
+	* over client threshold（超过server端的限流阈值）
+	*/
+	static const int CLIENT_OVER_THRESHOLD = -503;
+
+	/**
+	* server error code
+	* 400 403 throw exception to user
+	* 500 502 503 change ip and retry
+	*/
+
+	/**
+	* invalid param（参数错误）
+	*/
+	static const int INVALID_PARAM = 400;
+	/**
+	* no right（鉴权失败）
+	*/
+	static const int NO_RIGHT = 403;
+	/**
+	* conflict（写并发冲突）
+	*/
+	static const int CONFLICT = 409;
+	/**
+	* server error（server异常，如超时）
+	*/
+	static const int SERVER_ERROR = 500;
+	/**
+	* bad gateway（路由异常，如nginx后面的Server挂掉）
+	*/
+	static const int BAD_GATEWAY = 502;
+	/**
+	* over threshold（超过server端的限流阈值）
+	*/
+	static const int OVER_THRESHOLD = 503;
 };
 
 class NetworkException : public std::exception
