@@ -45,7 +45,7 @@ HttpResult ServerHttpAgent::httpGet
 ) throw (NetworkException)
 {
 	String serverAddr = svrListMgr->getCurrentServerAddr();
-	
+
 	String url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpGet Assembled URL:%s\n", url.c_str());
@@ -64,7 +64,7 @@ HttpResult ServerHttpAgent::httpDelete
 ) throw (NetworkException)
 {
 	String serverAddr = svrListMgr->getCurrentServerAddr();
-	
+
 	String url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpDelete Assembled URL:%s\n", url.c_str());
@@ -83,7 +83,7 @@ HttpResult ServerHttpAgent::httpPost
 ) throw (NetworkException)
 {
 	String serverAddr = svrListMgr->getCurrentServerAddr();
-	
+
 	String url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpPost Assembled URL:%s\n", url.c_str());
