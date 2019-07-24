@@ -172,6 +172,27 @@ public:
 		return implodedString;
 	}
 
+	//use ',' as default separator to serialize a map
+	static String Implode(std::map<String, String> &toImplode)
+	{
+		return Implode(toImplode, ',');
+	}
+
+	static String Implode(std::map<String, String> &toImplode, char separator)
+	{
+		String implodedString;
+		for (std::map<String, String>::iterator it = toImplode.begin(); it != toImplode.end(); it++)
+		{
+			implodedString += it->first + "=" + it->second;
+			if (it != toImplode.end())
+			{
+				implodedString += ",";
+			}
+		}
+
+		return implodedString;
+	}
+
 	static bool contains(const String &haystack, char needle)
 	{
 		if (haystack.find(needle) != std::string::npos)

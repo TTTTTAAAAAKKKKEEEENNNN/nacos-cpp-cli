@@ -13,11 +13,15 @@ using namespace std;
 
 NamingProxy::NamingProxy(HTTPCli *httpcli, const String &_namespaceId, const String &_endpoint, const String &_serverList)
 {
+	log_debug("NamingProxy Constructor:\n"
+		"namespace:%s, endpoint:%s, Servers:%s\n",
+		_namespaceId.c_str(), _endpoint.c_str(), _serverList.c_str());
 	serverPort = "8848";//TODO:get this from the environment variable
 	httpCli = httpcli;
 	namespaceId = _namespaceId;
 	endpoint = _endpoint;
 	ParamUtils::Explode(serverList, _serverList, ',');
+	log_debug("The serverlist:%s\n", ParamUtils::Implode(serverList).c_str());
 	if (serverList.size() == 1)
 	{
 		nacosDomain = _serverList;
@@ -85,12 +89,15 @@ String NamingProxy::reqAPI(const String &api, map<String, String> &params, list<
 	if (!servers.empty())
 	{
 		size_t maxSvrSlot = servers.size();
+		log_debug("nr_servers:%d\n", maxSvrSlot);
 		srand(time(NULL));
 		size_t selectedServer = rand() % maxSvrSlot;
+		log_debug("selected_server:%d\n", selectedServer);
 
 		for (size_t i = 0; i < servers.size(); i++)
 		{
 			String server = ParamUtils::getNthElem(servers, selectedServer);
+			log_debug("Trying to access server:%s\n", server.c_str());
 			try
 			{
 				return callServer(api, params, server, method);
@@ -152,6 +159,10 @@ String NamingProxy::callServer
 	if (!ParamUtils::contains(curServer, UtilAndComs::SERVER_ADDR_IP_SPLITER))
 	{
 		requestUrl = curServer + UtilAndComs::SERVER_ADDR_IP_SPLITER + serverPort;
+	}
+	else
+	{
+		requestUrl = curServer;
 	}
 
 	requestUrl = HTTPCli::getPrefix() + requestUrl + api;

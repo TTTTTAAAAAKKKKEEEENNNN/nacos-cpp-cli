@@ -29,6 +29,7 @@ bool testCleanAllCache();
 bool testMD5();
 bool testURLEncodeAndDecode();
 bool testStringExplode();
+bool testNamingProxy();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -56,11 +57,12 @@ TEST_ITEM("Save cache in test and prod env, then clean all, should not get any d
 TEST_ITEM("Test MD5", testMD5)
 TEST_ITEM("Test urlencode/urldecode of libcurl", testURLEncodeAndDecode)
 TEST_ITEM("Test explode function", testStringExplode)
+TEST_ITEM("Test Listener function for nacos", testAddListener)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Test Listener function for nacos", testAddListener)
+TEST_ITEM("Test basic function of NamingProxy's registerService", testNamingProxy)
 TEST_ITEM_END
 
 int main()
