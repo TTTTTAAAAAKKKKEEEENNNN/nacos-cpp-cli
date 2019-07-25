@@ -1,6 +1,7 @@
 #ifndef __PARMUTILS_H_
 #define __PARMUTILS_H_
 #include <map>
+#include <list>
 #include <vector>
 #include <assert.h>
 #include "NacosString.h"

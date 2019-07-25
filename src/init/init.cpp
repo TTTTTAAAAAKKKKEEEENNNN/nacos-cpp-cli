@@ -5,6 +5,7 @@
 #include "config/SnapShotSwitch.h"
 #include "config/JVMUtil.h"
 #include "utils/UtilAndComs.h"
+#include "utils/NetUtils.h"
 //static Init initobj;//Implicitly call the constructors
 
 bool SnapShotSwitch::isSnapShot = true;
@@ -18,6 +19,7 @@ void Init::doInit()
 	HTTPCli::HTTP_GLOBAL_INIT();
 	LocalConfigInfoProcessor::init();
 	UtilAndComs::Init();
+	NetUtils::Init();
 	log_debug("LOCAL_FILEROOT_PATH = %s\n", LocalConfigInfoProcessor::LOCAL_FILEROOT_PATH.c_str());
 	log_debug("LOCAL_SNAPSHOT_PATH = %s\n", LocalConfigInfoProcessor::LOCAL_SNAPSHOT_PATH.c_str());
 }

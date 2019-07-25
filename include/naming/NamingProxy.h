@@ -27,6 +27,7 @@ public:
 	~NamingProxy();
 	void registerService(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
 	void deregisterService(const String &serviceName, Instance instance) throw (NacosException);
+    String queryList(const String &serviceName, const String &clusters, int udpPort, bool healthyOnly) throw (NacosException);
 	String getNamespaceId();
 };
 

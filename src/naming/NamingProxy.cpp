@@ -5,6 +5,7 @@
 #include "utils/ParamUtils.h"
 #include "utils/UtilAndComs.h"
 #include "utils/UuidUtils.h"
+#include "utils/NetUtils.h"
 #include "http/httpStatCode.h"
 #include "Debug.h"
 #include "NacosExceptions.h"
@@ -69,6 +70,19 @@ void NamingProxy::deregisterService(const String &serviceName, Instance instance
 	params["ephemeral"] = NacosString::valueOf(instance.ephemeral);
 
 	reqAPI(UtilAndComs::NACOS_URL_INSTANCE, params, HTTPCli::DELETE);
+}
+
+String NamingProxy::queryList(const String &serviceName, const String &clusters, int udpPort, bool healthyOnly) throw (NacosException)
+{
+    map<String, String> params;
+    params[CommonParams::NAMESPACE_ID] = namespaceId;
+    params[CommonParams::SERVICE_NAME] = serviceName;
+    params["clusters"] = clusters;
+    params["udpPort"] = NacosString::valueOf(udpPort);
+    params["clientIP"] = NetUtils::localIP();
+    params["healthyOnly"] = NacosString::valueOf(healthyOnly);
+
+    return reqAPI(UtilAndComs::NACOS_URL_BASE + "/instance/list", params, HTTPCli::GET);
 }
 
 String NamingProxy::reqAPI(const String &api, map<String, String> &params, int method) throw (NacosException)
