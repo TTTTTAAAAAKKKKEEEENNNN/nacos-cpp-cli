@@ -1,8 +1,9 @@
-#ifndef __NACOS_NAM_SVC_H_
-#define __NACOS_NAM_SVC_H_
+#ifndef __NAM_SVC_H_
+#define __NAM_SVC_H_
 #include "naming/NamingService.h"
 #include "naming/Instance.h"
 #include "NacosString.h"
+#include "NacosExceptions.h"
 
 class NamingService
 {
@@ -26,7 +27,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
+	//virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified cluster name
@@ -37,7 +38,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	//virtual void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified cluster name
@@ -49,7 +50,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	//virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified instance properties
@@ -58,7 +59,7 @@ public:
 	 * @param instance    instance to register
 	 * @throw (NacosException) = 0
 	 */
-	void registerInstance(const String &serviceName, Instance instance) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, Instance instance) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified instance properties
@@ -68,7 +69,7 @@ public:
 	 * @param instance    instance to register
 	 * @throw (NacosException) = 0
 	 */
-	void registerInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance from a service
@@ -78,7 +79,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//void deregisterInstance(const String &serviceName, const String &ip, int port) throw (NacosException) = 0;
+	//virtual void deregisterInstance(const String &serviceName, const String &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance from a service
@@ -89,7 +90,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//void deregisterInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
+	//virtual void deregisterInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with specified cluster name from a service
@@ -100,7 +101,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//void deregisterInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	//virtual void deregisterInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with specified cluster name from a service
@@ -112,7 +113,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//void deregisterInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	//virtual void deregisterInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with full instance information
@@ -122,7 +123,7 @@ public:
 	 * @param instance    instance information
 	 * @throw (NacosException) = 0
 	 */
-	void deregisterInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException) = 0;
+	virtual void deregisterInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException) = 0;
 
 	/**
 	 * get all instances of a service
@@ -131,7 +132,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName) throw (NacosException) = 0;
 
 	/**
 	 * get all instances of a service
@@ -141,7 +142,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, const String &groupName) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, const String &groupName) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances of a service
@@ -151,7 +152,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances of a service
@@ -162,7 +163,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -172,7 +173,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, std::list<String> clusters) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, std::list<String> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -183,7 +184,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, std::list<String> clusters) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, std::list<String> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -194,7 +195,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -206,7 +207,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> getAllInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances of service
@@ -216,7 +217,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, bool healthy) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, bool healthy) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances of service
@@ -227,7 +228,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, const String &groupName, bool healthy) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, const String &groupName, bool healthy) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances of service
@@ -238,7 +239,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, bool healthy, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, bool healthy, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances of service
@@ -250,7 +251,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, const String &groupName, bool healthy, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, const String &groupName, bool healthy, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances within specified clusters of service
@@ -261,7 +262,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, std::list<String> clusters, bool healthy) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, std::list<String> clusters, bool healthy) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances within specified clusters of service
@@ -273,7 +274,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool healthy) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool healthy) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances within specified clusters of service
@@ -285,7 +286,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, std::list<String> clusters, bool healthy, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, std::list<String> clusters, bool healthy, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances within specified clusters of service
@@ -298,7 +299,7 @@ public:
 	 * @return A qualified list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<Instance> selectInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool healthy, bool subscribe) throw (NacosException) = 0;
+	//virtual std::list<Instance> selectInstances(const String &serviceName, const String &groupName, std::list<String> clusters, bool healthy, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -307,7 +308,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -317,7 +318,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, const String &groupName) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, const String &groupName) throw (NacosException) = 0;
 
 	/**
 	 * select one healthy instance of service using predefined load balance strategy
@@ -327,7 +328,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, bool subscribe) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * select one healthy instance of service using predefined load balance strategy
@@ -338,7 +339,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, bool subscribe) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -348,7 +349,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, std::list<String> clusters) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, std::list<String> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -359,7 +360,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, std::list<String> clusters) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, std::list<String> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -370,7 +371,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Select one healthy instance of service using predefined load balance strategy
@@ -382,7 +383,7 @@ public:
 	 * @return qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
+	//virtual Instance selectOneHealthyInstance(const String &serviceName, const String &groupName, std::list<String> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Subscribe service to receive events of instances alteration
@@ -391,7 +392,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void subscribe(const String &serviceName, EventListener listener) throw (NacosException) = 0;
+	//virtual void subscribe(const String &serviceName, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Subscribe service to receive events of instances alteration
@@ -401,7 +402,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void subscribe(const String &serviceName, const String &groupName, EventListener listener) throw (NacosException) = 0;
+	//virtual void subscribe(const String &serviceName, const String &groupName, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Subscribe service to receive events of instances alteration
@@ -411,7 +412,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void subscribe(const String &serviceName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
+	//virtual void subscribe(const String &serviceName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Subscribe service to receive events of instances alteration
@@ -422,7 +423,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void subscribe(const String &serviceName, const String &groupName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
+	//virtual void subscribe(const String &serviceName, const String &groupName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Unsubscribe event listener of service
@@ -431,7 +432,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void unsubscribe(const String &serviceName, EventListener listener) throw (NacosException) = 0;
+	//virtual void unsubscribe(const String &serviceName, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * unsubscribe event listener of service
@@ -441,7 +442,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void unsubscribe(const String &serviceName, const String &groupName, EventListener listener) throw (NacosException) = 0;
+	//virtual void unsubscribe(const String &serviceName, const String &groupName, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Unsubscribe event listener of service
@@ -451,7 +452,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void unsubscribe(const String &serviceName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
+	//virtual void unsubscribe(const String &serviceName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Unsubscribe event listener of service
@@ -462,7 +463,7 @@ public:
 	 * @param listener    event listener
 	 * @throw (NacosException) = 0
 	 */
-	//void unsubscribe(const String &serviceName, const String &groupName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
+	//virtual void unsubscribe(const String &serviceName, const String &groupName, std::list<String> clusters, EventListener listener) throw (NacosException) = 0;
 
 	/**
 	 * Get all service names from server
@@ -472,7 +473,7 @@ public:
 	 * @return list of service names
 	 * @throw (NacosException) = 0
 	 */
-	//ListView<String> getServicesOfServer(int pageNo, int pageSize) throw (NacosException) = 0;
+	//virtual ListView<String> getServicesOfServer(int pageNo, int pageSize) throw (NacosException) = 0;
 
 	/**
 	 * Get all service names from server
@@ -483,7 +484,7 @@ public:
 	 * @return list of service names
 	 * @throw (NacosException) = 0
 	 */
-	//ListView<String> getServicesOfServer(int pageNo, int pageSize, const String &groupName) throw (NacosException) = 0;
+	//virtual ListView<String> getServicesOfServer(int pageNo, int pageSize, const String &groupName) throw (NacosException) = 0;
 
 	/**
 	 * Get all service names from server with selector
@@ -495,7 +496,7 @@ public:
 	 * @throw (NacosException) = 0
 	 * @since 0.7.0
 	 */
-	//ListView<String> getServicesOfServer(int pageNo, int pageSize, AbstractSelector selector) throw (NacosException) = 0;
+	//virtual ListView<String> getServicesOfServer(int pageNo, int pageSize, AbstractSelector selector) throw (NacosException) = 0;
 
 	/**
 	 * Get all service names from server with selector
@@ -507,7 +508,7 @@ public:
 	 * @return list of service names
 	 * @throw (NacosException) = 0
 	 */
-	//ListView<String> getServicesOfServer(int pageNo, int pageSize, const String &groupName, AbstractSelector selector) throw (NacosException) = 0;
+	//virtual ListView<String> getServicesOfServer(int pageNo, int pageSize, const String &groupName, AbstractSelector selector) throw (NacosException) = 0;
 
 	/**
 	 * Get all subscribed services of current client
@@ -515,14 +516,14 @@ public:
 	 * @return subscribed services
 	 * @throw (NacosException) = 0
 	 */
-	//std::list<ServiceInfo> getSubscribeServices() throw (NacosException) = 0;
+	//virtual std::list<ServiceInfo> getSubscribeServices() throw (NacosException) = 0;
 
 	/**
 	 * get server health status
 	 *
 	 * @return is server healthy
 	 */
-	//String getServerStatus();
+	//virtual String getServerStatus() = 0;
 	
 	virtual ~NamingService();
 };

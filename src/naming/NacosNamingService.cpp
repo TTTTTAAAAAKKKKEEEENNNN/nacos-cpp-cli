@@ -28,7 +28,25 @@ NacosNamingService::NacosNamingService(Properties &props)
 
 	initNamespace(props);
 	initEndpoint(props);
+	httpCli = new HTTPCli();
+	serverProxy = new NamingProxy(httpCli, namesp, endpoint, serverList);
 }
+
+NacosNamingService::~NacosNamingService()
+{
+	if (httpCli != NULL)
+	{
+		delete httpCli;
+	}
+	httpCli = NULL;
+
+	if (serverProxy != NULL)
+	{
+		delete serverProxy;
+	}
+	serverProxy = NULL;
+}
+
 
 void NacosNamingService::registerInstance
 (
@@ -36,15 +54,15 @@ void NacosNamingService::registerInstance
 	Instance instance
 ) throw (NacosException)
 {
-	throw NacosException(0, "Method not implemented!");
+	registerInstance(serviceName, Constants::DEFAULT_GROUP, instance);
 }
 
-void registerInstance
+void NacosNamingService::registerInstance
 (
 	const String &serviceName,
 	const String &groupName,
 	Instance instance
-) throw (NacosException);
+) throw (NacosException)
 {
 
 	//TODO:use a thread to send heartbeat to config server
@@ -62,7 +80,7 @@ void registerInstance
 		beatReactor.addBeatInfo(NamingUtils.getGroupedName(serviceName, groupName), beatInfo);
 	}*/
 
-	serverProxy.registerService(NamingUtils::getGroupedName(serviceName, groupName), groupName, instance);
+	serverProxy->registerService(NamingUtils::getGroupedName(serviceName, groupName), groupName, instance);
 }
 
 void NacosNamingService::deregisterInstance
@@ -72,4 +90,6 @@ void NacosNamingService::deregisterInstance
 	Instance instance
 ) throw (NacosException)
 {
+	//TODO:beatReactor->removeBeatInfo(NamingUtils.getGroupedName(serviceName, groupName), instance.getIp(), instance.getPort());
+	serverProxy->deregisterService(NamingUtils::getGroupedName(serviceName, groupName), instance);
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "naming/NamingProxy.h"
+#include "naming/NacosNamingService.h"
 #include "naming/Instance.h"
 #include "Constants.h"
 #include "utils/UtilAndComs.h"
@@ -9,12 +10,14 @@
 #include "DebugAssertion.h"
 #include "Debug.h"
 #include "NacosString.h"
+#include "Properties.h"
+#include "PropertyKeyConst.h"
 
 using namespace std;
 
-bool testNamingProxySmoking()
+bool testNamingProxySmokeTest()
 {
-	cout << "in function testNamingProxy" << endl;
+	cout << "in function testNamingProxySmokeTest" << endl;
 	String servers = "127.0.0.1:8848";
 	HTTPCli *httpcli = new HTTPCli();
 	NamingProxy *namingProxy = new NamingProxy(httpcli, UtilAndComs::DEFAULT_NAMESPACE_ID, NULLSTR/*endpoint*/, servers);
@@ -106,5 +109,38 @@ bool testNamingProxySmoking()
 bool testNamingProxyFailOver()
 {
 	cout << "in function testNamingProxyFailOver" << endl;
+	return true;
+}
+
+bool testNamingServiceRegister()
+{
+	cout << "in function testNamingServiceRegister" << endl;
+	Properties configProps;
+	configProps[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1";
+	NacosNamingService *namingSvc = new NacosNamingService(configProps);
+	Instance instance;
+	instance.clusterName = "DefaultCluster";
+	instance.ip = "127.0.0.1";
+	instance.port = 2333;
+	instance.instanceId = "1";
+
+	try
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			String serviceName = "TestNamingService" + NacosString::valueOf(i);
+			
+			namingSvc->registerInstance(serviceName, instance);
+		}
+	}
+	catch (NacosException e)
+	{
+		cout << "encounter exception while registering service instance, raison:" << e.what() << endl;
+		ReleaseResource(namingSvc);
+		return false;
+	}
+
+	ReleaseResource(namingSvc);
+
 	return true;
 }

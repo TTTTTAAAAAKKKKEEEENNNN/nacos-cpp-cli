@@ -32,6 +32,7 @@ private:
 	void initEndpoint(Properties &properties);
 public:
 	NacosNamingService(Properties &props);
+	~NacosNamingService();
 	void registerInstance(const String &serviceName, Instance instance) throw (NacosException);
 	void registerInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
 	void deregisterInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
