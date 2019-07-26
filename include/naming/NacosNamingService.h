@@ -33,6 +33,10 @@ private:
 public:
 	NacosNamingService(Properties &props);
 	~NacosNamingService();
+	void registerInstance(const String &serviceName, const String &ip, int port) throw (NacosException);
+	void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException);
+	void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException);
+	void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException);
 	void registerInstance(const String &serviceName, Instance instance) throw (NacosException);
 	void registerInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
 	void deregisterInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);

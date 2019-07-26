@@ -16,7 +16,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void registerInstance(const String &serviceName, const String &ip, int port) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, const String &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service
@@ -27,7 +27,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified cluster name
@@ -38,7 +38,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified cluster name
@@ -50,7 +50,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
+	virtual void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified instance properties

@@ -47,7 +47,55 @@ NacosNamingService::~NacosNamingService()
 	serverProxy = NULL;
 }
 
+void NacosNamingService::registerInstance
+(
+	const String &serviceName,
+	const String &ip,
+	int port
+) throw (NacosException)
+{
+	registerInstance(serviceName, ip, port, Constants::DEFAULT_CLUSTER_NAME);
+}
 
+void NacosNamingService::registerInstance
+(
+	const String &serviceName,
+	const String &groupName,
+	const String &ip,
+	int port
+) throw (NacosException)
+{
+	registerInstance(serviceName, groupName, ip, port, Constants::DEFAULT_CLUSTER_NAME);
+}
+
+void NacosNamingService::registerInstance
+(
+	const String &serviceName,
+	const String &ip,
+	int port,
+	const String &clusterName
+) throw (NacosException)
+{
+	registerInstance(serviceName, Constants::DEFAULT_GROUP, ip, port, clusterName);
+}
+
+void NacosNamingService::registerInstance
+(
+	const String &serviceName,
+	const String &groupName,
+	const String &ip,
+	int port,
+	const String &clusterName
+) throw (NacosException)
+{
+	Instance instance;
+	instance.ip = ip;
+	instance.port = port;
+	instance.weight = 1.0D;
+	instance.clusterName = clusterName;
+	
+	registerInstance(serviceName, groupName, instance);
+}
 void NacosNamingService::registerInstance
 (
 	const String &serviceName,
