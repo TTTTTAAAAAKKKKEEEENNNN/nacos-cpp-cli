@@ -183,6 +183,7 @@ String NamingProxy::callServer
 
 	HttpResult requestRes;
 	list<String> headers;
+	headers = builderHeaders();
 	switch (method)
 	{
 	case HTTPCli::GET:
