@@ -21,7 +21,7 @@ public:
 	}
 
 	HttpResult(long _code, const NacosString &_content): code(_code), content(_content) {}
-	HttpResult() { code = -1; content.assign(""); headers.clear(); }
+	HttpResult() { code = -1; content = ""; headers.clear(); }
 
 	HttpResult operator = (HttpResult asignee)
 	{

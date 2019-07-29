@@ -6,7 +6,7 @@
 
 void ServerListManager::initParams()
 {
-	contentPath.assign(DEFAULT_CONTEXT_PATH);
+	contentPath = DEFAULT_CONTEXT_PATH;
 }
 
 void ServerListManager::initSrvListWithAddress(NacosString &address)

@@ -3,7 +3,7 @@
 NacosException::NacosException(int errorcode, const char *errormsg) throw()
 {
 	_errcode = errorcode;
-	_errmsg.assign(errormsg);
+	_errmsg = errormsg;
 }
 
 NacosException::NacosException(int errorcode, const NacosString &errormsg)  throw()

@@ -13,7 +13,7 @@ NacosString urlencode(const NacosString & content)
 
 	if(output)
 	{
-		result.assign(output);
+		result = output;
 		curl_free(output);
 	}
 	
@@ -33,7 +33,7 @@ NacosString urldecode(const NacosString & content)
 
 	if(output)
 	{
-		result.assign(output);
+		result = output;
 		curl_free(output);
 	}
 
