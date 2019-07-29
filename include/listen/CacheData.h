@@ -10,10 +10,10 @@
 class Cachedata
 {
 public:
-	String tenant;
-	String dataId;
-	String group;
-	String dataMD5;
+	NacosString tenant;
+	NacosString dataId;
+	NacosString group;
+	NacosString dataMD5;
 	Listener *listener;
 	bool operator == (const Cachedata &rhs) const
 	{

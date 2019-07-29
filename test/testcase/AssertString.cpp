@@ -10,8 +10,8 @@ using namespace std;
 bool testStringEqual()
 {
 	cout << "In testStringEqual" << endl;
-	String s2 = "";
-	String s3 = "Nacos";
+	NacosString s2 = "";
+	NacosString s3 = "Nacos";
 	SHOULD_BE_TRUE(isNull(NULLSTR), "NULLSTR should be NULL");
 	SHOULD_BE_TRUE(isNull(s2), "\"\" should be NULL");
 	SHOULD_BE_FALSE(isNull(s3), "\"Nacos\" should not be NULL");

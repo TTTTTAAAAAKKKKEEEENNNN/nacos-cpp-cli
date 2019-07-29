@@ -8,14 +8,14 @@
 class ServerListManager
 {
 private:
-	std::list<String> serverList;
-	String contentPath;
+	std::list<NacosString> serverList;
+	NacosString contentPath;
 	void initParams();
-	void initSrvListWithAddress(String &address);
+	void initSrvListWithAddress(NacosString &address);
 public:
-	ServerListManager(std::list<String> &fixed);
+	ServerListManager(std::list<NacosString> &fixed);
 	ServerListManager(Properties &props) throw(NacosException);
-	String getContentPath() { return contentPath; };
-	String getCurrentServerAddr();
+	NacosString getContentPath() { return contentPath; };
+	NacosString getCurrentServerAddr();
 };
 #endif

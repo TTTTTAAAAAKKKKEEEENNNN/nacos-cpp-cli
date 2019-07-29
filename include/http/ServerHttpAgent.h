@@ -15,17 +15,17 @@ class ServerHttpAgent : public HttpAgent
 {
 private:
 	//Variables
-	String namesp;
-	String encoding;
+	NacosString namesp;
+	NacosString encoding;
 	HTTPCli *httpCli = NULL;
 	ServerListManager *svrListMgr = NULL;
 public:
-	ServerHttpAgent(HTTPCli *httpcli, const String &_encoding, ServerListManager *_svrListMgr, const String &_namesp);
-	ServerHttpAgent(HTTPCli *httpcli, const String &encoding, ServerListManager *_svrListMgr);
-	HttpResult httpGet(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException);
-	HttpResult httpPost(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException);
-	HttpResult httpDelete(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException);
-	String getEncode() const;
+	ServerHttpAgent(HTTPCli *httpcli, const NacosString &_encoding, ServerListManager *_svrListMgr, const NacosString &_namesp);
+	ServerHttpAgent(HTTPCli *httpcli, const NacosString &encoding, ServerListManager *_svrListMgr);
+	HttpResult httpGet(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException);
+	HttpResult httpPost(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException);
+	HttpResult httpDelete(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException);
+	NacosString getEncode() const;
 	virtual ~ServerHttpAgent() { httpCli = NULL; svrListMgr = NULL; };
 };
 

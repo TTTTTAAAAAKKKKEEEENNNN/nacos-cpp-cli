@@ -18,13 +18,13 @@ class MD5 {
 public:
 	MD5();
 	MD5(const void* input, size_t length);
-	MD5(const String& str);
+	MD5(const NacosString& str);
 	MD5(ifstream& in);
 	void update(const void* input, size_t length);
-	void update(const String& str);
+	void update(const NacosString& str);
 	void update(ifstream& in);
 	const byte* digest();
-	String toString();
+	NacosString toString();
 	void reset();
 
 private:
@@ -33,7 +33,7 @@ private:
 	void transform(const byte block[64]);
 	void encode(const uint32* input, byte* output, size_t length);
 	void decode(const byte* input, uint32* output, size_t length);
-	String bytesToHexString(const byte* input, size_t length);
+	NacosString bytesToHexString(const byte* input, size_t length);
 
 	/* class uncopyable */
 	MD5(const MD5&);

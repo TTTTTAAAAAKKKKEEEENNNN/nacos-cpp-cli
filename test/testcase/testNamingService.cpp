@@ -18,7 +18,7 @@ using namespace std;
 bool testNamingProxySmokeTest()
 {
 	cout << "in function testNamingProxySmokeTest" << endl;
-	String servers = "127.0.0.1:8848";
+	NacosString servers = "127.0.0.1:8848";
 	HTTPCli *httpcli = new HTTPCli();
 	NamingProxy *namingProxy = new NamingProxy(httpcli, UtilAndComs::DEFAULT_NAMESPACE_ID, NULLSTR/*endpoint*/, servers);
 	Instance theinstance;
@@ -32,7 +32,7 @@ bool testNamingProxySmokeTest()
 	{
 	    for (int i = 0; i < 10; i++)
         {
-            String serviceName = "TestServiceName" + NacosString::valueOf(i);
+            NacosString serviceName = "TestServiceName" + NacosStringOps::valueOf(i);
             theinstance.serviceName = serviceName;
             namingProxy->deregisterService(serviceName, theinstance);
         }
@@ -51,7 +51,7 @@ bool testNamingProxySmokeTest()
 	{
 	    for (int i = 0; i < 10; i++)
         {
-            String serviceName = "TestServiceName" + NacosString::valueOf(i);
+            NacosString serviceName = "TestServiceName" + NacosStringOps::valueOf(i);
             theinstance.serviceName = serviceName;
             namingProxy->registerService(serviceName, Constants::DEFAULT_GROUP, theinstance);
             sleep(1);
@@ -69,8 +69,8 @@ bool testNamingProxySmokeTest()
 	//check whether the data are correct
 	for (int i = 0; i < 10; i++)
     {
-        String serviceName = "TestServiceName" + NacosString::valueOf(i);
-        String serverlist = namingProxy->queryList(serviceName, "TestCluster", 0, false);
+        NacosString serviceName = "TestServiceName" + NacosStringOps::valueOf(i);
+        NacosString serverlist = namingProxy->queryList(serviceName, "TestCluster", 0, false);
 
         if (serverlist.find("\"serviceName\":\"" + serviceName + "\"") == string::npos)
         {
@@ -87,7 +87,7 @@ bool testNamingProxySmokeTest()
 	{
 	    for (int i = 0; i < 10; i++)
         {
-            String serviceName = "TestServiceName" + NacosString::valueOf(i);
+            NacosString serviceName = "TestServiceName" + NacosStringOps::valueOf(i);
             theinstance.serviceName = serviceName;
             namingProxy->deregisterService(serviceName, theinstance);
         }
@@ -128,7 +128,7 @@ bool testNamingServiceRegister()
 	{
 		for (int i = 0; i < 100; i++)
 		{
-			String serviceName = "TestNamingService" + NacosString::valueOf(i);
+			NacosString serviceName = "TestNamingService" + NacosStringOps::valueOf(i);
 			
 			namingSvc->registerInstance(serviceName, instance);
 		}

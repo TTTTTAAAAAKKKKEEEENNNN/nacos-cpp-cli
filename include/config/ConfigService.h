@@ -16,7 +16,7 @@ public:
 	 * @return config value
 	 * @throws NacosException NacosException
 	 */
-	virtual String getConfig(const String &dataId, const String &group, long timeoutMs) throw(NacosException) = 0;
+	virtual NacosString getConfig(const NacosString &dataId, const NacosString &group, long timeoutMs) throw(NacosException) = 0;
 
 	/**
 	 * Add a listener to the configuration, after the server modified the
@@ -31,7 +31,7 @@ public:
 	 * @param listener listener
 	 * @throws NacosException NacosException
 	 */
-	virtual void addListener(const String &dataId, const String &group, Listener *listener) throw(NacosException) = 0;
+	virtual void addListener(const NacosString &dataId, const NacosString &group, Listener *listener) throw(NacosException) = 0;
 
 	/**
 	 * Publish config.
@@ -42,7 +42,7 @@ public:
 	 * @return Whether publish
 	 * @throws NacosException NacosException
 	 */
-	virtual bool publishConfig(const String &dataId, const String &group, const String &content) throw(NacosException) = 0;
+	virtual bool publishConfig(const NacosString &dataId, const NacosString &group, const NacosString &content) throw(NacosException) = 0;
 
 	/**
 	 * Remove config
@@ -52,7 +52,7 @@ public:
 	 * @return whether remove
 	 * @throws NacosException NacosException
 	 */
-	virtual bool removeConfig(const String &dataId, const String &group) throw(NacosException) = 0;
+	virtual bool removeConfig(const NacosString &dataId, const NacosString &group) throw(NacosException) = 0;
 
 	/**
 	 * Remove listener
@@ -61,14 +61,14 @@ public:
 	 * @param group    group
 	 * @param listener listener
 	 */
-	//virtual void removeListener(String dataId, String group, Listener listener) = 0;
+	//virtual void removeListener(NacosString dataId, NacosString group, Listener listener) = 0;
 
 	/**
 	 * Get server status
 	 *
 	 * @return whether health
 	 */
-	//virtual String getServerStatus() = 0;
+	//virtual NacosString getServerStatus() = 0;
 
 	virtual ~ConfigService() {};
 };

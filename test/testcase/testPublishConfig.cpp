@@ -21,7 +21,7 @@ bool testPublishConfig()
 		char val_s[200];
 		sprintf(key_s, "Key%d", i);
 		sprintf(val_s, "v__%d", i);
-		String ss = "";
+		NacosString ss = "";
 
 		try
 		{

@@ -1,9 +1,9 @@
 #include "utils/url.h"
 #include <curl/curl.h>
 
-String urlencode(const String & content)
+NacosString urlencode(const NacosString & content)
 {
-	String result;
+	NacosString result;
 	CURL *curl = curl_easy_init();
 	char *output = NULL;
 	if (curl)
@@ -21,9 +21,9 @@ String urlencode(const String & content)
 	return result;
 }
 
-String urldecode(const String & content)
+NacosString urldecode(const NacosString & content)
 {
-	String result;
+	NacosString result;
 	CURL *curl = curl_easy_init();
 	char *output = NULL;
 	if (curl)

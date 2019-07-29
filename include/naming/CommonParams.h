@@ -5,13 +5,13 @@
 class CommonParams
 {
 public:
-	static const String SERVICE_NAME;
+	static const NacosString SERVICE_NAME;
 
-	static const String CLUSTER_NAME;
+	static const NacosString CLUSTER_NAME;
 
-	static const String NAMESPACE_ID;
+	static const NacosString NAMESPACE_ID;
 
-	static const String GROUP_NAME;
+	static const NacosString GROUP_NAME;
 
 };
 

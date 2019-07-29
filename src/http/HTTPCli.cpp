@@ -14,7 +14,7 @@ receiveResponseCallback(
 )
 {
 	size_t realsize = size * nmemb;
-	String *strbuf = (String *)userp;
+	NacosString *strbuf = (NacosString *)userp;
 
 	strbuf->append((char*)contents, realsize);
 
@@ -33,9 +33,9 @@ static size_t receiveHeaderCallback(
 	char *pos = strchr(content_s, ':');
 	if (pos != NULL)//Skip status
 	{
-		std::map<String, String> *respheaders = (std::map<String, String> *)userp;
-		String k = String(content_s, pos - content_s);
-		String v = String(pos + 1);
+		std::map<NacosString, NacosString> *respheaders = (std::map<NacosString, NacosString> *)userp;
+		NacosString k = NacosString(content_s, pos - content_s);
+		NacosString v = NacosString(pos + 1);
 		(*respheaders)[k] = v;
 	}
 	size_t realsize = size * nmemb;
@@ -87,10 +87,10 @@ void HTTPCli::HTTPBasicSettings(CURL *curlHandle)
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERFUNCTION, receiveHeaderCallback);
 }
 
-String HTTPCli::encodingParams(list<String> &params)
+NacosString HTTPCli::encodingParams(list<NacosString> &params)
 {
-	String encodedParms = "";
-	for (list<String>::iterator it = params.begin(); it != params.end(); it++)
+	NacosString encodedParms = "";
+	for (list<NacosString>::iterator it = params.begin(); it != params.end(); it++)
 	{
 		if (encodedParms.compare("") != 0)
 		{
@@ -104,10 +104,10 @@ String HTTPCli::encodingParams(list<String> &params)
 	return encodedParms;
 }
 
-String HTTPCli::encodingParams(map<String, String> &params)
+NacosString HTTPCli::encodingParams(map<NacosString, NacosString> &params)
 {
-	String encodedParms = "";
-	for (map<String, String>::iterator it = params.begin(); it != params.end(); it++)
+	NacosString encodedParms = "";
+	for (map<NacosString, NacosString>::iterator it = params.begin(); it != params.end(); it++)
 	{
 		if (encodedParms.compare("") != 0)
 		{
@@ -119,11 +119,11 @@ String HTTPCli::encodingParams(map<String, String> &params)
 	return encodedParms;
 }
 
-void HTTPCli::assembleHeaders(list<String> &assembledHeaders, list<String> &headers)
+void HTTPCli::assembleHeaders(list<NacosString> &assembledHeaders, list<NacosString> &headers)
 {
-	for (list<String>::iterator it = headers.begin(); it != headers.end(); it++)
+	for (list<NacosString>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
-		String curHeader = "";
+		NacosString curHeader = "";
 		curHeader.append(*it);
 		curHeader += ": ";
 		it++;
@@ -134,45 +134,45 @@ void HTTPCli::assembleHeaders(list<String> &assembledHeaders, list<String> &head
 
 HttpResult HTTPCli::httpGet
 (
-	const String &path,
-	list<String> &headers,
-	list<String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	list<NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpGetInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
 
 HttpResult HTTPCli::httpGet
 (
-	const String &path,
-	list<String> &headers,
-	map<String, String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	map<NacosString, NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpGetInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
 
 HttpResult HTTPCli::httpGetInternal
 (
-	const String &path,
-	list<String> &headers,
-	const String &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	const NacosString &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
-	String Url = path;
+	NacosString Url = path;
 
 	if (paramValues.compare("") != 0)
 	{
@@ -189,7 +189,7 @@ HttpResult HTTPCli::httpGetInternal
 		foo: bar
 		bax: lol
 	*/
-	list<String> assembledHeaders;
+	list<NacosString> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
 	/* specify URL to get */
@@ -198,12 +198,12 @@ HttpResult HTTPCli::httpGetInternal
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 	/* send all data to this function  */
-	String strbuf = "";
+	NacosString strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
 
 	/* Get response headers from the response */
-	std::map<String, String> respheaders;
+	std::map<NacosString, NacosString> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
 
 	//TODO:Time out in a more precise way
@@ -212,7 +212,7 @@ HttpResult HTTPCli::httpGetInternal
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
+	for (list<NacosString>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}
@@ -260,14 +260,14 @@ We convert it into sth like this:
 */
 HttpResult HTTPCli::httpPost
 (
-	const String &path,
-	list<String> &headers,
-	list<String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	list<NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpPostInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
@@ -275,14 +275,14 @@ HttpResult HTTPCli::httpPost
 //httpPost, post data are passed in map form
 HttpResult HTTPCli::httpPost
 (
-	const String &path,
-	list<String> &headers,
-	map<String, String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	map<NacosString, NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpPostInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
@@ -290,17 +290,17 @@ HttpResult HTTPCli::httpPost
 //Implement of httpPost
 HttpResult HTTPCli::httpPostInternal
 (
-	const String &path,
-	list<String> &headers,
-	const String &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	const NacosString &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
-	String Url = path;
+	NacosString Url = path;
 	log_debug("HTTPPOST-Assembled URL with parms:%s\n", Url.c_str());
 
 	/*Headers look like:
@@ -312,7 +312,7 @@ HttpResult HTTPCli::httpPostInternal
 		foo: bar
 		bax: lol
 	*/
-	list<String> assembledHeaders;
+	list<NacosString> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
 	log_debug("Post data:%s\n", paramValues.c_str());
@@ -326,12 +326,12 @@ HttpResult HTTPCli::httpPostInternal
 	//Setup common parameters
 	HTTPBasicSettings(curlHandle);
 
-	String strbuf = "";
+	NacosString strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
 
 	/* Get response headers from the response */
-	std::map<String, String> respheaders;
+	std::map<NacosString, NacosString> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
 
 	//TODO:Time out in a more precise way
@@ -340,7 +340,7 @@ HttpResult HTTPCli::httpPostInternal
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
+	for (list<NacosString>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 		log_debug("HTTPPOST-RequestHeaders:%s\n", it->c_str());
@@ -382,45 +382,45 @@ HttpResult HTTPCli::httpPostInternal
 
 HttpResult HTTPCli::httpDelete
 (
-	const String &path,
-	list<String> &headers,
-	list<String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	list<NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpDeleteInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
 
 HttpResult HTTPCli::httpDelete
 (
-	const String &path,
-	list<String> &headers,
-	map<String, String> &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	map<NacosString, NacosString> &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String parmVal;
+	NacosString parmVal;
 	parmVal = encodingParams(paramValues);
 	return httpDeleteInternal(path, headers, parmVal, encoding, readTimeoutMs);
 }
 
 HttpResult HTTPCli::httpDeleteInternal
 (
-	const String &path,
-	list<String> &headers,
-	const String &paramValues,
-	const String &encoding,
+	const NacosString &path,
+	list<NacosString> &headers,
+	const NacosString &paramValues,
+	const NacosString &encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
 	CURL *curlHandle = getCurlHandle();
 	CURLcode curlres;
 
-	String Url = path;
+	NacosString Url = path;
 
 	Url += "?" + paramValues;
 	log_debug("Assembled URL with parms:%s\n", Url.c_str());
@@ -434,7 +434,7 @@ HttpResult HTTPCli::httpDeleteInternal
 		foo: bar
 		bax: lol
 	*/
-	list<String> assembledHeaders;
+	list<NacosString> assembledHeaders;
 	assembleHeaders(assembledHeaders, headers);
 
 	/* specify URL to get */
@@ -445,12 +445,12 @@ HttpResult HTTPCli::httpDeleteInternal
 	/* Set to DELETE, since this is a delete request*/
 	curl_easy_setopt(curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-	String strbuf = "";
+	NacosString strbuf = "";
 	/* we pass our 'strbuf' struct to the callback function */
 	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
 
 	/* Get response headers from the response */
-	std::map<String, String> respheaders;
+	std::map<NacosString, NacosString> respheaders;
 	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
 
 	//TODO:Time out in a more precise way
@@ -459,7 +459,7 @@ HttpResult HTTPCli::httpDeleteInternal
 	/*Add the request headers to the request*/
 	struct curl_slist *headerlist = NULL;
 
-	for (list<String>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
+	for (list<NacosString>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
 	{
 		headerlist = curl_slist_append(headerlist, it->c_str());
 	}

@@ -27,16 +27,16 @@
 class GroupKey
 {
 public:
-	static String getKey(const String &dataId, const String &group)
+	static NacosString getKey(const NacosString &dataId, const NacosString &group)
 	{
 		//DataID+GroupId
 		return urlencode(dataId) + "+" + urlencode(group);
 	}
 
-	static String getKeyTenant(const String &dataId, const String &group, const String &tenant)
+	static NacosString getKeyTenant(const NacosString &dataId, const NacosString &group, const NacosString &tenant)
 	{
 		//DataID+GroupId
-		String key = getKey(dataId, group);
+		NacosString key = getKey(dataId, group);
 		
 		if (!isNull(tenant))
 		{
@@ -45,17 +45,17 @@ public:
 		return key;
 	}
 
-	/*static String getKey(const String &dataId, const String &group, const String &datumStr)
+	/*static NacosString getKey(const NacosString &dataId, const NacosString &group, const NacosString &datumStr)
 	{
 		//DataID+GroupId+datumStr
 		return urlencode(dataId) + "+" + urlencode(group) + "+" + urlencode(datumStr);
 	}*/
 
-    /*static public String[] parseKey(String groupKey) {
+    /*static public NacosString[] parseKey(NacosString groupKey) {
         StringBuilder sb = new StringBuilder();
-        String dataId = null;
-        String group = null;
-        String tenant = null;
+        NacosString dataId = null;
+        NacosString group = null;
+        NacosString tenant = null;
 
         for (int i = 0; i < groupKey.length(); ++i) {
             char c = groupKey.charAt(i);
@@ -96,13 +96,13 @@ public:
             }
         }
 
-        return new String[] {dataId, group, tenant};
+        return new NacosString[] {dataId, group, tenant};
     }*/
 
     /**
      * + -> %2B % -> %25
      */
-    /*static void urlEncode(String str, StringBuilder sb) {
+    /*static void urlEncode(NacosString str, StringBuilder sb) {
         for (int idx = 0; idx < str.length(); ++idx) {
             char c = str.charAt(idx);
             if ('+' == c) {

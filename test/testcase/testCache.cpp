@@ -12,7 +12,7 @@ bool testSaveSnapshot()
 	cout << "in function testSaveSnapshot" << endl;
 	LocalConfigInfoProcessor::cleanAllSnapshot();
 	LocalConfigInfoProcessor::saveSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant", "ConfigName=Value for FrontTenant");
-	String content = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString content = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
 	SHOULD_BE_TRUE(content == "ConfigName=Value for FrontTenant", "Saved snapshot, read it again, should be the same");
 	LocalConfigInfoProcessor::saveSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR, "ConfigName=Value");
 	content = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
@@ -29,10 +29,10 @@ bool testCleanTestenvCacheAndGetTestenv()
 	LocalConfigInfoProcessor::saveSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Testenv");
 	LocalConfigInfoProcessor::saveSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Prodenv");
 
-	String cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
-	String cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
 
 	SHOULD_BE_TRUE(cntfrontEndTest == "Value for FrontTenant&Testenv", "Check settings for FrontTenant&Testenv");
 	SHOULD_BE_TRUE(cntPrdFrontEnd == "Value for FrontTenant&Prodenv", "Check settings for FrontTenant&Prodenv");
@@ -61,10 +61,10 @@ bool testCleanPrdCacheAndGetPrdenv()
 	LocalConfigInfoProcessor::saveSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Testenv");
 	LocalConfigInfoProcessor::saveSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Prodenv");
 
-	String cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
-	String cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
 
 	SHOULD_BE_TRUE(cntfrontEndTest == "Value for FrontTenant&Testenv", "Check settings for FrontTenant&Testenv");
 	SHOULD_BE_TRUE(cntPrdFrontEnd == "Value for FrontTenant&Prodenv", "Check settings for FrontTenant&Prodenv");
@@ -93,10 +93,10 @@ bool testCleanAllCache()
 	LocalConfigInfoProcessor::saveSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Testenv");
 	LocalConfigInfoProcessor::saveSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR, "Value for Prodenv");
 
-	String cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
-	String cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
-	String cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntfrontEndTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntPrdFrontEnd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", "FrontTenant");
+	NacosString cntTest = LocalConfigInfoProcessor::getSnapshot("Testenv", "DummyData", "BusinessGrp1", NULLSTR);
+	NacosString cntPrd = LocalConfigInfoProcessor::getSnapshot("Prodenv", "DummyData", "BusinessGrp1", NULLSTR);
 
 	SHOULD_BE_TRUE(cntfrontEndTest == "Value for FrontTenant&Testenv", "Check settings for FrontTenant&Testenv");
 	SHOULD_BE_TRUE(cntPrdFrontEnd == "Value for FrontTenant&Prodenv", "Check settings for FrontTenant&Prodenv");

@@ -13,7 +13,7 @@
  * @return content
  * @throws IOException IOException
  */
-String ConcurrentDiskUtil::getFileContent(const String &file, const String &charsetName) throw(IOException)
+NacosString ConcurrentDiskUtil::getFileContent(const NacosString &file, const NacosString &charsetName) throw(IOException)
 {
 	if (IOUtils::checkNotExistOrNotFile(file))
 	{
@@ -35,7 +35,7 @@ String ConcurrentDiskUtil::getFileContent(const String &file, const String &char
 	buf[toRead] = '\0';
 	flock(fileno(fp), LOCK_UN);
 	fclose(fp);
-	return String(buf);
+	return NacosString(buf);
 }
 
 /**
@@ -49,9 +49,9 @@ String ConcurrentDiskUtil::getFileContent(const String &file, const String &char
  */
 bool ConcurrentDiskUtil::writeFileContent
 (
-	const String &path,
-	const String &content,
-	const String &charsetName
+	const NacosString &path,
+	const NacosString &content,
+	const NacosString &charsetName
 ) throw (IOException)
 {
 	FILE *fp = fopen(path.c_str(), "wb");

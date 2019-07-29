@@ -8,36 +8,36 @@ class IOUtils
 {
 private:
 public:
-	static size_t getFileSize(const String &file);
+	static size_t getFileSize(const NacosString &file);
 
-	static String readStringFromFile(const String &file, const String &encoding) throw (IOException);
+	static NacosString readStringFromFile(const NacosString &file, const NacosString &encoding) throw (IOException);
 
-	static void writeStringToFile(const String &file, const String &data, const String &encoding) throw (IOException);
+	static void writeStringToFile(const NacosString &file, const NacosString &data, const NacosString &encoding) throw (IOException);
 
 	//Returns true if:
 	//a. the file doesn't exist
 	//b. the file is not a regular file
-	static bool checkNotExistOrNotFile(const String &pathname);
+	static bool checkNotExistOrNotFile(const NacosString &pathname);
 
 	//Returns true if:
 	//a. the file doesn't exist
 	//b. the file is not a directory
-	static bool checkNotExistOrNotDir(const String &pathname);
+	static bool checkNotExistOrNotDir(const NacosString &pathname);
 
 	//TODO:To provide compability across different platforms
-	static String getParentFile(const String &thefile);
+	static NacosString getParentFile(const NacosString &thefile);
 
 	//Upon success, return true
 	//Upon failure, return false
-	static bool recursivelyRemove(const String &file);
+	static bool recursivelyRemove(const NacosString &file);
 
-	static bool cleanDirectory(const String &file);
+	static bool cleanDirectory(const NacosString &file);
 
-	static void recursivelyCreate(const String &file);
+	static void recursivelyCreate(const NacosString &file);
 	
-	static String getCwd();
+	static NacosString getCwd();
 
-	static std::list<String> listFiles(const String &path);
+	static std::list<NacosString> listFiles(const NacosString &path);
 };
 
 #endif

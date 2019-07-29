@@ -12,10 +12,10 @@
 class ParamUtils
 {
 public:
-	static String getNthElem(std::list<String> &parm, size_t i)
+	static NacosString getNthElem(std::list<NacosString> &parm, size_t i)
 	{
 		assert(parm.size() > i);
-		std::list<String>::iterator it = parm.begin();
+		std::list<NacosString>::iterator it = parm.begin();
 		for (size_t skipper = 0; skipper < i; skipper++)
 		{
 			it++;
@@ -23,7 +23,7 @@ public:
 
 		return *it;
 	}
-	static String trim(const String &content)
+	static NacosString trim(const NacosString &content)
 	{
 		int start = 0;
 		int end = content.size() - 1;
@@ -38,17 +38,17 @@ public:
 			end--;
 		}
 
-		return String(content.substr(start, end - start + 1));
+		return NacosString(content.substr(start, end - start + 1));
 	}
 
-	static String null2defaultGroup(const String &group)
+	static NacosString null2defaultGroup(const NacosString &group)
 	{
 		return (isNull(group)) ? Constants::DEFAULT_GROUP : ParamUtils::trim(group);
 	}
 
-	static void parseString2KeyGroupTenant(const String &stringToParse, String &dataId, String &group, String &tenant)
+	static void parseString2KeyGroupTenant(const NacosString &stringToParse, NacosString &dataId, NacosString &group, NacosString &tenant)
 	{
-		std::vector<String> KGT;//KeyGroupTenant
+		std::vector<NacosString> KGT;//KeyGroupTenant
 		Explode(KGT, stringToParse, Constants::WORD_SEPARATOR);
 		dataId = KGT[0];
 		group = KGT[1];
@@ -75,7 +75,7 @@ public:
 				return false;
 		}
 	}
-	static bool isBlank(const String &content)
+	static bool isBlank(const NacosString &content)
 	{
 		//TODO:Apply ParamUtils.Java's logic to here, support whitespaces in other countries/zones
 		if (content.size() == 0)
@@ -92,12 +92,12 @@ public:
 		return true;
 	};
 
-	static bool isValid(const String &content)
+	static bool isValid(const NacosString &content)
 	{
 		return false;
 	};
 
-	static void checkParam(const String &dataId, const String &group, const String &content) throw (NacosException)
+	static void checkParam(const NacosString &dataId, const NacosString &group, const NacosString &content) throw (NacosException)
 	{
 		if (isBlank(content))
 		{
@@ -105,13 +105,13 @@ public:
 		}
 	};
 
-	//A little trick here for String constants
-	static void Explode(std::vector<String> &explodedList, const String &stringToExplode, const String &separator)
+	//A little trick here for NacosString constants
+	static void Explode(std::vector<NacosString> &explodedList, const NacosString &stringToExplode, const NacosString &separator)
 	{
 		Explode(explodedList, stringToExplode, separator[0]);
 	}
 
-	static void Explode(std::vector<String> &explodedList, const String &stringToExplode, char separator)
+	static void Explode(std::vector<NacosString> &explodedList, const NacosString &stringToExplode, char separator)
 	{
 		size_t start_pos = 0;
 		size_t cur_pos = 0;
@@ -120,18 +120,18 @@ public:
 		//break the string with separator
 		while (cur_pos != std::string::npos)
 		{
-			String cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
+			NacosString cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
 			explodedList.push_back(cur_addr);
 			start_pos = cur_pos + 1;
 			cur_pos = stringToExplode.find(separator, start_pos);
 		}
 
 		//deal with the last string
-		String last_addr = stringToExplode.substr(start_pos);
+		NacosString last_addr = stringToExplode.substr(start_pos);
 		explodedList.push_back(last_addr);
 	}
 
-	static void Explode(std::list<String> &explodedList, const String &stringToExplode, char separator)
+	static void Explode(std::list<NacosString> &explodedList, const NacosString &stringToExplode, char separator)
 	{
 		size_t start_pos = 0;
 		size_t cur_pos = 0;
@@ -140,27 +140,27 @@ public:
 		//break the string with separator
 		while (cur_pos != std::string::npos)
 		{
-			String cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
+			NacosString cur_addr = stringToExplode.substr(start_pos, cur_pos - start_pos);
 			explodedList.push_back(cur_addr);
 			start_pos = cur_pos + 1;
 			cur_pos = stringToExplode.find(separator, start_pos);
 		}
 
 		//deal with the last string
-		String last_addr = stringToExplode.substr(start_pos);
+		NacosString last_addr = stringToExplode.substr(start_pos);
 		explodedList.push_back(last_addr);
 	}
 
 	//use ',' as separator by default
-	static String Implode(std::list<String> &toImplode)
+	static NacosString Implode(std::list<NacosString> &toImplode)
 	{
 		return Implode(toImplode, ',');
 	}
 
-	static String Implode(std::list<String> &toImplode, char separator)
+	static NacosString Implode(std::list<NacosString> &toImplode, char separator)
 	{
-		String implodedString;
-		for (std::list<String>::iterator it = toImplode.begin(); it != toImplode.end(); /*it++ is within the for ... loop*/)
+		NacosString implodedString;
+		for (std::list<NacosString>::iterator it = toImplode.begin(); it != toImplode.end(); /*it++ is within the for ... loop*/)
 		{
 			implodedString += *it;
 			it++;
@@ -174,15 +174,15 @@ public:
 	}
 
 	//use ',' as default separator to serialize a map
-	static String Implode(std::map<String, String> &toImplode)
+	static NacosString Implode(std::map<NacosString, NacosString> &toImplode)
 	{
 		return Implode(toImplode, ',');
 	}
 
-	static String Implode(std::map<String, String> &toImplode, char separator)
+	static NacosString Implode(std::map<NacosString, NacosString> &toImplode, char separator)
 	{
-		String implodedString;
-		for (std::map<String, String>::iterator it = toImplode.begin(); it != toImplode.end(); it++)
+		NacosString implodedString;
+		for (std::map<NacosString, NacosString>::iterator it = toImplode.begin(); it != toImplode.end(); it++)
 		{
 			implodedString += it->first + "=" + it->second;
 			if (it != toImplode.end())
@@ -194,7 +194,7 @@ public:
 		return implodedString;
 	}
 
-	static bool contains(const String &haystack, char needle)
+	static bool contains(const NacosString &haystack, char needle)
 	{
 		if (haystack.find(needle) != std::string::npos)
 		{
@@ -204,7 +204,7 @@ public:
 		return false;
 	}
 
-	static bool contains(const String &haystack, const String &needle)
+	static bool contains(const NacosString &haystack, const NacosString &needle)
 	{
 		if (haystack.find(needle) != std::string::npos)
 		{

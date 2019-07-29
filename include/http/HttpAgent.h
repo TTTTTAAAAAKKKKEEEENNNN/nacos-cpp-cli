@@ -30,7 +30,7 @@ public:
 	* @throws NetworkException If an input or output exception occurred
 	*/
 
-	virtual HttpResult httpGet(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException) = 0;
+	virtual HttpResult httpGet(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException) = 0;
 
 	/**
 	* invoke http post method
@@ -42,7 +42,7 @@ public:
 	* @return HttpResult http response
 	* @throws NetworkException If an input or output exception occurred
 	*/
-	virtual HttpResult httpPost(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException) = 0;
+	virtual HttpResult httpPost(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException) = 0;
 
 	/**
 	* invoke http delete method
@@ -54,31 +54,31 @@ public:
 	* @return HttpResult http response
 	* @throws NetworkException If an input or output exception occurred
 	*/
-	virtual HttpResult httpDelete(const String &path, std::list<String> &headers, std::list<String> &paramValues, const String &encoding, long readTimeoutMs) throw (NetworkException) = 0;
+	virtual HttpResult httpDelete(const NacosString &path, std::list<NacosString> &headers, std::list<NacosString> &paramValues, const NacosString &encoding, long readTimeoutMs) throw (NetworkException) = 0;
 
 	/**
 	* get name
-	* @return String
+	* @return NacosString
 	*/
-	//virtual String getName() const;
+	//virtual NacosString getName() const;
 
 	/**
 	* get namespace
-	* @return String
+	* @return NacosString
 	*/
-	//virtual String getNamespace() const;
+	//virtual NacosString getNamespace() const;
 
 	/**
 	* get tenant
-	* @return String
+	* @return NacosString
 	*/
-	//virtual String getTenant() const;
+	//virtual NacosString getTenant() const;
 
 	/**
 	* get encode
-	* @return String
+	* @return NacosString
 	*/
-	virtual String getEncode() const = 0;
+	virtual NacosString getEncode() const = 0;
 	
 	virtual ~HttpAgent() {};
 };

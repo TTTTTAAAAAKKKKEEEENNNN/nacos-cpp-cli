@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include "Debug.h"
 
-size_t IOUtils::getFileSize(const String &file)
+size_t IOUtils::getFileSize(const NacosString &file)
 {
 	struct stat statbuf;
 
@@ -22,7 +22,7 @@ size_t IOUtils::getFileSize(const String &file)
 	return statbuf.st_size;
 }
 
-String IOUtils::readStringFromFile(const String &file, const String &encoding) throw (IOException)
+NacosString IOUtils::readStringFromFile(const NacosString &file, const NacosString &encoding) throw (IOException)
 {
 	size_t toRead = getFileSize(file);
 	FILE *fp = fopen(file.c_str(), "rb");
@@ -30,10 +30,10 @@ String IOUtils::readStringFromFile(const String &file, const String &encoding) t
 	fread(buf, toRead, 1, fp);
 	buf[toRead] = '\0';
 	fclose(fp);
-	return String(buf);
+	return NacosString(buf);
 }
 
-void IOUtils::writeStringToFile(const String &file, const String &data, const String &encoding) throw (IOException)
+void IOUtils::writeStringToFile(const NacosString &file, const NacosString &data, const NacosString &encoding) throw (IOException)
 {
 	FILE *fp = fopen(file.c_str(), "wb");
 	fwrite(data.c_str(), data.size(), 1, fp);
@@ -43,7 +43,7 @@ void IOUtils::writeStringToFile(const String &file, const String &data, const St
 //Returns true if:
 //a. the file doesn't exist
 //b. the file is not a regular file
-bool IOUtils::checkNotExistOrNotFile(const String &pathname)
+bool IOUtils::checkNotExistOrNotFile(const NacosString &pathname)
 {
 	struct stat thestat = {0};
 	int res = stat(pathname.c_str(), &thestat);
@@ -79,7 +79,7 @@ bool IOUtils::checkNotExistOrNotFile(const String &pathname)
 //Returns true if:
 //a. the file doesn't exist
 //b. the file is not a directory
-bool IOUtils::checkNotExistOrNotDir(const String &pathname)
+bool IOUtils::checkNotExistOrNotDir(const NacosString &pathname)
 {
 	struct stat thestat = {0};
 	int res = stat(pathname.c_str(), &thestat);
@@ -112,7 +112,7 @@ bool IOUtils::checkNotExistOrNotDir(const String &pathname)
 }
 
 //TODO:To provide compability across different platforms
-String IOUtils::getParentFile(const String &thefile)
+NacosString IOUtils::getParentFile(const NacosString &thefile)
 {
 	size_t parentFilePos = thefile.rfind('/');
 	//Invalid Directory/Filename, returning empty
@@ -120,13 +120,13 @@ String IOUtils::getParentFile(const String &thefile)
 	{
 		return NULLSTR;
 	}
-	String parentFile = thefile.substr(0, parentFilePos);
+	NacosString parentFile = thefile.substr(0, parentFilePos);
 	return parentFile;
 }
 
 //Upon success, return true
 //Upon failure, return false
-bool IOUtils::recursivelyRemove(const String &file)
+bool IOUtils::recursivelyRemove(const NacosString &file)
 {
 	struct stat thestat;
 
@@ -150,7 +150,7 @@ bool IOUtils::recursivelyRemove(const String &file)
 				continue;
 			}
 			struct stat subfilestat;
-			String subfilepath = file + "/" + direntp->d_name;
+			NacosString subfilepath = file + "/" + direntp->d_name;
 
 			if (stat(subfilepath.c_str(), &subfilestat) == -1 && errno != ENOENT)
 			{
@@ -180,7 +180,7 @@ bool IOUtils::recursivelyRemove(const String &file)
 	return true;
 }
 
-bool IOUtils::cleanDirectory(const String &file)
+bool IOUtils::cleanDirectory(const NacosString &file)
 {
 	struct stat thestat;
 
@@ -207,7 +207,7 @@ bool IOUtils::cleanDirectory(const String &file)
 			direntp = readdir(curdir);
 			continue;
 		}
-		String subfilepath = file + "/" + direntp->d_name;
+		NacosString subfilepath = file + "/" + direntp->d_name;
 
 		recursivelyRemove(subfilepath);
 		//get to the next entry
@@ -218,9 +218,9 @@ bool IOUtils::cleanDirectory(const String &file)
 	return true;
 }
 
-void IOUtils::recursivelyCreate(const String &file)
+void IOUtils::recursivelyCreate(const NacosString &file)
 {
-	String parentFile = getParentFile(file);
+	NacosString parentFile = getParentFile(file);
 	if (!isNull(parentFile))
 	{
 		recursivelyCreate(parentFile);
@@ -232,16 +232,16 @@ void IOUtils::recursivelyCreate(const String &file)
 	}
 }
 
-String IOUtils::getCwd()
+NacosString IOUtils::getCwd()
 {
 	char temp[PATH_MAX];
-	return ( getcwd(temp, sizeof(temp)) ? String( temp ) : String("") );
+	return ( getcwd(temp, sizeof(temp)) ? NacosString( temp ) : NacosString("") );
 }
 
-std::list<String> IOUtils::listFiles(const String &path)
+std::list<NacosString> IOUtils::listFiles(const NacosString &path)
 {
 	struct stat thestat;
-	std::list<String> filelist;
+	std::list<NacosString> filelist;
 	if (stat(path.c_str(), &thestat) == -1 && errno != ENOENT)
 	{
 		//Something's wrong, and it's not "FileNotExist", we should record this and exit
@@ -265,7 +265,7 @@ std::list<String> IOUtils::listFiles(const String &path)
 			direntp = readdir(curdir);
 			continue;
 		}
-		String curitem = direntp->d_name;
+		NacosString curitem = direntp->d_name;
 		filelist.push_back(curitem);
 		//get to the next entry
 		direntp = readdir(curdir);

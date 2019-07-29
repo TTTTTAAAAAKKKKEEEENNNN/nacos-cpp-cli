@@ -14,7 +14,7 @@ public:
      * @return content
      * @throws IOException IOException
      */
-	static String getFileContent(const String &file, const String &charsetName) throw(IOException);
+	static NacosString getFileContent(const NacosString &file, const NacosString &charsetName) throw(IOException);
 
     /**
      * write file content
@@ -25,6 +25,6 @@ public:
      * @return whether write ok
      * @throws IOException IOException
      */
-    static bool writeFileContent(const String &path, const String &content,	const String &charsetName) throw (IOException);
+    static bool writeFileContent(const NacosString &path, const NacosString &content,	const NacosString &charsetName) throw (IOException);
 };
 #endif

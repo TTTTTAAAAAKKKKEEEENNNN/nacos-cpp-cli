@@ -36,18 +36,18 @@ int64_t getCurrentTimeInMs()
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-String ClientWorker::getServerConfig
+NacosString ClientWorker::getServerConfig
 (
-	const String &tenant,
-	const String &dataId,
-	const String &group,
+	const NacosString &tenant,
+	const NacosString &dataId,
+	const NacosString &group,
 	long timeoutMs
 ) throw (NacosException)
 {
-	std::list<String> headers;
-	std::list<String> paramValues;
+	std::list<NacosString> headers;
+	std::list<NacosString> paramValues;
 	//Get the request url
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	NacosString url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
 
 	HttpResult res;
 
@@ -104,11 +104,11 @@ void *ClientWorker::listenerThread(void *parm)
 	return 0;
 }
 
-vector<String> ClientWorker::parseListenedKeys(const String &ReturnedKeys)
+vector<NacosString> ClientWorker::parseListenedKeys(const NacosString &ReturnedKeys)
 {
-	String changedKeyList = urldecode(ReturnedKeys);
+	NacosString changedKeyList = urldecode(ReturnedKeys);
 
-	vector<String> explodedList;
+	vector<NacosString> explodedList;
 	ParamUtils::Explode(explodedList, changedKeyList, Constants::LINE_SEPARATOR);
 
 	//If the server returns a string with a trailing \x01, actually there is no data after that
@@ -173,7 +173,7 @@ void ClientWorker::stopListening()
 
 void ClientWorker::addListener(const Cachedata &cachedata)
 {
-	String key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
+	NacosString key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
 	log_debug("Adding listener with key: %s\n", key.c_str());
 	pthread_mutex_lock(&watchListMutex);
 
@@ -195,9 +195,9 @@ void ClientWorker::addListener(const Cachedata &cachedata)
 
 void ClientWorker::removeListener(const Cachedata &cachedata)
 {
-	String key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
+	NacosString key = GroupKey::getKeyTenant(cachedata.dataId, cachedata.group, cachedata.tenant);
 	pthread_mutex_lock(&watchListMutex);
-	map<String, Cachedata *>::iterator it = watchList.find(key);
+	map<NacosString, Cachedata *>::iterator it = watchList.find(key);
 	//Check whether the cachedata being removed exists
 	if (it == watchList.end())
 	{
@@ -213,11 +213,11 @@ void ClientWorker::removeListener(const Cachedata &cachedata)
 	pthread_mutex_unlock(&watchListMutex);
 }
 
-String ClientWorker::checkListenedKeys()
+NacosString ClientWorker::checkListenedKeys()
 {
-	String postData;
+	NacosString postData;
 	pthread_mutex_lock(&watchListMutex);
-	for (map<String, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
+	for (map<NacosString, Cachedata *>::iterator it = watchList.begin(); it != watchList.end(); it++)
 	{
 		Cachedata *curCachedata = it->second;
 
@@ -241,8 +241,8 @@ String ClientWorker::checkListenedKeys()
 	}
 	pthread_mutex_unlock(&watchListMutex);
 
-	list<String> headers;
-	list<String> paramValues;
+	list<NacosString> headers;
+	list<NacosString> paramValues;
 
 	//TODO:put it into constants list
 	long timeout = 30000;
@@ -256,7 +256,7 @@ String ClientWorker::checkListenedKeys()
 
 	//Get the request url
 	//TODO:move /listener to constant
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH + "/listener";
+	NacosString url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH + "/listener";
 	HttpResult res;
 
 	//TODO:constant for 30 * 1000
@@ -267,7 +267,7 @@ String ClientWorker::checkListenedKeys()
 	catch (NetworkException e)
 	{
 		log_warn("Request failed with: %s\n", e.what());
-		String result = "";
+		NacosString result = "";
 		return result;
 	}
 
@@ -278,25 +278,25 @@ String ClientWorker::checkListenedKeys()
 void ClientWorker::performWatch()
 {
 	MD5 md5;
-	String changedData = checkListenedKeys();
-	vector<String> changedList = ClientWorker::parseListenedKeys(changedData);
+	NacosString changedData = checkListenedKeys();
+	vector<NacosString> changedList = ClientWorker::parseListenedKeys(changedData);
 	pthread_mutex_lock(&watchListMutex);
-	for (std::vector<String>::iterator it = changedList.begin(); it != changedList.end(); it++)
+	for (std::vector<NacosString>::iterator it = changedList.begin(); it != changedList.end(); it++)
 	{
-		String dataId, group, tenant;
+		NacosString dataId, group, tenant;
 		ParamUtils::parseString2KeyGroupTenant(*it, dataId, group, tenant);
 		log_debug("Processing item:%s, dataId = %s, group = %s, tenant = %s\n",
 					it->c_str(), dataId.c_str(), group.c_str(), tenant.c_str());
 		
-		String key = GroupKey::getKeyTenant(dataId, group, tenant);
-		map<String, Cachedata *>::iterator cacheDataIt = watchList.find(key);
+		NacosString key = GroupKey::getKeyTenant(dataId, group, tenant);
+		map<NacosString, Cachedata *>::iterator cacheDataIt = watchList.find(key);
 		//check whether the data being watched still exists
 		if (cacheDataIt != watchList.end())
 		{
 			log_debug("Found entry for:%s\n", key.c_str());
 			Cachedata *cachedq = cacheDataIt->second;
 			//TODO:Constant
-			String updatedcontent = getServerConfig(cachedq->tenant, cachedq->dataId, cachedq->group, 3000);
+			NacosString updatedcontent = getServerConfig(cachedq->tenant, cachedq->dataId, cachedq->group, 3000);
 			log_debug("Data fetched from the server: %s\n", updatedcontent.c_str());
 			md5.reset();
 			md5.update(updatedcontent.c_str());

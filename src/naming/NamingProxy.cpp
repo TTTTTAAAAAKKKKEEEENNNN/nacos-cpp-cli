@@ -12,7 +12,7 @@
 
 using namespace std;
 
-NamingProxy::NamingProxy(HTTPCli *httpcli, const String &_namespaceId, const String &_endpoint, const String &_serverList)
+NamingProxy::NamingProxy(HTTPCli *httpcli, const NacosString &_namespaceId, const NacosString &_endpoint, const NacosString &_serverList)
 {
 	log_debug("NamingProxy Constructor:\n"
 		"namespace:%s, endpoint:%s, Servers:%s\n",
@@ -34,63 +34,63 @@ NamingProxy::~NamingProxy()
 	httpCli = NULL;
 }
 
-void NamingProxy::registerService(const String &serviceName, const String &groupName, Instance instance) throw (NacosException)
+void NamingProxy::registerService(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException)
 {
 	log_info("[REGISTER-SERVICE] %s registering service %s with instance: %s\n",
 	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
 
-	map<String, String> params;
+	map<NacosString, NacosString> params;
 	params[CommonParams::NAMESPACE_ID] = namespaceId;
 	params[CommonParams::SERVICE_NAME] = serviceName;
 	params[CommonParams::GROUP_NAME] = groupName;
 	params[CommonParams::CLUSTER_NAME] = instance.clusterName;
 	params["ip"] = instance.ip;
-	params["port"] = NacosString::valueOf(instance.port);
-	params["weight"] = NacosString::valueOf(instance.weight);
-	params["enable"] = NacosString::valueOf(instance.enabled);
-	params["healthy"] = NacosString::valueOf(instance.healthy);
-	params["ephemeral"] = NacosString::valueOf(instance.ephemeral);
+	params["port"] = NacosStringOps::valueOf(instance.port);
+	params["weight"] = NacosStringOps::valueOf(instance.weight);
+	params["enable"] = NacosStringOps::valueOf(instance.enabled);
+	params["healthy"] = NacosStringOps::valueOf(instance.healthy);
+	params["ephemeral"] = NacosStringOps::valueOf(instance.ephemeral);
 	//TODO:transfer metadata in JSON form
 	//params["metadata"] = JSON.toJSONString(instance.getMetadata()));
 
 	reqAPI(UtilAndComs::NACOS_URL_INSTANCE, params, HTTPCli::POST);
 }
 
-void NamingProxy::deregisterService(const String &serviceName, Instance instance) throw (NacosException)
+void NamingProxy::deregisterService(const NacosString &serviceName, Instance instance) throw (NacosException)
 {
 	log_info("[DEREGISTER-SERVICE] %s deregistering service %s with instance: %s\n",
 	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
 
-	map<String, String> params;
+	map<NacosString, NacosString> params;
 	params[CommonParams::NAMESPACE_ID] = namespaceId;
 	params[CommonParams::SERVICE_NAME] = serviceName;
 	params[CommonParams::CLUSTER_NAME] = instance.clusterName;
 	params["ip"] = instance.ip;
-	params["port"] = NacosString::valueOf(instance.port);
-	params["ephemeral"] = NacosString::valueOf(instance.ephemeral);
+	params["port"] = NacosStringOps::valueOf(instance.port);
+	params["ephemeral"] = NacosStringOps::valueOf(instance.ephemeral);
 
 	reqAPI(UtilAndComs::NACOS_URL_INSTANCE, params, HTTPCli::DELETE);
 }
 
-String NamingProxy::queryList(const String &serviceName, const String &clusters, int udpPort, bool healthyOnly) throw (NacosException)
+NacosString NamingProxy::queryList(const NacosString &serviceName, const NacosString &clusters, int udpPort, bool healthyOnly) throw (NacosException)
 {
-    map<String, String> params;
+    map<NacosString, NacosString> params;
     params[CommonParams::NAMESPACE_ID] = namespaceId;
     params[CommonParams::SERVICE_NAME] = serviceName;
     params["clusters"] = clusters;
-    params["udpPort"] = NacosString::valueOf(udpPort);
+    params["udpPort"] = NacosStringOps::valueOf(udpPort);
     params["clientIP"] = NetUtils::localIP();
-    params["healthyOnly"] = NacosString::valueOf(healthyOnly);
+    params["healthyOnly"] = NacosStringOps::valueOf(healthyOnly);
 
     return reqAPI(UtilAndComs::NACOS_URL_BASE + "/instance/list", params, HTTPCli::GET);
 }
 
-String NamingProxy::reqAPI(const String &api, map<String, String> &params, int method) throw (NacosException)
+NacosString NamingProxy::reqAPI(const NacosString &api, map<NacosString, NacosString> &params, int method) throw (NacosException)
 {
     return reqAPI(api, params, serverList, method);
 }
 
-String NamingProxy::reqAPI(const String &api, map<String, String> &params, list<String> &servers, int method) throw (NacosException)
+NacosString NamingProxy::reqAPI(const NacosString &api, map<NacosString, NacosString> &params, list<NacosString> &servers, int method) throw (NacosException)
 {
 	params[CommonParams::NAMESPACE_ID] = getNamespaceId();
 
@@ -99,7 +99,7 @@ String NamingProxy::reqAPI(const String &api, map<String, String> &params, list<
 		throw NacosException(0, "no server available");
 	}
 
-	String errmsg;
+	NacosString errmsg;
 	if (!servers.empty())
 	{
 		size_t maxSvrSlot = servers.size();
@@ -110,7 +110,7 @@ String NamingProxy::reqAPI(const String &api, map<String, String> &params, list<
 
 		for (size_t i = 0; i < servers.size(); i++)
 		{
-			String server = ParamUtils::getNthElem(servers, selectedServer);
+			NacosString server = ParamUtils::getNthElem(servers, selectedServer);
 			log_debug("Trying to access server:%s\n", server.c_str());
 			try
 			{
@@ -150,25 +150,25 @@ String NamingProxy::reqAPI(const String &api, map<String, String> &params, list<
 	throw NacosException(0, "failed to req API:/api/" + api + " after all servers(" + ParamUtils::Implode(servers) + ") tried: " + errmsg);
 }
 
-String NamingProxy::callServer
+NacosString NamingProxy::callServer
 (
-	const String &api,
-	map<String, String> &params,
-	const String &curServer
+	const NacosString &api,
+	map<NacosString, NacosString> &params,
+	const NacosString &curServer
 ) throw (NacosException)
 {
 	return callServer(api, params, nacosDomain, HTTPCli::GET);
 }
 
-String NamingProxy::callServer
+NacosString NamingProxy::callServer
 (
-	const String &api,
-	map<String, String> &params,
-	const String &curServer,
+	const NacosString &api,
+	map<NacosString, NacosString> &params,
+	const NacosString &curServer,
 	int method
 ) throw (NacosException)
 {
-	String requestUrl;
+	NacosString requestUrl;
 	//Current server address doesn't have SERVER_ADDR_IP_SPLITER, which means
 	if (!ParamUtils::contains(curServer, UtilAndComs::SERVER_ADDR_IP_SPLITER))
 	{
@@ -182,7 +182,7 @@ String NamingProxy::callServer
 	requestUrl = HTTPCli::getPrefix() + requestUrl + api;
 
 	HttpResult requestRes;
-	list<String> headers;
+	list<NacosString> headers;
 	headers = builderHeaders();
 	switch (method)
 	{
@@ -208,17 +208,17 @@ String NamingProxy::callServer
 	}
 	//TODO:Metrics & Monitoring
 
-	throw NacosException(NacosException::SERVER_ERROR, "failed to req API:" + requestUrl + " code:" + NacosString::valueOf(requestRes.code) + " errormsg:" + requestRes.content);
+	throw NacosException(NacosException::SERVER_ERROR, "failed to req API:" + requestUrl + " code:" + NacosStringOps::valueOf(requestRes.code) + " errormsg:" + requestRes.content);
 }
 
-String NamingProxy::getNamespaceId()
+NacosString NamingProxy::getNamespaceId()
 {
 	return namespaceId;
 }
 
-list<String> NamingProxy::builderHeaders()
+list<NacosString> NamingProxy::builderHeaders()
 {
-	list<String> headers;
+	list<NacosString> headers;
 	headers.push_back("Client-Version");
 	headers.push_back(UtilAndComs::VERSION);
 
@@ -237,4 +237,27 @@ list<String> NamingProxy::builderHeaders()
 	headers.push_back("Request-Module");
 	headers.push_back("Naming");
 	return headers;
+}
+
+long NamingProxy::sendBeat(BeatInfo &beatInfo)
+{
+	/*try
+	{
+		log_info("[BEAT] %s sending beat to server: %s", namespaceId.c_str(), beatInfo.toString());
+		map<NacosString, NacosString> params;
+		params["beat"] JSON.toJSONString(beatInfo));
+		params[CommonParams::NAMESPACE_ID] = namespaceId;
+		params[CommonParams::SERVICE_NAME] = beatInfo.serviceName;
+		NacosString result = reqAPI(UtilAndComs::NACOS_URL_BASE + "/instance/beat", params, HTTPCli::PUT);
+		JSONObject jsonObject = JSON.parseObject(result);
+
+		if (jsonObject != null) {
+			return jsonObject.getLong("clientBeatInterval");
+		}
+	}
+	catch (exception e)
+	{
+		//log_error("[CLIENT-BEAT] failed to send beat: " + JSON.toJSONString(beatInfo), e);
+	}*/
+	return 0L;
 }

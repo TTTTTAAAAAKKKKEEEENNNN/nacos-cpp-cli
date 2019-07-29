@@ -13,11 +13,11 @@ using namespace std;
 class KeyChangeListener : public Listener
 {
 private:
-	String key;
+	NacosString key;
 public:
-	void setKey(const String &_key) {key = _key;};
-	String getKey() const {return key;};
-	void receiveConfigInfo(const String &configInfo)
+	void setKey(const NacosString &_key) {key = _key;};
+	NacosString getKey() const {return key;};
+	void receiveConfigInfo(const NacosString &configInfo)
 	{
 		cout << "in receiveConfigInfo: " << key << " changed to " << configInfo << endl;
 	}

@@ -5,7 +5,7 @@
 class Listener
 {
 public:
-	virtual void receiveConfigInfo(const String &configInfo) = 0;
+	virtual void receiveConfigInfo(const NacosString &configInfo) = 0;
 	virtual ~Listener() {};
 };
 

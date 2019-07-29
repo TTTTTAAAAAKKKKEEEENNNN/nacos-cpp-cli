@@ -48,10 +48,10 @@ NacosConfigService::~NacosConfigService()
 	}
 }
 
-String NacosConfigService::getConfig
+NacosString NacosConfigService::getConfig
 (
-	const String &dataId,
-	const String &group,
+	const NacosString &dataId,
+	const NacosString &group,
 	long timeoutMs
 ) throw(NacosException)
 {
@@ -60,9 +60,9 @@ String NacosConfigService::getConfig
 
 bool NacosConfigService::publishConfig
 (
-	const String &dataId,
-	const String &group,
-	const String &content
+	const NacosString &dataId,
+	const NacosString &group,
+	const NacosString &content
 ) throw (NacosException)
 {
 	return publishConfigInner(namesp, dataId, group, NULLSTR, NULLSTR, NULLSTR, content);
@@ -70,18 +70,18 @@ bool NacosConfigService::publishConfig
 	
 bool NacosConfigService::removeConfig
 (
-	const String &dataId,
-	const String &group
+	const NacosString &dataId,
+	const NacosString &group
 ) throw (NacosException)
 {
 	return removeConfigInner(namesp, dataId, group, NULLSTR);
 }
 
-String NacosConfigService::getConfigInner
+NacosString NacosConfigService::getConfigInner
 (
-	const String &tenant,
-	const String &dataId,
-	const String &group,
+	const NacosString &tenant,
+	const NacosString &dataId,
+	const NacosString &group,
 	long timeoutMs
 ) throw (NacosException)
 {
@@ -90,23 +90,23 @@ String NacosConfigService::getConfigInner
 
 bool NacosConfigService::removeConfigInner
 (
-	const String &tenant,
-	const String &dataId,
-	const String &group,
-	const String &tag
+	const NacosString &tenant,
+	const NacosString &dataId,
+	const NacosString &group,
+	const NacosString &tag
 ) throw (NacosException)
 {
-	std::list<String> headers;
-	std::list<String> paramValues;
+	std::list<NacosString> headers;
+	std::list<NacosString> paramValues;
 	//Get the request url
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	NacosString url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
 	
 	HttpResult res;
 	
 	paramValues.push_back("dataId");
 	paramValues.push_back(dataId);
 	
-	String parmGroupid = ParamUtils::null2defaultGroup(group);
+	NacosString parmGroupid = ParamUtils::null2defaultGroup(group);
 	paramValues.push_back("group");
 	paramValues.push_back(parmGroupid);
 	
@@ -139,23 +139,23 @@ bool NacosConfigService::removeConfigInner
 
 bool NacosConfigService::publishConfigInner
 (
-	const String &tenant,
-	const String &dataId,
-	const String &group,
-	const String &tag,
-	const String &appName,
-	const String &betaIps,
-	const String &content
+	const NacosString &tenant,
+	const NacosString &dataId,
+	const NacosString &group,
+	const NacosString &tag,
+	const NacosString &appName,
+	const NacosString &betaIps,
+	const NacosString &content
 ) throw (NacosException)
 {
 	//TODO:More stringent check, need to improve checkParam() function
 	ParamUtils::checkParam(dataId, group, content);
 
-	std::list<String> headers;
-	std::list<String> paramValues;
-	String parmGroupid;
+	std::list<NacosString> headers;
+	std::list<NacosString> paramValues;
+	NacosString parmGroupid;
 	//Get the request url
-	String url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
+	NacosString url = DEFAULT_CONTEXT_PATH + Constants::CONFIG_CONTROLLER_PATH;
 
 	HttpResult res;
 
@@ -217,8 +217,8 @@ bool NacosConfigService::publishConfigInner
 
 void NacosConfigService::addListener
 (
-	const String &dataId,
-	const String &group,
+	const NacosString &dataId,
+	const NacosString &group,
 	Listener *listener
 ) throw(NacosException)
 {
@@ -226,7 +226,7 @@ void NacosConfigService::addListener
 	cachedata.tenant = namesp;
 	cachedata.dataId = dataId;
 	//TODO:give a constant to this hard-coded number
-	String cfgcontent = getConfig(dataId, group, 3000);
+	NacosString cfgcontent = getConfig(dataId, group, 3000);
 	if (!isNull(group))
 	{
 		cachedata.group = group;

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-String ServerHttpAgent::getEncode() const
+NacosString ServerHttpAgent::getEncode() const
 {
 	return encoding;
 }
@@ -12,7 +12,7 @@ String ServerHttpAgent::getEncode() const
 ServerHttpAgent::ServerHttpAgent
 (
 	HTTPCli *httpcli,
-	const String &_encoding,
+	const NacosString &_encoding,
 	ServerListManager *_svrListMgr
 )
 {
@@ -24,9 +24,9 @@ ServerHttpAgent::ServerHttpAgent
 ServerHttpAgent::ServerHttpAgent
 (
 	HTTPCli *httpcli,
-	const String &_encoding,
+	const NacosString &_encoding,
 	ServerListManager *_svrListMgr,
-	const String &_namesp
+	const NacosString &_namesp
 )
 {
 	encoding = _encoding;
@@ -37,16 +37,16 @@ ServerHttpAgent::ServerHttpAgent
 
 HttpResult ServerHttpAgent::httpGet
 (
-	const String &path,
-	std::list<String> &headers,
-	std::list<String> &paramValues,
-	const String &_encoding,
+	const NacosString &path,
+	std::list<NacosString> &headers,
+	std::list<NacosString> &paramValues,
+	const NacosString &_encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String serverAddr = svrListMgr->getCurrentServerAddr();
+	NacosString serverAddr = svrListMgr->getCurrentServerAddr();
 
-	String url = serverAddr + "/" + path;
+	NacosString url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpGet Assembled URL:%s\n", url.c_str());
 
@@ -56,16 +56,16 @@ HttpResult ServerHttpAgent::httpGet
 
 HttpResult ServerHttpAgent::httpDelete
 (
-	const String &path,
-	std::list<String> &headers,
-	std::list<String> &paramValues,
-	const String &_encoding,
+	const NacosString &path,
+	std::list<NacosString> &headers,
+	std::list<NacosString> &paramValues,
+	const NacosString &_encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String serverAddr = svrListMgr->getCurrentServerAddr();
+	NacosString serverAddr = svrListMgr->getCurrentServerAddr();
 
-	String url = serverAddr + "/" + path;
+	NacosString url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpDelete Assembled URL:%s\n", url.c_str());
 
@@ -75,16 +75,16 @@ HttpResult ServerHttpAgent::httpDelete
 
 HttpResult ServerHttpAgent::httpPost
 (
-	const String &path,
-	std::list<String> &headers,
-	std::list<String> &paramValues,
-	const String &_encoding,
+	const NacosString &path,
+	std::list<NacosString> &headers,
+	std::list<NacosString> &paramValues,
+	const NacosString &_encoding,
 	long readTimeoutMs
 ) throw (NetworkException)
 {
-	String serverAddr = svrListMgr->getCurrentServerAddr();
+	NacosString serverAddr = svrListMgr->getCurrentServerAddr();
 
-	String url = serverAddr + "/" + path;
+	NacosString url = serverAddr + "/" + path;
 	HttpResult res;
 	log_debug("httpPost Assembled URL:%s\n", url.c_str());
 

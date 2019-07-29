@@ -10,12 +10,12 @@ public:
 	/**
 	* unique id of this instance.
 	*/
-	String instanceId;
+	NacosString instanceId;
 
 	/**
 	* instance ip
 	*/
-	String ip;
+	NacosString ip;
 
 	/**
 	* instance port
@@ -47,19 +47,19 @@ public:
 	/**
 	* cluster information of instance
 	*/
-	String clusterName;
+	NacosString clusterName;
 
 	/**
 	* Service information of instance
 	*/
-	String serviceName;
+	NacosString serviceName;
 
 	/**
 	* user extended attributes
 	*/
-	std::map<String, String> metadata;
+	std::map<NacosString, NacosString> metadata;
 
-	String toString();
+	NacosString toString();
 };
 
 #endif

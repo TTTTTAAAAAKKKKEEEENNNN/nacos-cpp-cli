@@ -49,8 +49,8 @@ NacosNamingService::~NacosNamingService()
 
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
-	const String &ip,
+	const NacosString &serviceName,
+	const NacosString &ip,
 	int port
 ) throw (NacosException)
 {
@@ -59,9 +59,9 @@ void NacosNamingService::registerInstance
 
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
-	const String &groupName,
-	const String &ip,
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	const NacosString &ip,
 	int port
 ) throw (NacosException)
 {
@@ -70,10 +70,10 @@ void NacosNamingService::registerInstance
 
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
-	const String &ip,
+	const NacosString &serviceName,
+	const NacosString &ip,
 	int port,
-	const String &clusterName
+	const NacosString &clusterName
 ) throw (NacosException)
 {
 	registerInstance(serviceName, Constants::DEFAULT_GROUP, ip, port, clusterName);
@@ -81,11 +81,11 @@ void NacosNamingService::registerInstance
 
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
-	const String &groupName,
-	const String &ip,
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	const NacosString &ip,
 	int port,
-	const String &clusterName
+	const NacosString &clusterName
 ) throw (NacosException)
 {
 	Instance instance;
@@ -98,7 +98,7 @@ void NacosNamingService::registerInstance
 }
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
+	const NacosString &serviceName,
 	Instance instance
 ) throw (NacosException)
 {
@@ -107,8 +107,8 @@ void NacosNamingService::registerInstance
 
 void NacosNamingService::registerInstance
 (
-	const String &serviceName,
-	const String &groupName,
+	const NacosString &serviceName,
+	const NacosString &groupName,
 	Instance instance
 ) throw (NacosException)
 {
@@ -133,8 +133,8 @@ void NacosNamingService::registerInstance
 
 void NacosNamingService::deregisterInstance
 (
-	const String &serviceName,
-	const String &groupName,
+	const NacosString &serviceName,
+	const NacosString &groupName,
 	Instance instance
 ) throw (NacosException)
 {

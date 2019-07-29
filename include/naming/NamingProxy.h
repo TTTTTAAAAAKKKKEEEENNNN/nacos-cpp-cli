@@ -6,29 +6,31 @@
 #include "NacosExceptions.h"
 #include "http/HTTPCli.h"
 #include "naming/Instance.h"
+#include "naming/BeatInfo.h"
 
 class NamingProxy
 {
 private:
 	HTTPCli *httpCli = NULL;
 	NamingProxy();
-    String reqAPI(const String &api, std::map<String, String> &params, int method) throw (NacosException);
-	String reqAPI(const String &api, std::map<String, String> &params, std::list<String> &servers, int method) throw (NacosException);
-	String callServer(const String &api, std::map<String, String> &params, const String &curServer, int method) throw (NacosException);
-	String callServer(const String &api, std::map<String, String> &params, const String &curServer) throw (NacosException);
-	std::list<String> builderHeaders();
-	String serverPort;
-	String nacosDomain;
-	String namespaceId;
-	String endpoint;
-	std::list<String> serverList;
+    NacosString reqAPI(const NacosString &api, std::map<NacosString, NacosString> &params, int method) throw (NacosException);
+	NacosString reqAPI(const NacosString &api, std::map<NacosString, NacosString> &params, std::list<NacosString> &servers, int method) throw (NacosException);
+	NacosString callServer(const NacosString &api, std::map<NacosString, NacosString> &params, const NacosString &curServer, int method) throw (NacosException);
+	NacosString callServer(const NacosString &api, std::map<NacosString, NacosString> &params, const NacosString &curServer) throw (NacosException);
+	std::list<NacosString> builderHeaders();
+	NacosString serverPort;
+	NacosString nacosDomain;
+	NacosString namespaceId;
+	NacosString endpoint;
+	std::list<NacosString> serverList;
 public:
-	NamingProxy(HTTPCli *httpcli, const String &namespaceId, const String &endpoint, const String &serverList);
+	NamingProxy(HTTPCli *httpcli, const NacosString &namespaceId, const NacosString &endpoint, const NacosString &serverList);
 	~NamingProxy();
-	void registerService(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
-	void deregisterService(const String &serviceName, Instance instance) throw (NacosException);
-    String queryList(const String &serviceName, const String &clusters, int udpPort, bool healthyOnly) throw (NacosException);
-	String getNamespaceId();
+	void registerService(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
+	void deregisterService(const NacosString &serviceName, Instance instance) throw (NacosException);
+    NacosString queryList(const NacosString &serviceName, const NacosString &clusters, int udpPort, bool healthyOnly) throw (NacosException);
+	NacosString getNamespaceId();
+	long sendBeat(BeatInfo &beatInfo);
 };
 
 #endif

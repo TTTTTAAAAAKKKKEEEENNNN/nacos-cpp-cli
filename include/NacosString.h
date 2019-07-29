@@ -2,28 +2,28 @@
 #define __NACOS_STRING_H_
 #include <string>
 #include <sstream>
-#define String std::string
-#define NULLSTR NacosString::nullstr
-#define isNull NacosString::isNullStr
+#define NacosString std::string
+#define NULLSTR NacosStringOps::nullstr
+#define isNull NacosStringOps::isNullStr
 
-class NacosString
+class NacosStringOps
 {
 public:
-	static const String nullstr;
-	static bool isNullStr(const String &str);
+	static const NacosString nullstr;
+	static bool isNullStr(const NacosString &str);
 	template <typename T>
-	static String valueOf(T val)
+	static NacosString valueOf(T val)
 	{
 		std::ostringstream os;
 		if (os << val)
 		{
-			return String(os.str().c_str());
+			return NacosString(os.str().c_str());
 		}
 
 		return NULLSTR;
 	}
-	static const String TRUE;
-	static const String FALSE;
+	static const NacosString TRUE;
+	static const NacosString FALSE;
 };
 
 #endif

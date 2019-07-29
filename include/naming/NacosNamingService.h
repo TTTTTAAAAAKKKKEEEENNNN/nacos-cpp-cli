@@ -14,15 +14,15 @@ private:
     NamingProxy *serverProxy;
     //TODO: add BeatReactor *beatReactor;
 	NacosNamingService();
-	String namesp;
+	NacosString namesp;
 
-	String endpoint;
+	NacosString endpoint;
 
-	String serverList;
+	NacosString serverList;
 
-	String cacheDir;
+	NacosString cacheDir;
 
-	String logName;
+	NacosString logName;
 
 	//HostReactor hostReactor;
 
@@ -33,13 +33,13 @@ private:
 public:
 	NacosNamingService(Properties &props);
 	~NacosNamingService();
-	void registerInstance(const String &serviceName, const String &ip, int port) throw (NacosException);
-	void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port) throw (NacosException);
-	void registerInstance(const String &serviceName, const String &ip, int port, const String &clusterName) throw (NacosException);
-	void registerInstance(const String &serviceName, const String &groupName, const String &ip, int port, const String &clusterName) throw (NacosException);
-	void registerInstance(const String &serviceName, Instance instance) throw (NacosException);
-	void registerInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
-	void deregisterInstance(const String &serviceName, const String &groupName, Instance instance) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &ip, int port) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, Instance instance) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
+	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
 };
 
 #endif

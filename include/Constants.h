@@ -9,51 +9,51 @@
  */
 class Constants {
 public:
-	const static String CLIENT_VERSION;
+	const static NacosString CLIENT_VERSION;
 
 	const static int DATA_IN_BODY_VERSION;
 
-	const static String DEFAULT_GROUP;
+	const static NacosString DEFAULT_GROUP;
 
-	const static String APPNAME;
+	const static NacosString APPNAME;
 
-	const static String UNKNOWN_APP;
+	const static NacosString UNKNOWN_APP;
 
-	const static String DEFAULT_DOMAINNAME;
+	const static NacosString DEFAULT_DOMAINNAME;
 
-	const static String DAILY_DOMAINNAME;
+	const static NacosString DAILY_DOMAINNAME;
 
-	const static String NUL;
+	const static NacosString NUL;
 
-	const static String DATAID;
+	const static NacosString DATAID;
 
-	const static String GROUP;
+	const static NacosString GROUP;
 
-	const static String LAST_MODIFIED;
+	const static NacosString LAST_MODIFIED;
 
-	const static String ACCEPT_ENCODING;
+	const static NacosString ACCEPT_ENCODING;
 
-	const static String CONTENT_ENCODING;
+	const static NacosString CONTENT_ENCODING;
 
-	const static String PROBE_MODIFY_REQUEST;
+	const static NacosString PROBE_MODIFY_REQUEST;
 
-	const static String PROBE_MODIFY_RESPONSE;
+	const static NacosString PROBE_MODIFY_RESPONSE;
 
-	const static String PROBE_MODIFY_RESPONSE_NEW;
+	const static NacosString PROBE_MODIFY_RESPONSE_NEW;
 
-	const static String USE_ZIP;
+	const static NacosString USE_ZIP;
 
-	const static String CONTENT_MD5;
+	const static NacosString CONTENT_MD5;
 
-	const static String CONFIG_VERSION;
+	const static NacosString CONFIG_VERSION;
 
-	const static String IF_MODIFIED_SINCE;
+	const static NacosString IF_MODIFIED_SINCE;
 
-	const static String SPACING_INTERVAL;
+	const static NacosString SPACING_INTERVAL;
 
-	const static String BASE_PATH;
+	const static NacosString BASE_PATH;
 
-	const static String CONFIG_CONTROLLER_PATH;
+	const static NacosString CONFIG_CONTROLLER_PATH;
 
 	/**
 	 * second
@@ -80,9 +80,9 @@ public:
 	 */
 	const static int RECV_WAIT_TIMEOUT;
 
-	const static String ENCODE;
+	const static NacosString ENCODE;
 
-	const static String MAP_FILE;
+	const static NacosString MAP_FILE;
 
 	const static int FLOW_CONTROL_THRESHOLD;
 
@@ -90,33 +90,33 @@ public:
 
 	const static int FLOW_CONTROL_INTERVAL;
 
-	const static String LINE_SEPARATOR;
+	const static NacosString LINE_SEPARATOR;
 
-	const static String WORD_SEPARATOR;
+	const static NacosString WORD_SEPARATOR;
 
-	const static String LONGPOLLING_LINE_SEPARATOR;
+	const static NacosString LONGPOLLING_LINE_SEPARATOR;
 
-	const static String CLIENT_APPNAME_HEADER;
-	const static String CLIENT_REQUEST_TS_HEADER;
-	const static String CLIENT_REQUEST_TOKEN_HEADER;
+	const static NacosString CLIENT_APPNAME_HEADER;
+	const static NacosString CLIENT_REQUEST_TS_HEADER;
+	const static NacosString CLIENT_REQUEST_TOKEN_HEADER;
 
 	const static int ATOMIC_MAX_SIZE;
 
-	const static String NAMING_INSTANCE_ID_SPLITTER;
+	const static NacosString NAMING_INSTANCE_ID_SPLITTER;
 	const static int NAMING_INSTANCE_ID_SEG_COUNT;
-	const static String NAMING_HTTP_HEADER_SPILIER;
+	const static NacosString NAMING_HTTP_HEADER_SPILIER;
 
-	const static String DEFAULT_CLUSTER_NAME;
+	const static NacosString DEFAULT_CLUSTER_NAME;
 
-	const static String DEFAULT_NAMESPACE_ID;
+	const static NacosString DEFAULT_NAMESPACE_ID;
 
 	const static int WRITE_REDIRECT_CODE;
 
-	const static String SERVICE_INFO_SPLITER;
+	const static NacosString SERVICE_INFO_SPLITER;
 
-	const static String NULL_STRING;
+	const static NacosString NULL_STRING;
 
-	const static String FILE_SEPARATOR;
+	const static NacosString FILE_SEPARATOR;
 };
 
 

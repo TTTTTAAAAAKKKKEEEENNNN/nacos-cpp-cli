@@ -8,29 +8,29 @@
 class NamingUtils
 {
 public:
-    static String getGroupedName(const String &serviceName, const String &groupName)
+    static NacosString getGroupedName(const NacosString &serviceName, const NacosString &groupName)
     {
         return groupName + Constants::SERVICE_INFO_SPLITER + serviceName;
     }
 
-    static String getServiceName(const String &serviceNameWithGroup)
+    static NacosString getServiceName(const NacosString &serviceNameWithGroup)
     {
         if (!ParamUtils::contains(serviceNameWithGroup, Constants::SERVICE_INFO_SPLITER))
         {
             return serviceNameWithGroup;
         }
-        std::vector<String> splittedNameNGroup;
+        std::vector<NacosString> splittedNameNGroup;
         ParamUtils::Explode(splittedNameNGroup, serviceNameWithGroup, Constants::SERVICE_INFO_SPLITER);
         return splittedNameNGroup[1];
     }
 
-    static String getGroupName(const String &serviceNameWithGroup)
+    static NacosString getGroupName(const NacosString &serviceNameWithGroup)
     {
         if (!ParamUtils::contains(serviceNameWithGroup, Constants::SERVICE_INFO_SPLITER))
         {
             return Constants::DEFAULT_GROUP;
         }
-        std::vector<String> splittedNameNGroup;
+        std::vector<NacosString> splittedNameNGroup;
         ParamUtils::Explode(splittedNameNGroup, serviceNameWithGroup, Constants::SERVICE_INFO_SPLITER);
         return splittedNameNGroup[0];
     }

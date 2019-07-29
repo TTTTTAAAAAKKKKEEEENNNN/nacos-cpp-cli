@@ -9,10 +9,10 @@ using namespace std;
 bool testNormalHttpRequest()
 {
 	cout << "in function testNormalHttpRequest" << endl;
-	String path = "http://127.0.0.1:8848/nacos/v1/ns/operator/servers";
-	String ENCODING = DEFAULT_ENCODING;
-	std::list<String> headers;
-	std::list<String> paramValues;
+	NacosString path = "http://127.0.0.1:8848/nacos/v1/ns/operator/servers";
+	NacosString ENCODING = DEFAULT_ENCODING;
+	std::list<NacosString> headers;
+	std::list<NacosString> paramValues;
 	HTTPCli httpcli;
 	HttpResult callres;
 	try
@@ -34,7 +34,7 @@ bool testNormalHttpRequest()
 	cout << "Http Request returned with code:" << callres.code << endl;
 	cout << "Headers:" << endl;
 	
-	for (std::map<String, String >::iterator it = callres.headers.begin();
+	for (std::map<NacosString, NacosString >::iterator it = callres.headers.begin();
 		it != callres.headers.end(); ++it)
 	{
 		cout << it->first << ":" << it->second << endl;
@@ -47,10 +47,10 @@ bool testNormalHttpRequest()
 bool testNoServerRequest()
 {
 	cout << "in function testNoServerRequest" << endl;
-	String path = "http://127.0.0.1:9999/nacos/v1/ns/operator/servers";
-	String ENCODING = DEFAULT_ENCODING;
-	std::list<String> headers;
-	std::list<String> paramValues;
+	NacosString path = "http://127.0.0.1:9999/nacos/v1/ns/operator/servers";
+	NacosString ENCODING = DEFAULT_ENCODING;
+	std::list<NacosString> headers;
+	std::list<NacosString> paramValues;
 	HTTPCli httpcli;
 	HttpResult callres;
 	try
@@ -73,7 +73,7 @@ bool testNoServerRequest()
 	cout << "Http Request returned with code:" << callres.code << endl;
 	cout << "Headers:" << endl;
 	
-	for (std::map<String, String >::iterator it = callres.headers.begin();
+	for (std::map<NacosString, NacosString >::iterator it = callres.headers.begin();
 		it != callres.headers.end(); ++it)
 	{
 		cout << it->first << ":" << it->second << endl;

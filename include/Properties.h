@@ -3,7 +3,7 @@
 #include <map>
 #include "NacosString.h"
 
-class Properties : public std::map<String, String>
+class Properties : public std::map<NacosString, NacosString>
 {
 };
 

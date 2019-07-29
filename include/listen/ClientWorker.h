@@ -13,7 +13,7 @@ class ClientWorker
 {
 private:
 	//dataID||group||tenant -> Cachedata* Mapping
-	std::map<String, Cachedata*> watchList;
+	std::map<NacosString, Cachedata*> watchList;
 	pthread_mutex_t watchListMutex;
 	HttpAgent *httpAgent = NULL;
 	//Listener thread related info
@@ -26,8 +26,8 @@ private:
 
 	//You just can't construct a ClientWorker object without any parameter
 	ClientWorker();
-	std::vector<String> parseListenedKeys(const String &ReturnedKeys);
-	String checkListenedKeys();
+	std::vector<NacosString> parseListenedKeys(const NacosString &ReturnedKeys);
+	NacosString checkListenedKeys();
 public:
 	ClientWorker(HttpAgent *_httpAgent);
 	~ClientWorker();
@@ -36,7 +36,7 @@ public:
 	void addListener(const Cachedata &cachedata);
 	void removeListener(const Cachedata &cachedata);
 	void performWatch();
-	String getServerConfig(const String &tenant, const String &dataId, const String &group, long timeoutMs) throw (NacosException);
+	NacosString getServerConfig(const NacosString &tenant, const NacosString &dataId, const NacosString &group, long timeoutMs) throw (NacosException);
 };
 
 #endif

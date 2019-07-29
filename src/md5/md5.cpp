@@ -80,7 +80,7 @@ MD5::MD5(const void* input, size_t length)
 }
 
 /* Construct a MD5 object with a string. */
-MD5::MD5(const String& str)
+MD5::MD5(const NacosString& str)
 {
 	reset();
 	update(str);
@@ -123,7 +123,7 @@ void MD5::update(const void* input, size_t length)
 }
 
 /* Updating the context with a string. */
-void MD5::update(const String& str)
+void MD5::update(const NacosString& str)
 {
 	update((const byte*)str.c_str(), str.length());
 }
@@ -334,9 +334,9 @@ void MD5::decode(const byte* input, uint32* output, size_t length)
 }
 
 /* Convert byte array to hex string. */
-String MD5::bytesToHexString(const byte* input, size_t length)
+NacosString MD5::bytesToHexString(const byte* input, size_t length)
 {
-	String str;
+	NacosString str;
 	str.reserve(length << 1);
 	for (size_t i = 0; i < length; ++i) {
 	   int t = input[i];
@@ -349,6 +349,6 @@ String MD5::bytesToHexString(const byte* input, size_t length)
 }
 
 /* Convert digest to string value */
-String MD5::toString() {
+NacosString MD5::toString() {
 	return bytesToHexString(digest(), 16);
 }

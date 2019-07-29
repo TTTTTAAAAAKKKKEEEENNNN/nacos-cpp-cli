@@ -12,7 +12,7 @@ bool testGetConfig()
 	Properties props;
 	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1:8848";
 	NacosConfigService *n = new NacosConfigService(props);
-	String ss = "";
+	NacosString ss = "";
 	try
 	{
 		ss = n->getConfig("k", NULLSTR, 1000);
@@ -37,7 +37,7 @@ bool testGetConfigwithDefaultPort()
 	Properties props;
 	props[PropertyKeyConst::SERVER_ADDR] = "127.0.0.1";
 	NacosConfigService *n = new NacosConfigService(props);
-	String ss = n->getConfig("k", NULLSTR, 1000);
+	NacosString ss = n->getConfig("k", NULLSTR, 1000);
 	cout << ss << endl;
 
 	ReleaseResource(n);
@@ -50,7 +50,7 @@ bool testInvalidConfig()
 	Properties props;
 	NacosConfigService *n = NULL;
 	
-	String ss;
+	NacosString ss;
 	try
 	{
 		n = new NacosConfigService(props);
@@ -58,7 +58,7 @@ bool testInvalidConfig()
 	}
 	catch (NacosException e)
 	{
-		String errmsgShouldBe = "endpoint is blank";
+		NacosString errmsgShouldBe = "endpoint is blank";
 		if (errmsgShouldBe == e.what())
 		{
 			ReleaseResource(n);

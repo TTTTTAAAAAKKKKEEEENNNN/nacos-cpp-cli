@@ -11,16 +11,16 @@
 class HttpResult {
 public:
 	long code;
-	String content;
-	std::map< String, String > headers;
+	NacosString content;
+	std::map< NacosString, NacosString > headers;
 	CURLcode curlcode;
-	HttpResult(long _code, const String &_content, std::map< String, String > &_headers)
+	HttpResult(long _code, const NacosString &_content, std::map< NacosString, NacosString > &_headers)
 	: code(_code), content(_content)
 	{
 		headers.insert(_headers.begin(), _headers.end());
 	}
 
-	HttpResult(long _code, const String &_content): code(_code), content(_content) {}
+	HttpResult(long _code, const NacosString &_content): code(_code), content(_content) {}
 	HttpResult() { code = -1; content.assign(""); headers.clear(); }
 
 	HttpResult operator = (HttpResult asignee)
@@ -47,81 +47,81 @@ private:
 	static void destroyCurlHandle(void* arg);
 	HttpResult httpGetInternal
 	(
-		const String &path,
-		std::list<String> &headers,
-		const String &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		const NacosString &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpPostInternal
 	(
-		const String &path,
-		std::list<String> &headers,
-		const String &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		const NacosString &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpDeleteInternal
 	(
-		const String &path,
-		std::list<String> &headers,
-		const String &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		const NacosString &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 public:
-	static String encodingParams(std::list<String> &params);
-	static String encodingParams(std::map<String, String> &params);
-	static void assembleHeaders(std::list<String> &assembledHeaders, std::list<String> &headers);
+	static NacosString encodingParams(std::list<NacosString> &params);
+	static NacosString encodingParams(std::map<NacosString, NacosString> &params);
+	static void assembleHeaders(std::list<NacosString> &assembledHeaders, std::list<NacosString> &headers);
 	static void HTTPBasicSettings(CURL *curlHandle);
 	static void HTTP_GLOBAL_INIT();
 	static void HTTP_GLOBAL_DEINIT();
 	HTTPCli();
 	~HTTPCli();
 	HttpResult httpGet(
-		const String &path,
-		std::list<String> &headers,
-		std::list<String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::list<NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpGet(
-		const String &path,
-		std::list<String> &headers,
-		std::map<String, String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::map<NacosString, NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpDelete(
-		const String &path,
-		std::list<String> &headers,
-		std::list<String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::list<NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpDelete(
-		const String &path,
-		std::list<String> &headers,
-		std::map<String, String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::map<NacosString, NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpPost(
-		const String &path,
-		std::list<String> &headers,
-		std::list<String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::list<NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 	HttpResult httpPost(
-		const String &path,
-		std::list<String> &headers,
-		std::map<String, String> &paramValues,
-		const String &encoding,
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::map<NacosString, NacosString> &paramValues,
+		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
 
-	static String getPrefix() { return  "http://"; };//TODO:changeable according to env variable
+	static NacosString getPrefix() { return  "http://"; };//TODO:changeable according to env variable
 	static const int GET = 0;
 	static const int PUT = 1;
 	static const int POST = 3;

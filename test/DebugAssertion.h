@@ -12,7 +12,7 @@ typedef bool (*TESTFN) ();
 
 typedef struct tagTestData
 {
-	String testName;
+	NacosString testName;
 	TESTFN testFn;
 } TestData;
 

@@ -17,7 +17,7 @@ private:
     static bool _isMultiInstance;
 
     /*static {
-        String multiDeploy = System.getProperty("isMultiInstance", "false");
+        NacosString multiDeploy = System.getProperty("isMultiInstance", "false");
         if (TRUE.equals(multiDeploy)) {
             isMultiInstance = true;
         }

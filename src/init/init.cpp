@@ -10,8 +10,8 @@
 
 bool SnapShotSwitch::isSnapShot = true;
 bool JVMUtil::_isMultiInstance = false;
-String LocalConfigInfoProcessor::LOCAL_FILEROOT_PATH = "";
-String LocalConfigInfoProcessor::LOCAL_SNAPSHOT_PATH = "";
+NacosString LocalConfigInfoProcessor::LOCAL_FILEROOT_PATH = "";
+NacosString LocalConfigInfoProcessor::LOCAL_SNAPSHOT_PATH = "";
 
 void Init::doInit()
 {

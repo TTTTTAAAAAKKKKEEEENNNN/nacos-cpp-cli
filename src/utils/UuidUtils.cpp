@@ -1,6 +1,6 @@
 #include "utils/UuidUtils.h"
 
-String UuidUtils::generateUuid()
+NacosString UuidUtils::generateUuid()
 {
 	return "Fake-UUID";//TODO:read a pseudo-random number from /dev/urandom
 }

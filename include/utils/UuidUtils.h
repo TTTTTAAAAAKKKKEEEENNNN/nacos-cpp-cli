@@ -5,7 +5,7 @@
 class UuidUtils
 {
 public:
-    static String generateUuid();
+    static NacosString generateUuid();
 };
 
 #endif

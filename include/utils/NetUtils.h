@@ -5,9 +5,9 @@
 class NetUtils
 {
 private:
-	static String LOCAL_IP;
+	static NacosString LOCAL_IP;
 public:
-    static String localIP();
+    static NacosString localIP();
 	static void Init();
 };
 

@@ -10,10 +10,10 @@ Instance::Instance()
 	ephemeral = true;
 }
 
-String Instance::toString()
+NacosString Instance::toString()
 {
-	return "instanceId:" + instanceId + " ip:" + ip + " port:" + NacosString::valueOf(port) +
-	" weight:" + NacosString::valueOf(weight) + " healthy:" + NacosString::valueOf(healthy) +
-	" enabled:" + NacosString::valueOf(enabled) + " ephemeral:" + NacosString::valueOf(ephemeral) +
+	return "instanceId:" + instanceId + " ip:" + ip + " port:" + NacosStringOps::valueOf(port) +
+	" weight:" + NacosStringOps::valueOf(weight) + " healthy:" + NacosStringOps::valueOf(healthy) +
+	" enabled:" + NacosStringOps::valueOf(enabled) + " ephemeral:" + NacosStringOps::valueOf(ephemeral) +
 	" clusterName:" + clusterName + " serviceName:" + serviceName + " metadata:{" + ParamUtils::Implode(metadata) + "}";
 }

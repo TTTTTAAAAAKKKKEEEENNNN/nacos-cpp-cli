@@ -3,12 +3,12 @@
 #include <sstream>
 #include "NacosString.h"
 
-const String NacosString::nullstr = "";
-const String NacosString::TRUE = "true";
-const String NacosString::FALSE = "false";
+const NacosString NacosStringOps::nullstr = "";
+const NacosString NacosStringOps::TRUE = "true";
+const NacosString NacosStringOps::FALSE = "false";
 
 //Returns true if str refers to nullstr
-bool NacosString::isNullStr(const String &str)
+bool NacosStringOps::isNullStr(const NacosString &str)
 {
 	return (&str == &nullstr) || (str == "");
 }

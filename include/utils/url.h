@@ -2,7 +2,7 @@
 #define __URL_H_
 #include "NacosString.h"
 
-String urlencode(const String & content);
-String urldecode(const String & content);
+NacosString urlencode(const NacosString & content);
+NacosString urldecode(const NacosString & content);
 
 #endif

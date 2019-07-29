@@ -15,9 +15,9 @@
 #include "Constants.h"
 #include "Debug.h"
 
-String LocalConfigInfoProcessor::getFailover(const String &serverName, const String &dataId, const String &group, const String &tenant)
+NacosString LocalConfigInfoProcessor::getFailover(const NacosString &serverName, const NacosString &dataId, const NacosString &group, const NacosString &tenant)
 {
-	String localPath = getFailoverFile(serverName, dataId, group, tenant);
+	NacosString localPath = getFailoverFile(serverName, dataId, group, tenant);
 
 	if (IOUtils::checkNotExistOrNotFile(localPath))
 	{
@@ -36,18 +36,18 @@ String LocalConfigInfoProcessor::getFailover(const String &serverName, const Str
 /**
  * 获取本地缓存文件内容。NULL表示没有本地文件或抛出异常。
  */
-String LocalConfigInfoProcessor::getSnapshot
+NacosString LocalConfigInfoProcessor::getSnapshot
 (
-	const String &name,
-	const String &dataId,
-	const String &group,
-	const String &tenant
+	const NacosString &name,
+	const NacosString &dataId,
+	const NacosString &group,
+	const NacosString &tenant
 )
 {
 	if (!SnapShotSwitch::getIsSnapShot()) {
 		return NULLSTR;
 	}
-	String file = getSnapshotFile(name, dataId, group, tenant);
+	NacosString file = getSnapshotFile(name, dataId, group, tenant);
 	if (IOUtils::checkNotExistOrNotFile(file)) {
 		return NULLSTR;
 	}
@@ -60,7 +60,7 @@ String LocalConfigInfoProcessor::getSnapshot
 	}
 };
 
-String LocalConfigInfoProcessor::readFile(const String &file) throw(IOException)
+NacosString LocalConfigInfoProcessor::readFile(const NacosString &file) throw(IOException)
 {
 	if (IOUtils::checkNotExistOrNotFile(file))
 	{
@@ -77,14 +77,14 @@ String LocalConfigInfoProcessor::readFile(const String &file) throw(IOException)
 	}
 };
 
-void LocalConfigInfoProcessor::saveSnapshot(const String &envName, const String &dataId, const String &group, const String &tenant, const String &config)
+void LocalConfigInfoProcessor::saveSnapshot(const NacosString &envName, const NacosString &dataId, const NacosString &group, const NacosString &tenant, const NacosString &config)
 {
 	if (!SnapShotSwitch::getIsSnapShot())
 	{
 		return;
 	}
 
-	String file = getSnapshotFile(envName, dataId, group, tenant);
+	NacosString file = getSnapshotFile(envName, dataId, group, tenant);
 	if (isNull(config))
 	{
 		int remove_result = remove(file.c_str());
@@ -96,7 +96,7 @@ void LocalConfigInfoProcessor::saveSnapshot(const String &envName, const String 
 	}
 	else
 	{
-		String parentFile = IOUtils::getParentFile(file);
+		NacosString parentFile = IOUtils::getParentFile(file);
 		if (IOUtils::checkNotExistOrNotDir(parentFile))
 		{
 			IOUtils::recursivelyCreate(parentFile);
@@ -121,9 +121,9 @@ void LocalConfigInfoProcessor::saveSnapshot(const String &envName, const String 
  */
 void LocalConfigInfoProcessor::cleanAllSnapshot()
 {
-	std::list<String> rootFile = IOUtils::listFiles(LOCAL_SNAPSHOT_PATH);
+	std::list<NacosString> rootFile = IOUtils::listFiles(LOCAL_SNAPSHOT_PATH);
 
-	for (std::list<String>::iterator it = rootFile.begin(); it != rootFile.end(); it++)
+	for (std::list<NacosString>::iterator it = rootFile.begin(); it != rootFile.end(); it++)
 	{
 		//endsWith("_nacos")
 		if (it->length() >= 6 && (it->rfind("_nacos") == it->length() - 6))
@@ -134,20 +134,20 @@ void LocalConfigInfoProcessor::cleanAllSnapshot()
 	//LOGGER.error("clean all snapshot error, " + ioe.toString(), ioe);
 };
 
-void LocalConfigInfoProcessor::cleanEnvSnapshot(const String &envName)
+void LocalConfigInfoProcessor::cleanEnvSnapshot(const NacosString &envName)
 {
-	String tmp = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
+	NacosString tmp = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
 	tmp += "/snapshot";
 	//I think we should remove -tenant also, so for one envname, cache for all tenants within the environment will be purged
-	String tmp_tenant = tmp + "-tenant";
+	NacosString tmp_tenant = tmp + "-tenant";
 	IOUtils::cleanDirectory(tmp);
 	IOUtils::cleanDirectory(tmp_tenant);
 	log_info("success delete %s-snapshot: %s\n", envName.c_str(), tmp.c_str());
 };
 
-String LocalConfigInfoProcessor::getFailoverFile(const String &serverName, const String &dataId, const String &group, const String &tenant)
+NacosString LocalConfigInfoProcessor::getFailoverFile(const NacosString &serverName, const NacosString &dataId, const NacosString &group, const NacosString &tenant)
 {
-	String Failoverfile = LOCAL_SNAPSHOT_PATH + "/" + serverName + "_nacos";
+	NacosString Failoverfile = LOCAL_SNAPSHOT_PATH + "/" + serverName + "_nacos";
 	Failoverfile += "/data";
 	if (ParamUtils::isBlank(tenant)) {
 		Failoverfile += "/config-data";
@@ -159,9 +159,9 @@ String LocalConfigInfoProcessor::getFailoverFile(const String &serverName, const
 	return Failoverfile;
 };
 
-String LocalConfigInfoProcessor::getSnapshotFile(const String &envName, const String &dataId, const String &group, const String &tenant)
+NacosString LocalConfigInfoProcessor::getSnapshotFile(const NacosString &envName, const NacosString &dataId, const NacosString &group, const NacosString &tenant)
 {
-	String filename = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
+	NacosString filename = LOCAL_SNAPSHOT_PATH + "/" + envName + "_nacos";
 	if (isNull(tenant)) {
 		filename += "/snapshot";
 	} else {
@@ -182,7 +182,7 @@ void LocalConfigInfoProcessor::init()
 		+ "nacos" + File.separator + "config";*/
 
 	struct passwd *pw = getpwuid(getuid());
-	String homedir = pw->pw_dir;
+	NacosString homedir = pw->pw_dir;
 	LOCAL_FILEROOT_PATH = homedir + Constants::FILE_SEPARATOR + "nacos" + Constants::FILE_SEPARATOR + "config";
 	LOCAL_SNAPSHOT_PATH = homedir + Constants::FILE_SEPARATOR + "nacos" + Constants::FILE_SEPARATOR + "config";
 	log_info("LOCAL_SNAPSHOT_PATH:%s\n", LOCAL_SNAPSHOT_PATH.c_str());
