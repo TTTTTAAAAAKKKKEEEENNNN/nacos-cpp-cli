@@ -6,6 +6,7 @@
 #include "utils/UtilAndComs.h"
 #include "utils/UuidUtils.h"
 #include "utils/NetUtils.h"
+#include "json/JSON.h"
 #include "http/httpStatCode.h"
 #include "Debug.h"
 #include "NacosExceptions.h"
@@ -241,23 +242,24 @@ list<NacosString> NamingProxy::builderHeaders()
 
 long NamingProxy::sendBeat(BeatInfo &beatInfo)
 {
-	/*try
+	try
 	{
 		log_info("[BEAT] %s sending beat to server: %s", namespaceId.c_str(), beatInfo.toString());
 		map<NacosString, NacosString> params;
-		params["beat"] JSON.toJSONString(beatInfo));
+		params["beat"] = JSON::toJSONString(beatInfo);
 		params[CommonParams::NAMESPACE_ID] = namespaceId;
 		params[CommonParams::SERVICE_NAME] = beatInfo.serviceName;
 		NacosString result = reqAPI(UtilAndComs::NACOS_URL_BASE + "/instance/beat", params, HTTPCli::PUT);
-		JSONObject jsonObject = JSON.parseObject(result);
+		//JSONObject jsonObject = JSON.parseObject(result);
 
-		if (jsonObject != null) {
-			return jsonObject.getLong("clientBeatInterval");
+		if (!isNull(result))
+		{
+			return JSON::getLong(result, "clientBeatInterval");
 		}
 	}
 	catch (exception e)
 	{
-		//log_error("[CLIENT-BEAT] failed to send beat: " + JSON.toJSONString(beatInfo), e);
-	}*/
+		log_error("[CLIENT-BEAT] failed to send beat: %s e:%s" + JSON::toJSONString(beatInfo).c_str(), e.what());
+	}
 	return 0L;
 }

@@ -31,6 +31,7 @@ bool testURLEncodeAndDecode();
 bool testStringExplode();
 bool testNamingProxySmokeTest();
 bool testNamingServiceRegister();
+bool testRapidJsonIntroduce();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -60,11 +61,12 @@ TEST_ITEM("Test urlencode/urldecode of libcurl", testURLEncodeAndDecode)
 TEST_ITEM("Test explode function", testStringExplode)
 TEST_ITEM("Test Listener function for nacos", testAddListener)
 TEST_ITEM("Test basic function of NamingProxy's registerService", testNamingProxySmokeTest)
+TEST_ITEM("Test basic function of NacosNamingService's registerService", testNamingServiceRegister)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Test basic function of NacosNamingService's registerService", testNamingServiceRegister)
+TEST_ITEM("Check whether rapidjson is introduced into the project successfully", testRapidJsonIntroduce)
 TEST_ITEM_END
 
 int main()
