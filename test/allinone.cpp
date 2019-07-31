@@ -32,6 +32,7 @@ bool testStringExplode();
 bool testNamingProxySmokeTest();
 bool testNamingServiceRegister();
 bool testRapidJsonIntroduce();
+bool testSerialize();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -67,6 +68,7 @@ TEST_ITEM_END
 TestData testList[] =
 TEST_ITEM_START
 TEST_ITEM("Check whether rapidjson is introduced into the project successfully", testRapidJsonIntroduce)
+TEST_ITEM("Check if the serialization succeeds", testSerialize)
 TEST_ITEM_END
 
 int main()

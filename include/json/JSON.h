@@ -14,7 +14,7 @@ class JSON {
 public:
 	static NacosString toJSONString(BeatInfo &beatInfo);
 	static NacosString toJSONString(std::map<NacosString, NacosString> &mapinfo);
-	static long getLong(NacosString &jsonString, NacosString &fieldname);
+	static long getLong(const NacosString &jsonString, const NacosString &fieldname);
 };
 
 

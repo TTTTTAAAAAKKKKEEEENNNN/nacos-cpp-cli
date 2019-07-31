@@ -11,19 +11,20 @@ class NacosStringOps
 public:
 	static const NacosString nullstr;
 	static bool isNullStr(const NacosString &str);
-	template <typename T>
-	static NacosString valueOf(T val)
-	{
-		std::ostringstream os;
-		if (os << val)
-		{
-			return NacosString(os.str().c_str());
-		}
-
-		return NULLSTR;
-	}
+	template <typename T> static NacosString valueOf(T val);
 	static const NacosString TRUE;
 	static const NacosString FALSE;
 };
 
+template <typename T>
+NacosString NacosStringOps::valueOf(T val)
+{
+	std::ostringstream os;
+	if (os << val)
+	{
+		return NacosString(os.str().c_str());
+	}
+
+	return NULLSTR;
+}
 #endif

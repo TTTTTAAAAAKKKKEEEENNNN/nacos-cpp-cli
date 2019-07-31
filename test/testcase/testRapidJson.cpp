@@ -1,8 +1,10 @@
+#include <iostream>
 #include "DebugAssertion.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
-#include <iostream>
+#include "naming/BeatInfo.h"
+#include "json/JSON.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -28,5 +30,13 @@ bool testRapidJsonIntroduce()
 	Value& s2 = parsedAgain["stars"];
 	int expectedtoBe11 = s2.GetInt();
 	SHOULD_BE_TRUE(expectedtoBe11 == 11, "There should be 11 stars");
+	return true;
+}
+
+bool testSerialize()
+{
+	BeatInfo bi;
+	bi.port = 10;
+	cout << JSON::toJSONString(bi);
 	return true;
 }

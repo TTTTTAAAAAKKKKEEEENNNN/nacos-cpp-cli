@@ -12,3 +12,10 @@ bool NacosStringOps::isNullStr(const NacosString &str)
 {
 	return (&str == &nullstr) || (str == "");
 }
+
+template <>
+NacosString NacosStringOps::valueOf<bool>(bool val)
+{
+	if (val) { return TRUE; }
+	else { return FALSE; }
+}
