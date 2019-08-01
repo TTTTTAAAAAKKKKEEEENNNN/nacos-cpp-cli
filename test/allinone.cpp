@@ -33,6 +33,7 @@ bool testNamingProxySmokeTest();
 bool testNamingServiceRegister();
 bool testRapidJsonIntroduce();
 bool testSerialize();
+bool testThreadSmoke();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -63,12 +64,13 @@ TEST_ITEM("Test explode function", testStringExplode)
 TEST_ITEM("Test Listener function for nacos", testAddListener)
 TEST_ITEM("Test basic function of NamingProxy's registerService", testNamingProxySmokeTest)
 TEST_ITEM("Test basic function of NacosNamingService's registerService", testNamingServiceRegister)
+TEST_ITEM("Check whether rapidjson is introduced into the project successfully", testRapidJsonIntroduce)
+TEST_ITEM("Check if the serialization succeeds", testSerialize)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Check whether rapidjson is introduced into the project successfully", testRapidJsonIntroduce)
-TEST_ITEM("Check if the serialization succeeds", testSerialize)
+TEST_ITEM("Smoke test for Thread", testThreadSmoke)
 TEST_ITEM_END
 
 int main()
