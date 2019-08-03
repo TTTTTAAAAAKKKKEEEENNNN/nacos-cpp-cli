@@ -1,5 +1,6 @@
 #ifndef _ALL_IN_ONE_H_
 #define _ALL_IN_ONE_H_
+#include <stdlib.h>
 #include "http/HTTPCli.h"
 #include "NacosString.h"
 #include "Debug.h"
@@ -7,6 +8,13 @@
 #define TEST_ITEM_START {
 #define TEST_ITEM(testName, testfn) {(testName), (testfn)},
 #define TEST_ITEM_END };
+
+#define NACOS_ASSERT(x) \
+if (!(x)) \
+{ \
+	log_error("Assertion failed!"); \
+	abort(); \
+}
 
 typedef bool (*TESTFN) ();
 
