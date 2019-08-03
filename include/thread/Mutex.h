@@ -4,7 +4,9 @@
 #include <unistd.h>
 /*
 * Mutex.h
-* Thanks to Shuo, Chen's muduo: https://github.com/chenshuo/muduo/blob/master/muduo/base/Mutex.h
+* Author: Liu, Hanyu
+* Thanks to Shuo, Chen's muduo:
+* https://github.com/chenshuo/muduo/blob/master/muduo/base/Mutex.h
 */
 class Mutex
 {
@@ -25,8 +27,8 @@ public:
 		unassignHolder();
 		pthread_mutex_unlock(&_mutex);
 	};
-	pthread_mutex_t *getPthreadMutex() ( return &_mutex; );
-	void assignHolder() { _holder =  gettid(); };
+	pthread_mutex_t *getPthreadMutex() { return &_mutex; };
+	void assignHolder() { _holder = 0; /*gettid();*/ };
 	void unassignHolder() { _holder = 0; };
 };
 
@@ -36,7 +38,7 @@ private:
 	Mutex &_mutex;
 	pthread_cond_t _cond;
 public:
-	Condition(Mutex &mutex) : _mutex(mutex) { pthread_cond_init(&_cond, NULL) };
+	Condition(Mutex &mutex) : _mutex(mutex) { pthread_cond_init(&_cond, NULL); };
 	~Condition() { pthread_cond_destroy(&_cond); };
 	void wait()
 	{
@@ -46,14 +48,18 @@ public:
 	{
 		pthread_cond_signal(&_cond);
 	}
+	void notifyAll()
+	{
+		pthread_cond_broadcast(&_cond);
+	}
 };
 
-class LockGuard()
+class LockGuard
 {
 private:
 	Mutex &_mutex;
 public:
 	LockGuard(Mutex &mutex) : _mutex(mutex) { _mutex.lock(); };
 	~LockGuard() { _mutex.unlock(); };
-}
+};
 #endif
