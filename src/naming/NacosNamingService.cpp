@@ -1,4 +1,5 @@
 #include "naming/NacosNamingService.h"
+#include "naming/beat/BeatReactor.h"
 #include "utils/NamingUtils.h"
 #include "utils/UtilAndComs.h"
 #include "PropertyKeyConst.h"
@@ -30,21 +31,31 @@ NacosNamingService::NacosNamingService(Properties &props)
 	initEndpoint(props);
 	httpCli = new HTTPCli();
 	serverProxy = new NamingProxy(httpCli, namesp, endpoint, serverList);
+	beatReactor = new BeatReactor(serverProxy, 20);
+	beatReactor->start();
 }
 
 NacosNamingService::~NacosNamingService()
 {
-	if (httpCli != NULL)
+	if (beatReactor != NULL)
 	{
-		delete httpCli;
+		delete beatReactor;
 	}
-	httpCli = NULL;
+	beatReactor = NULL;
+
 
 	if (serverProxy != NULL)
 	{
 		delete serverProxy;
 	}
 	serverProxy = NULL;
+
+
+	if (httpCli != NULL)
+	{
+		delete httpCli;
+	}
+	httpCli = NULL;
 }
 
 void NacosNamingService::registerInstance
@@ -114,19 +125,19 @@ void NacosNamingService::registerInstance
 {
 
 	//TODO:use a thread to send heartbeat to config server
-	/*if (instance.isEphemeral())
+	if (instance.ephemeral)
 	{
-		BeatInfo beatInfo = new BeatInfo();
-		beatInfo.setServiceName(NamingUtils.getGroupedName(serviceName, groupName));
-		beatInfo.setIp(instance.getIp());
-		beatInfo.setPort(instance.getPort());
-		beatInfo.setCluster(instance.getClusterName());
-		beatInfo.setWeight(instance.getWeight());
-		beatInfo.setMetadata(instance.getMetadata());
-		beatInfo.setScheduled(false);
+		BeatInfo beatInfo;
+		beatInfo.serviceName = NamingUtils::getGroupedName(serviceName, groupName);
+		beatInfo.ip = instance.ip;
+		beatInfo.port =instance.port;
+		beatInfo.cluster = instance.clusterName;
+		beatInfo.weight = instance.weight;
+		beatInfo.metadata = instance.metadata;
+		beatInfo.scheduled = false;
 
-		beatReactor.addBeatInfo(NamingUtils.getGroupedName(serviceName, groupName), beatInfo);
-	}*/
+		beatReactor->addBeatInfo(NamingUtils::getGroupedName(serviceName, groupName), beatInfo);
+	}
 
 	serverProxy->registerService(NamingUtils::getGroupedName(serviceName, groupName), groupName, instance);
 }
@@ -138,6 +149,6 @@ void NacosNamingService::deregisterInstance
 	Instance instance
 ) throw (NacosException)
 {
-	//TODO:beatReactor->removeBeatInfo(NamingUtils.getGroupedName(serviceName, groupName), instance.getIp(), instance.getPort());
+	beatReactor->removeBeatInfo(NamingUtils::getGroupedName(serviceName, groupName), instance.ip, instance.port);
 	serverProxy->deregisterService(NamingUtils::getGroupedName(serviceName, groupName), instance);
 }

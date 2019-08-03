@@ -3,6 +3,7 @@
 #include "naming/NamingService.h"
 #include "naming/Instance.h"
 #include "naming/NamingProxy.h"
+#include "naming/beat/BeatReactor.h"
 #include "http/HTTPCli.h"
 #include "NacosString.h"
 #include "Properties.h"
@@ -12,7 +13,7 @@ class NacosNamingService : public NamingService
 private:
 	HTTPCli *httpCli;
     NamingProxy *serverProxy;
-    //TODO: add BeatReactor *beatReactor;
+    BeatReactor *beatReactor;
 	NacosNamingService();
 	NacosString namesp;
 

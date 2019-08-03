@@ -6,7 +6,7 @@
 #include "NacosExceptions.h"
 #include "http/HTTPCli.h"
 #include "naming/Instance.h"
-#include "naming/BeatInfo.h"
+#include "naming/beat/BeatInfo.h"
 
 class NamingProxy
 {

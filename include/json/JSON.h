@@ -2,7 +2,10 @@
 #define __JSON_H_
 #include <map>
 #include "NacosString.h"
-#include "naming/BeatInfo.h"
+#include "naming/beat/BeatInfo.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 /**
  * JSON
@@ -14,6 +17,7 @@ class JSON {
 public:
 	static NacosString toJSONString(BeatInfo &beatInfo);
 	static NacosString toJSONString(std::map<NacosString, NacosString> &mapinfo);
+	static void toJSONObject(rapidjson::Value &jsonOb, std::map<NacosString, NacosString> &mapinfo);
 	static long getLong(const NacosString &jsonString, const NacosString &fieldname);
 };
 

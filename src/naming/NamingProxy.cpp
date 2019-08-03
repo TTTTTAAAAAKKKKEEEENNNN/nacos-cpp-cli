@@ -52,7 +52,7 @@ void NamingProxy::registerService(const NacosString &serviceName, const NacosStr
 	params["healthy"] = NacosStringOps::valueOf(instance.healthy);
 	params["ephemeral"] = NacosStringOps::valueOf(instance.ephemeral);
 	//TODO:transfer metadata in JSON form
-	//params["metadata"] = JSON.toJSONString(instance.getMetadata()));
+	params["metadata"] = JSON::toJSONString(instance.metadata);
 
 	reqAPI(UtilAndComs::NACOS_URL_INSTANCE, params, HTTPCli::POST);
 }
@@ -117,15 +117,15 @@ NacosString NamingProxy::reqAPI(const NacosString &api, map<NacosString, NacosSt
 			{
 				return callServer(api, params, server, method);
 			}
-			catch (NacosException e)
+			catch (NacosException &e)
 			{
 				errmsg = e.what();
-				log_error("request %s failed.", server.c_str());
+				log_error("request %s failed.\n", server.c_str());
 			}
-			catch (exception e)
+			catch (exception &e)
 			{
 				errmsg = e.what();
-				log_error("request %s failed.", server.c_str());
+				log_error("request %s failed.\n", server.c_str());
 			}
 
 			selectedServer = (selectedServer + 1) % servers.size();
@@ -141,10 +141,10 @@ NacosString NamingProxy::reqAPI(const NacosString &api, map<NacosString, NacosSt
 		{
 			return callServer(api, params, nacosDomain);
 		}
-		catch (exception e)
+		catch (exception &e)
 		{
 			errmsg = e.what();
-			log_error("[NA] req api:%s failed, server(%s), e = %s", api.c_str(), nacosDomain.c_str(), e.what());
+			log_error("[NA] req api:%s failed, server(%s), e = %s\n", api.c_str(), nacosDomain.c_str(), e.what());
 		}
 	}
 
@@ -189,6 +189,9 @@ NacosString NamingProxy::callServer
 	{
 	case HTTPCli::GET:
 		requestRes = httpCli->httpGet(requestUrl, headers, params, UtilAndComs::ENCODING, 50000);//TODO:change 50000 to a constant
+		break;
+	case HTTPCli::PUT:
+		requestRes = httpCli->httpPut(requestUrl, headers, params, UtilAndComs::ENCODING, 50000);//TODO:change 50000 to a constant
 		break;
 	case HTTPCli::POST:
 		requestRes = httpCli->httpPost(requestUrl, headers, params, UtilAndComs::ENCODING, 50000);//TODO:change 50000 to a constant
@@ -258,10 +261,10 @@ long NamingProxy::sendBeat(BeatInfo &beatInfo)
 			return JSON::getLong(result, "clientBeatInterval");
 		}
 	}
-	catch (exception e)
+	catch (exception &e)
 	{
 		NacosString jsonBeatInfo = JSON::toJSONString(beatInfo);
-		log_error("[CLIENT-BEAT] failed to send beat: %s e:%s", jsonBeatInfo.c_str(), e.what());
+		log_error("[CLIENT-BEAT] failed to send beat: %s e:%s\n", jsonBeatInfo.c_str(), e.what());
 	}
 	return 0L;
 }

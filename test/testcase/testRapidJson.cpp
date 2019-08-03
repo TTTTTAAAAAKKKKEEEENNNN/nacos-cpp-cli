@@ -3,7 +3,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
-#include "naming/BeatInfo.h"
+#include "naming/beat/BeatInfo.h"
 #include "json/JSON.h"
 
 using namespace std;

@@ -123,10 +123,11 @@ bool testNamingServiceRegister()
 	instance.ip = "127.0.0.1";
 	instance.port = 2333;
 	instance.instanceId = "1";
+	instance.ephemeral = true;
 
 	try
 	{
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 40; i++)
 		{
 			NacosString serviceName = "TestNamingService" + NacosStringOps::valueOf(i);
 			
@@ -139,8 +140,9 @@ bool testNamingServiceRegister()
 		ReleaseResource(namingSvc);
 		return false;
 	}
+	NacosString pause;
+	cin >> pause;
 
 	ReleaseResource(namingSvc);
-
 	return true;
 }
