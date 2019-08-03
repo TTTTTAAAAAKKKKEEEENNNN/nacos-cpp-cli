@@ -2,6 +2,7 @@
 #include "naming/beat/BeatReactor.h"
 #include "naming/beat/BeatTask.h"
 #include "NacosString.h"
+#include "DebugAssertion.h"
 
 using namespace std;
 
@@ -57,7 +58,17 @@ void BeatReactor::addBeatInfo(const NacosString &serviceName, BeatInfo &beatInfo
 	log_info("[BEAT] adding beat: %s to beat map.", beatInfoStr.c_str());
 	BeatTask *beattask = new BeatTask(beatInfo, _namingProxy, this);
 	NacosString beatKey = buildKey(serviceName, beatInfo.ip, beatInfo.port);
-	_beatInfoList[beatKey] = beattask;
+	beattask->setTaskName(beatKey);
+	{
+		LockGuard _lockguard(_beatInfoLock);
+		//The specified beatInfo is already in the list
+		if (_beatInfoList.count(beatKey) != 0)
+		{
+			log_warn("Adding already-exist key:%s\n", beatKey.c_str());
+			return;
+		}
+		_beatInfoList[beatKey] = beattask;
+	}
 	//TODO:MetricsMonitor.getDom2BeatSizeMonitor().set(dom2Beat.size());
 }
 
@@ -65,14 +76,40 @@ void BeatReactor::removeBeatInfo(const NacosString &serviceName, const NacosStri
 {
 	log_info("[BEAT] removing beat: %s:%s:%d from beat map.", serviceName.c_str(), ip.c_str(), port);
 	NacosString beatKey = buildKey(serviceName, ip, port);
-	BeatTask *beattask = _beatInfoList[beatKey];
-	_beatInfoList.erase(beatKey);
+	BeatTask *beattask = NULL;
+	{
+		LockGuard _lockguard(_beatInfoLock);
+		//If we can't find the beatInfo in the list, just return
+		if (_beatInfoList.count(beatKey) != 1)
+		{
+			log_warn("Removing non-existent key:%s\n", beatKey.c_str());
+			return;
+		}
+		beattask = _beatInfoList[beatKey];
+		_beatInfoList.erase(beatKey);
+	}
 	int refcount = beattask->decRef();
 	if (refcount == 0)
 	{
+		log_debug("[BEAT]:refCount is 0, deleting the object\n");
 		delete beattask;
 	}
 	//TODO:MetricsMonitor.getDom2BeatSizeMonitor().set(dom2Beat.size());
+}
+
+void BeatReactor::removeAllBeatInfo()
+{
+	LockGuard _lockguard(_beatInfoLock);
+	for (map<NacosString, BeatTask*>::iterator it = _beatInfoList.begin();
+		it != _beatInfoList.end(); it++)
+	{
+		BeatTask *curtask = it->second;
+		NACOS_ASSERT(curtask->getRef() == 1);
+		curtask->decRef();
+		delete curtask;
+		curtask = NULL;
+	}
+	_beatInfoList.clear();
 }
 
 NacosString BeatReactor::buildKey(const NacosString &serviceName, const NacosString &ip, int port)

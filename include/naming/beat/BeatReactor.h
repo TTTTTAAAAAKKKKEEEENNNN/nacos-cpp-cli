@@ -49,6 +49,7 @@ public:
 		delete _threadPool;
 		_threadPool = NULL;
 		_beatMaster = NULL;
+		removeAllBeatInfo();
 	};
 	
 	void start();
@@ -58,6 +59,9 @@ public:
 	void addBeatInfo(const NacosString &serviceName, BeatInfo &beatInfo);
 
 	void removeBeatInfo(const NacosString &serviceName, const NacosString &ip, int port);
+
+	//NOTICE:Should be invoked ONLY when the working threads are ALL STOPPED
+	void removeAllBeatInfo();
 
 	NacosString buildKey(const NacosString &serviceName, const NacosString &ip, int port);
 };

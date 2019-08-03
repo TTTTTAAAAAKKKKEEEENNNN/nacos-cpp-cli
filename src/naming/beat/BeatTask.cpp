@@ -2,6 +2,7 @@
 #include "naming/beat/BeatReactor.h"
 #include "naming/beat/BeatTask.h"
 #include "NacosString.h"
+#include "Debug.h"
 
 using namespace std;
 
@@ -19,6 +20,13 @@ void BeatTask::run()
 	int refcount = decRef();
 	if (refcount == 0)
 	{
+		log_debug("[BeatTask]:refCount is 0, deleting this object\n");
 		delete this;
 	}
+}
+
+BeatTask::~BeatTask()
+{
+	NacosString taskName = getTaskName();
+	log_debug("[BeatTask]Removing taskObject:%s\n", taskName.c_str());
 }

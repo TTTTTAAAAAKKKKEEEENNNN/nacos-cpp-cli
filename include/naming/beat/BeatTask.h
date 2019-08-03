@@ -5,6 +5,7 @@
 #include "naming/beat/BeatReactor.h"
 #include "thread/ThreadPool.h"
 #include "thread/AtomicInt.h"
+#include "Debug.h"
 
 class BeatReactor;
 
@@ -18,10 +19,13 @@ private:
 	bool _scheduled;
 public:
 	BeatTask(BeatInfo &beatInfo, NamingProxy *namingProxy, BeatReactor *beatReactor);
+	~BeatTask();
 
 	int incRef() { return _refCount.inc(); };
 	
 	int decRef()	{ return _refCount.dec(); };
+
+	int getRef() { return _refCount.get(); };
 
 	void run();
 	
