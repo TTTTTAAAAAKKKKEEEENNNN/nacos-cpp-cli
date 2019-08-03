@@ -61,6 +61,14 @@ private:
 		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
+	HttpResult httpPutInternal
+	(
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		const NacosString &paramValues,
+		const NacosString &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
 	HttpResult httpDeleteInternal
 	(
 		const NacosString &path,
@@ -120,7 +128,20 @@ public:
 		const NacosString &encoding,
 		long readTimeoutMs
 	) throw (NetworkException);
-
+	HttpResult httpPut(
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::list<NacosString> &paramValues,
+		const NacosString &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
+	HttpResult httpPut(
+		const NacosString &path,
+		std::list<NacosString> &headers,
+		std::map<NacosString, NacosString> &paramValues,
+		const NacosString &encoding,
+		long readTimeoutMs
+	) throw (NetworkException);
 	static NacosString getPrefix() { return  "http://"; };//TODO:changeable according to env variable
 	static const int GET = 0;
 	static const int PUT = 1;

@@ -380,6 +380,136 @@ HttpResult HTTPCli::httpPostInternal
 	return httpresp;
 }
 
+/*httpPut, put data are passed in list form like this:
+	foo
+	bar
+	bax
+	lol
+We convert it into sth like this:
+	foo=bar&bax=lol
+*/
+HttpResult HTTPCli::httpPut
+(
+	const NacosString &path,
+	list<NacosString> &headers,
+	list<NacosString> &paramValues,
+	const NacosString &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	NacosString parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpPutInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+//httpPut, post data are passed in map form
+HttpResult HTTPCli::httpPut
+(
+	const NacosString &path,
+	list<NacosString> &headers,
+	map<NacosString, NacosString> &paramValues,
+	const NacosString &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	NacosString parmVal;
+	parmVal = encodingParams(paramValues);
+	return httpPutInternal(path, headers, parmVal, encoding, readTimeoutMs);
+}
+
+//Implement of httpPut
+HttpResult HTTPCli::httpPutInternal
+(
+	const NacosString &path,
+	list<NacosString> &headers,
+	const NacosString &paramValues,
+	const NacosString &encoding,
+	long readTimeoutMs
+) throw (NetworkException)
+{
+	CURL *curlHandle = getCurlHandle();
+	CURLcode curlres;
+
+	NacosString Url = path;
+	log_debug("HTTPPUT-Assembled URL with parms:%s\n", Url.c_str());
+
+	/*Headers look like:
+		foo
+		bar
+		bax
+		lol
+	We convert it into sth like with assembleHeaders():
+		foo: bar
+		bax: lol
+	*/
+	list<NacosString> assembledHeaders;
+	assembleHeaders(assembledHeaders, headers);
+
+	log_debug("Put data:%s\n", paramValues.c_str());
+
+	/* specify URL to get */
+	curl_easy_setopt(curlHandle, CURLOPT_URL, Url.c_str());
+
+	curl_easy_setopt(curlHandle, CURLOPT_CUSTOMREQUEST, "PUT");
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDS, paramValues.c_str());
+	curl_easy_setopt(curlHandle, CURLOPT_POSTFIELDSIZE, paramValues.size());
+	//Setup common parameters
+	HTTPBasicSettings(curlHandle);
+
+	NacosString strbuf = "";
+	/* we pass our 'strbuf' struct to the callback function */
+	curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, (void *)&strbuf);
+
+	/* Get response headers from the response */
+	std::map<NacosString, NacosString> respheaders;
+	curl_easy_setopt(curlHandle, CURLOPT_HEADERDATA, (void *)&respheaders);
+
+	//TODO:Time out in a more precise way
+	curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, readTimeoutMs / 1000);
+
+	/*Add the request headers to the request*/
+	struct curl_slist *headerlist = NULL;
+
+	for (list<NacosString>::iterator it = assembledHeaders.begin(); it != assembledHeaders.end(); it++)
+	{
+		headerlist = curl_slist_append(headerlist, it->c_str());
+		log_debug("HTTPPUT-RequestHeaders:%s\n", it->c_str());
+	}
+
+	if (headerlist != NULL)
+	{
+		curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headerlist);
+	}
+
+
+	/* get it! */
+	curlres = curl_easy_perform(curlHandle);
+
+	/*Since the headerlist is not needed anymore, free it to prevent mem leak*/
+	if (headerlist != NULL)
+	{
+		curl_slist_free_all(headerlist);
+		headerlist = NULL;
+	}
+
+	if(curlres != CURLE_OK) {
+		log_error("curl_easy_perform() failed: %d - %s\n",
+		curlres, curl_easy_strerror(curlres));
+		throw NetworkException(curlres, curl_easy_strerror(curlres));
+	}
+
+	long response_code;
+    curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &response_code);
+	HttpResult httpresp = HttpResult(response_code, strbuf, respheaders);
+	httpresp.curlcode = curlres;
+
+	log_debug("HTTPPUT-%lu bytes retrieved\n", (unsigned long)strbuf.length());
+	log_debug("HTTPPUT-content:%s\n", strbuf.c_str());
+	log_debug("HTTPPUT-resp-code:%d\n", response_code);
+
+	return httpresp;
+}
+
 HttpResult HTTPCli::httpDelete
 (
 	const NacosString &path,
