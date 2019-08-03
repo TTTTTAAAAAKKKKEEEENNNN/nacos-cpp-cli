@@ -6,6 +6,8 @@ SRCS += $(wildcard src/init/*.c src/init/*.cpp)
 SRCS += $(wildcard src/md5/*.c src/md5/*.cpp)
 SRCS += $(wildcard src/utils/*.c src/utils/*.cpp)
 SRCS += $(wildcard src/naming/*.c src/naming/*.cpp)
+SRCS += $(wildcard src/naming/beat/*.c src/naming/beat/*.cpp)
+SRCS += $(wildcard src/thread/*.c src/thread/*.cpp)
 SRCS += $(wildcard test/*.c test/*.cpp test/testcase/*.c test/testcase/*.cpp)
 OBJS = $(SRCS:.c = .o)
 CC = g++
