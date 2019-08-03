@@ -1,11 +1,7 @@
 #include <iostream>
 #include "json/JSON.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-#include "naming/BeatInfo.h"
+#include "naming/beat/BeatInfo.h"
 #include "NacosString.h"
-
 
 /**
  * JSON
@@ -42,12 +38,35 @@ NacosString JSON::toJSONString(map<NacosString, NacosString> &mapinfo)
 	return documentToString(d);
 }
 
+void JSON::toJSONObject(Value &jsonOb, map<NacosString, NacosString> &mapinfo)
+{
+	Document document;
+	jsonOb.SetObject();
+	for (map<NacosString, NacosString>::iterator it = mapinfo.begin(); it != mapinfo.end(); it++)
+	{
+		Value k;
+		k.SetString(it->first.c_str(), document.GetAllocator());
+		Value v;
+		v.SetString(it->second.c_str(), document.GetAllocator());
+		jsonOb.AddMember(k, v, document.GetAllocator());
+	}
+}
+
+//Add key-value
 void AddKV(Document &d, const NacosString &k, const NacosString &v)
 {
 	Value k_, v_;
 	k_.SetString(k.c_str(), d.GetAllocator());
 	v_.SetString(v.c_str(), d.GetAllocator());
 	d.AddMember(k_, v_, d.GetAllocator());
+}
+
+//Add key-Object
+void AddKO(Document &d, const NacosString &k, Value &o)
+{
+	Value k_;
+	k_.SetString(k.c_str(), d.GetAllocator());
+	d.AddMember(k_, o, d.GetAllocator());
 }
 
 NacosString JSON::toJSONString(BeatInfo &beatInfo)
@@ -60,7 +79,9 @@ NacosString JSON::toJSONString(BeatInfo &beatInfo)
 	AddKV(d, "serviceName", beatInfo.serviceName);
 	AddKV(d, "cluster", beatInfo.cluster);
 	AddKV(d, "scheduled", NacosStringOps::valueOf(beatInfo.scheduled));
-	AddKV(d, "metadata", toJSONString(beatInfo.metadata));
+	Value metadata;
+	toJSONObject(metadata, beatInfo.metadata);
+	AddKO(d, "metadata", metadata);
 	
 	//d["port"] = NacosStringOps::valueOf(beatInfo.port);
 	//d["ip"] = beatInfo.ip;
