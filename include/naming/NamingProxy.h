@@ -26,8 +26,8 @@ private:
 public:
 	NamingProxy(HTTPCli *httpcli, const NacosString &namespaceId, const NacosString &endpoint, const NacosString &serverList);
 	~NamingProxy();
-	void registerService(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
-	void deregisterService(const NacosString &serviceName, Instance instance) throw (NacosException);
+	void registerService(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException);
+	void deregisterService(const NacosString &serviceName, Instance &instance) throw (NacosException);
     NacosString queryList(const NacosString &serviceName, const NacosString &clusters, int udpPort, bool healthyOnly) throw (NacosException);
 	NacosString getNamespaceId();
 	long sendBeat(BeatInfo &beatInfo);

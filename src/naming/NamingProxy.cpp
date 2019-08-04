@@ -35,7 +35,7 @@ NamingProxy::~NamingProxy()
 	httpCli = NULL;
 }
 
-void NamingProxy::registerService(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException)
+void NamingProxy::registerService(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException)
 {
 	log_info("[REGISTER-SERVICE] %s registering service %s with instance: %s\n",
 	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
@@ -57,7 +57,7 @@ void NamingProxy::registerService(const NacosString &serviceName, const NacosStr
 	reqAPI(UtilAndComs::NACOS_URL_INSTANCE, params, HTTPCli::POST);
 }
 
-void NamingProxy::deregisterService(const NacosString &serviceName, Instance instance) throw (NacosException)
+void NamingProxy::deregisterService(const NacosString &serviceName, Instance &instance) throw (NacosException)
 {
 	log_info("[DEREGISTER-SERVICE] %s deregistering service %s with instance: %s\n",
 	namespaceId.c_str(), serviceName.c_str(), instance.toString().c_str());
