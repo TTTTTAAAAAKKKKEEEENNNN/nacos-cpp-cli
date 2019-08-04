@@ -33,11 +33,7 @@ public:
 	std::map<NacosString, NacosString> metadata;
 	volatile bool scheduled;
 
-    NacosString toString()
-	{
-        //return JSON.toJSONString(this);
-		return "{\"fake\":\"Beatinfo\"}";//TODO:add json support & serialize as string
-    }
+    NacosString toString();
 };
 
 #endif
