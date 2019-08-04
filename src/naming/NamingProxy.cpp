@@ -185,6 +185,9 @@ NacosString NamingProxy::callServer
 	HttpResult requestRes;
 	list<NacosString> headers;
 	headers = builderHeaders();
+
+	try
+	{
 	switch (method)
 	{
 	case HTTPCli::GET:
@@ -199,6 +202,13 @@ NacosString NamingProxy::callServer
 	case HTTPCli::DELETE:
 		requestRes = httpCli->httpDelete(requestUrl, headers, params, UtilAndComs::ENCODING, 50000);//TODO:change 50000 to a constant
 		break;
+	}
+	}
+	catch (NetworkException &e)
+	{
+		NacosString errMsg = "Failed to request server, ";
+		errMsg += e.what();
+		throw NacosException(NacosException::SERVER_ERROR, errMsg);
 	}
 
 	if (requestRes.code == HTTP_OK)
@@ -261,7 +271,7 @@ long NamingProxy::sendBeat(BeatInfo &beatInfo)
 			return JSON::getLong(result, "clientBeatInterval");
 		}
 	}
-	catch (exception &e)
+	catch (NacosException &e)
 	{
 		NacosString jsonBeatInfo = JSON::toJSONString(beatInfo);
 		log_error("[CLIENT-BEAT] failed to send beat: %s e:%s\n", jsonBeatInfo.c_str(), e.what());
