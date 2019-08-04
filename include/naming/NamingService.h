@@ -59,7 +59,7 @@ public:
 	 * @param instance    instance to register
 	 * @throw (NacosException) = 0
 	 */
-	virtual void registerInstance(const NacosString &serviceName, Instance instance) throw (NacosException) = 0;
+	virtual void registerInstance(const NacosString &serviceName, Instance &instance) throw (NacosException) = 0;
 
 	/**
 	 * register a instance to service with specified instance properties
@@ -69,7 +69,7 @@ public:
 	 * @param instance    instance to register
 	 * @throw (NacosException) = 0
 	 */
-	virtual void registerInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException) = 0;
+	virtual void registerInstance(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance from a service
@@ -79,7 +79,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port) throw (NacosException) = 0;
+	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance from a service
@@ -90,7 +90,7 @@ public:
 	 * @param port        instance port
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port) throw (NacosException) = 0;
+	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with specified cluster name from a service
@@ -101,7 +101,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException) = 0;
+	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with specified cluster name from a service
@@ -113,7 +113,7 @@ public:
 	 * @param clusterName instance cluster name
 	 * @throw (NacosException) = 0
 	 */
-	//virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException) = 0;
+	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException) = 0;
 
 	/**
 	 * deregister instance with full instance information
@@ -123,7 +123,7 @@ public:
 	 * @param instance    instance information
 	 * @throw (NacosException) = 0
 	 */
-	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException) = 0;
+	virtual void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException) = 0;
 
 	/**
 	 * get all instances of a service
@@ -525,7 +525,7 @@ public:
 	 */
 	//virtual NacosString getServerStatus() = 0;
 	
-	virtual ~NamingService();
+	virtual ~NamingService() {};
 };
 
 #endif
