@@ -31,7 +31,7 @@ NacosNamingService::NacosNamingService(Properties &props)
 	initEndpoint(props);
 	httpCli = new HTTPCli();
 	serverProxy = new NamingProxy(httpCli, namesp, endpoint, serverList);
-	beatReactor = new BeatReactor(serverProxy, 20);
+	beatReactor = new BeatReactor(serverProxy);
 	beatReactor->start();
 }
 
