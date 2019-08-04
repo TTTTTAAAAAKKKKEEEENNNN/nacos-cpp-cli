@@ -38,9 +38,15 @@ public:
 	void registerInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port) throw (NacosException);
 	void registerInstance(const NacosString &serviceName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
 	void registerInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
-	void registerInstance(const NacosString &serviceName, Instance instance) throw (NacosException);
-	void registerInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
-	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance instance) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, Instance &instance) throw (NacosException);
+	void registerInstance(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException);
+
+	void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port) throw (NacosException);
+	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port) throw (NacosException);
+	void deregisterInstance(const NacosString &serviceName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
+	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
+	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException);
+
 };
 
 #endif

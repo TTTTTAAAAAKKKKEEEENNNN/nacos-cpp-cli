@@ -110,7 +110,7 @@ void NacosNamingService::registerInstance
 void NacosNamingService::registerInstance
 (
 	const NacosString &serviceName,
-	Instance instance
+	Instance &instance
 ) throw (NacosException)
 {
 	registerInstance(serviceName, Constants::DEFAULT_GROUP, instance);
@@ -120,11 +120,10 @@ void NacosNamingService::registerInstance
 (
 	const NacosString &serviceName,
 	const NacosString &groupName,
-	Instance instance
+	Instance &instance
 ) throw (NacosException)
 {
 
-	//TODO:use a thread to send heartbeat to config server
 	if (instance.ephemeral)
 	{
 		BeatInfo beatInfo;
@@ -145,8 +144,57 @@ void NacosNamingService::registerInstance
 void NacosNamingService::deregisterInstance
 (
 	const NacosString &serviceName,
+	const NacosString &ip,
+	int port
+) throw (NacosException)
+{
+	deregisterInstance(serviceName, ip, port, Constants::DEFAULT_CLUSTER_NAME);
+}
+
+void NacosNamingService::deregisterInstance
+(
+	const NacosString &serviceName,
 	const NacosString &groupName,
-	Instance instance
+	const NacosString &ip,
+	int port
+) throw (NacosException)
+{
+	deregisterInstance(serviceName, groupName, ip, port, Constants::DEFAULT_CLUSTER_NAME);
+}
+
+void NacosNamingService::deregisterInstance
+(
+	const NacosString &serviceName,
+	const NacosString &ip,
+	int port,
+	const NacosString &clusterName
+) throw (NacosException)
+{
+	deregisterInstance(serviceName, Constants::DEFAULT_GROUP, ip, port, clusterName);
+}
+
+void NacosNamingService::deregisterInstance
+(
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	const NacosString &ip,
+	int port,
+	const NacosString &clusterName
+) throw (NacosException)
+{
+	Instance instance;
+	instance.ip = ip;
+	instance.port = port;
+	instance.clusterName = clusterName;
+
+	deregisterInstance(serviceName, groupName, instance);
+}
+
+void NacosNamingService::deregisterInstance
+(
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	Instance &instance
 ) throw (NacosException)
 {
 	beatReactor->removeBeatInfo(NamingUtils::getGroupedName(serviceName, groupName), instance.ip, instance.port);
