@@ -12,7 +12,12 @@ public:
 	static const NacosString NAMESPACE_ID;
 
 	static const NacosString GROUP_NAME;
+	
+	static const NacosString SPLITER;
+	
+	static const NacosString EMPTY;
 
+	static const NacosString ALL_IPS;
 };
 
 #endif
