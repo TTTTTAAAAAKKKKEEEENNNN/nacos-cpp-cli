@@ -53,9 +53,14 @@ public:
 	static const int OVER_THRESHOLD = 503;
 
 	/**
-	* JSON解析時發生錯誤
+	* Error while parsing the JSON string
 	*/
 	static const int INVALID_JSON_FORMAT = 100001;
+
+	/**
+	* One or more JSON field is missing
+	*/
+	static const int LACK_JSON_FIELD = 100002;
 };
 
 class NetworkException : public std::exception
