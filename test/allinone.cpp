@@ -37,6 +37,8 @@ bool testThreadSmoke();
 bool testThreadPoolSmoke();
 bool testString2ServiceInfo();
 bool testMalformedJson2ServiceInfo();
+bool testMalformedDouble2ServiceInfo();
+bool testLackcacheMillisServiceInfo();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -77,6 +79,9 @@ TestData testList[] =
 TEST_ITEM_START
 TEST_ITEM("Test serialization/deserialization of Business Object", testString2ServiceInfo)
 TEST_ITEM("Test serialization/deserialization of malformed Business Object", testMalformedJson2ServiceInfo)
+TEST_ITEM("Test serialization/deserialization of malformed Business Object (Double)", testMalformedDouble2ServiceInfo)
+TEST_ITEM("Test serialization/deserialization of malformed Business Object (no cacheMillis)", testLackcacheMillisServiceInfo)
+
 TEST_ITEM_END
 
 int main()

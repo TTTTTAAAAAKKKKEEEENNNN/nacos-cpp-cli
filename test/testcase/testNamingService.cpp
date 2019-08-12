@@ -127,10 +127,10 @@ bool testNamingServiceRegister()
 
 	try
 	{
-		for (int i = 0; i < 40; i++)
+		for (int i = 0; i < 400; i++)
 		{
 			NacosString serviceName = "TestNamingService" + NacosStringOps::valueOf(i);
-			
+			instance.port = 2000 + i;
 			namingSvc->registerInstance(serviceName, instance);
 		}
 	}
@@ -140,8 +140,24 @@ bool testNamingServiceRegister()
 		ReleaseResource(namingSvc);
 		return false;
 	}
-	NacosString pause;
-	cin >> pause;
+	sleep(30);
+	try
+	{
+		for (int i = 20; i < 40; i++)
+		{
+			NacosString serviceName = "TestNamingService" + NacosStringOps::valueOf(i);
+			
+			namingSvc->deregisterInstance(serviceName, "127.0.0.1", 2000 + i);
+			sleep(1);
+		}
+	}
+	catch (NacosException e)
+	{
+		cout << "encounter exception while registering service instance, raison:" << e.what() << endl;
+		ReleaseResource(namingSvc);
+		return false;
+	}
+	sleep(30);
 
 	ReleaseResource(namingSvc);
 	return true;
