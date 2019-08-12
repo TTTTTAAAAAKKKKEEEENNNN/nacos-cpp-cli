@@ -111,22 +111,35 @@ long JSON::getLong(const NacosString &jsonString, const NacosString &fieldname)
 	return s.GetInt64();
 }
 
-Instance JSON::Json2Instance(const Value &host)
+Instance JSON::Json2Instance(const Value &host) throw (NacosException)
 {
 	Instance theinstance;
 
+	markRequired(host, "instanceId");
 	const Value &instanceId = host["instanceId"];
 	theinstance.instanceId = instanceId.GetString();
 
+	markRequired(host, "port");
 	const Value &port = host["port"];
+	if (!port.IsInt())
+	{
+		throw NacosException(NacosException::INVALID_JSON_FORMAT, "Error while parsing port for Instance!");
+	}
 	theinstance.port = port.GetInt();
 
+	markRequired(host, "ip");
 	const Value &ip = host["ip"];
 	theinstance.ip = ip.GetString();
 
+	markRequired(host, "weight");
 	const Value &weight = host["weight"];
+	if (!weight.IsDouble())
+	{
+		throw NacosException(NacosException::INVALID_JSON_FORMAT, "Error while parsing weight for Instance!");
+	}
 	theinstance.weight = weight.GetDouble();
 
+	markRequired(host, "metadata");
 	const Value &metadata = host["metadata"];
 
 	std::map<NacosString, NacosString> mtdata;
@@ -137,24 +150,58 @@ Instance JSON::Json2Instance(const Value &host)
 	return theinstance;
 }
 
-ServiceInfo JSON::JsonStr2ServiceInfo(const NacosString &jsonString)
+void JSON::markRequired(const Document &d, const NacosString &requiredField) throw (NacosException)
+{
+	if (!d.HasMember(requiredField.c_str()))
+	{
+		throw NacosException(NacosException::LACK_JSON_FIELD, "Missing required field:" + requiredField);
+	}
+}
+
+void JSON::markRequired(const Value &v, const NacosString &requiredField) throw (NacosException)
+{
+	if (!v.HasMember(requiredField.c_str()))
+	{
+		throw NacosException(NacosException::LACK_JSON_FIELD, "Missing required field:" + requiredField);
+	}
+}
+
+ServiceInfo JSON::JsonStr2ServiceInfo(const NacosString &jsonString) throw (NacosException)
 {
 	ServiceInfo si;
 	Document d;
 	d.Parse(jsonString.c_str());
-	
+
+	if (d.HasParseError())
+	{
+		throw NacosException(NacosException::INVALID_JSON_FORMAT, "Error while parsing the JSON String for ServiceInfo!");
+	}
+
+	markRequired(d, "cacheMillis");
 	const Value &cacheMillis = d["cacheMillis"];
+	if (!cacheMillis.IsInt64())
+	{
+		throw NacosException(NacosException::INVALID_JSON_FORMAT, "Error while parsing cacheMillis for ServiceInfo!");
+	}
 	si.setCacheMillis(cacheMillis.GetInt64());
-	
+
+	markRequired(d, "checksum");
 	const Value &checkSum = d["checksum"];
 	si.setChecksum(checkSum.GetString());
-	
+
+	markRequired(d, "lastRefTime");
 	const Value &lastRefTime = d["lastRefTime"];
+	if (!lastRefTime.IsInt64())
+	{
+		throw NacosException(NacosException::INVALID_JSON_FORMAT, "Error while parsing lastRefTime for ServiceInfo!");
+	}
 	si.setLastRefTime(lastRefTime.GetInt64());
-	
+
+	markRequired(d, "clusters");
 	const Value &clusters = d["clusters"];
 	si.setClusters(clusters.GetString());
 
+	markRequired(d, "hosts");
 	const Value &hosts = d["hosts"];
 	std::list<Instance> hostlist;
 	for (SizeType i = 0; i < hosts.Size(); i++)
