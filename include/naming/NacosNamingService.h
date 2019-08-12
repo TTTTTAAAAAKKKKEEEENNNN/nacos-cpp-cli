@@ -47,6 +47,14 @@ public:
 	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, const NacosString &ip, int port, const NacosString &clusterName) throw (NacosException);
 	void deregisterInstance(const NacosString &serviceName, const NacosString &groupName, Instance &instance) throw (NacosException);
 
+	std::list<Instance> getAllInstances(const NacosString &serviceName) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, bool subscribe) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, bool subscribe) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters, bool subscribe) throw (NacosException);
+	std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters, bool subscribe) throw (NacosException);
 };
 
 #endif

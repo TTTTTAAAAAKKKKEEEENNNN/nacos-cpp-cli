@@ -2,8 +2,11 @@
 #include "naming/beat/BeatReactor.h"
 #include "utils/NamingUtils.h"
 #include "utils/UtilAndComs.h"
+#include "utils/ParamUtils.h"
 #include "PropertyKeyConst.h"
+#include "json/JSON.h"
 
+using namespace std;
 
 void NacosNamingService::initNamespace(Properties &props)
 {
@@ -200,3 +203,95 @@ void NacosNamingService::deregisterInstance
 	beatReactor->removeBeatInfo(NamingUtils::getGroupedName(serviceName, groupName), instance.ip, instance.port);
 	serverProxy->deregisterService(NamingUtils::getGroupedName(serviceName, groupName), instance);
 }
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName
+) throw (NacosException)
+{
+	list<NacosString> clusters;
+	return getAllInstances(serviceName, clusters);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	const NacosString &groupName
+) throw (NacosException)
+{
+	list<NacosString> clusters;
+	return getAllInstances(serviceName, groupName, clusters);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	bool subscribe
+) throw (NacosException)
+{
+	list<NacosString> clusters;
+	return getAllInstances(serviceName, clusters, subscribe);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	bool subscribe
+) throw (NacosException)
+{
+	list<NacosString> clusters;
+	return getAllInstances(serviceName, groupName, clusters, subscribe);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	list<NacosString> clusters
+) throw (NacosException)
+{
+	return getAllInstances(serviceName, clusters, true);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	list<NacosString> clusters
+) throw (NacosException)
+{
+	return getAllInstances(serviceName, groupName, clusters, true);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	list<NacosString> clusters,
+	bool subscribe
+) throw (NacosException)
+{
+	return getAllInstances(serviceName, Constants::DEFAULT_GROUP, clusters, subscribe);
+}
+
+list<Instance> NacosNamingService::getAllInstances
+(
+	const NacosString &serviceName,
+	const NacosString &groupName,
+	list<NacosString> clusters,
+	bool subscribe
+) throw (NacosException)
+{
+	ServiceInfo serviceInfo;
+	//TODO:
+	/*if (subscribe) {
+		serviceInfo = hostReactor.getServiceInfo(NamingUtils::getGroupedName(serviceName, groupName), ParamUtils::Implode(clusters));
+	} else {
+		serviceInfo = hostReactor.getServiceInfoDirectlyFromServer(NamingUtils::getGroupedName(serviceName, groupName), ParamUtils::Implode(clusters));
+	}*/
+	NacosString clusterString = ParamUtils::Implode(clusters);
+	NacosString result = serverProxy->queryList(serviceName, clusterString, 0/*What should be filled in UDPPort??*/, false);
+	serviceInfo = JSON::JsonStr2ServiceInfo(result);
+	list<Instance> hostlist = serviceInfo.getHosts();
+	return hostlist;
+}
+

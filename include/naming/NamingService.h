@@ -1,6 +1,6 @@
 #ifndef __NAM_SVC_H_
 #define __NAM_SVC_H_
-#include "naming/NamingService.h"
+#include <list>
 #include "naming/Instance.h"
 #include "NacosString.h"
 #include "NacosExceptions.h"
@@ -132,7 +132,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName) throw (NacosException) = 0;
 
 	/**
 	 * get all instances of a service
@@ -142,7 +142,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances of a service
@@ -152,7 +152,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, bool subscribe) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances of a service
@@ -163,7 +163,7 @@ public:
 	 * @return A list of instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, bool subscribe) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -173,7 +173,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -184,7 +184,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -195,7 +195,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters, bool subscribe) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, std::list<NacosString> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get all instances within specified clusters of a service
@@ -207,7 +207,7 @@ public:
 	 * @return A list of qualified instance
 	 * @throw (NacosException) = 0
 	 */
-	//virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters, bool subscribe) throw (NacosException) = 0;
+	virtual std::list<Instance> getAllInstances(const NacosString &serviceName, const NacosString &groupName, std::list<NacosString> clusters, bool subscribe) throw (NacosException) = 0;
 
 	/**
 	 * Get qualified instances of service
