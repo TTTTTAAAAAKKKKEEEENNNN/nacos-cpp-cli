@@ -258,7 +258,7 @@ long NamingProxy::sendBeat(BeatInfo &beatInfo)
 	try
 	{
 		NacosString beatInfoStr = beatInfo.toString();
-		log_info("[BEAT] %s sending beat to server: %s", namespaceId.c_str(), beatInfoStr.c_str());
+		log_info("[BEAT] %s sending beat to server: %s\n", namespaceId.c_str(), beatInfoStr.c_str());
 		map<NacosString, NacosString> params;
 		params["beat"] = JSON::toJSONString(beatInfo);
 		params[CommonParams::NAMESPACE_ID] = namespaceId;
