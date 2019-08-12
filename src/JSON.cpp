@@ -38,7 +38,7 @@ NacosString JSON::toJSONString(map<NacosString, NacosString> &mapinfo)
 	return documentToString(d);
 }
 
-void JSON::toJSONObject(Value &jsonOb, map<NacosString, NacosString> &mapinfo)
+void JSON::Map2JSONObject(Value &jsonOb, map<NacosString, NacosString> &mapinfo)
 {
 	Document document;
 	jsonOb.SetObject();
@@ -49,6 +49,16 @@ void JSON::toJSONObject(Value &jsonOb, map<NacosString, NacosString> &mapinfo)
 		Value v;
 		v.SetString(it->second.c_str(), document.GetAllocator());
 		jsonOb.AddMember(k, v, document.GetAllocator());
+	}
+}
+
+void JSON::JSONObject2Map(std::map<NacosString, NacosString> &mapinfo, const Value &jsonOb)
+{
+	for (Value::ConstMemberIterator iter = jsonOb.MemberBegin(); iter != jsonOb.MemberEnd(); ++iter)
+	{
+		NacosString name = iter->name.GetString();
+		NacosString value = iter->value.GetString();
+		mapinfo[name] = value;
 	}
 }
 
@@ -80,7 +90,7 @@ NacosString JSON::toJSONString(BeatInfo &beatInfo)
 	AddKV(d, "cluster", beatInfo.cluster);
 	AddKV(d, "scheduled", NacosStringOps::valueOf(beatInfo.scheduled));
 	Value metadata;
-	toJSONObject(metadata, beatInfo.metadata);
+	Map2JSONObject(metadata, beatInfo.metadata);
 	AddKO(d, "metadata", metadata);
 	
 	//d["port"] = NacosStringOps::valueOf(beatInfo.port);
@@ -99,4 +109,62 @@ long JSON::getLong(const NacosString &jsonString, const NacosString &fieldname)
 	d.Parse(jsonString.c_str());
 	Value& s = d[fieldname.c_str()];
 	return s.GetInt64();
+}
+
+Instance JSON::Json2Instance(const Value &host)
+{
+	Instance theinstance;
+
+	const Value &instanceId = host["instanceId"];
+	theinstance.instanceId = instanceId.GetString();
+
+	const Value &port = host["port"];
+	theinstance.port = port.GetInt();
+
+	const Value &ip = host["ip"];
+	theinstance.ip = ip.GetString();
+
+	const Value &weight = host["weight"];
+	theinstance.weight = weight.GetDouble();
+
+	const Value &metadata = host["metadata"];
+
+	std::map<NacosString, NacosString> mtdata;
+	JSONObject2Map(mtdata, metadata);
+
+	theinstance.metadata = mtdata;
+
+	return theinstance;
+}
+
+ServiceInfo JSON::JsonStr2ServiceInfo(const NacosString &jsonString)
+{
+	ServiceInfo si;
+	Document d;
+	d.Parse(jsonString.c_str());
+	
+	const Value &cacheMillis = d["cacheMillis"];
+	si.setCacheMillis(cacheMillis.GetInt64());
+	
+	const Value &checkSum = d["checksum"];
+	si.setChecksum(checkSum.GetString());
+	
+	const Value &lastRefTime = d["lastRefTime"];
+	si.setLastRefTime(lastRefTime.GetInt64());
+	
+	const Value &clusters = d["clusters"];
+	si.setClusters(clusters.GetString());
+
+	const Value &hosts = d["hosts"];
+	std::list<Instance> hostlist;
+	for (SizeType i = 0; i < hosts.Size(); i++)
+	{
+		const Value &curhost = hosts[i];
+		Instance curinstance = Json2Instance(curhost);
+		hostlist.push_back(curinstance);
+	}
+
+	si.setHosts(hostlist);
+
+	return si;
 }

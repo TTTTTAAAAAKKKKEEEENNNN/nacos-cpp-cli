@@ -35,6 +35,8 @@ bool testRapidJsonIntroduce();
 bool testSerialize();
 bool testThreadSmoke();
 bool testThreadPoolSmoke();
+bool testString2ServiceInfo();
+bool testMalformedJson2ServiceInfo();
 
 TestData testList1[] =
 TEST_ITEM_START
@@ -68,11 +70,13 @@ TEST_ITEM("Check whether rapidjson is introduced into the project successfully",
 TEST_ITEM("Check if the serialization succeeds", testSerialize)
 TEST_ITEM("Smoke test for Thread", testThreadSmoke)
 TEST_ITEM("Smoke test for ThreadPool", testThreadPoolSmoke)
+TEST_ITEM("Test basic function of NacosNamingService's registerService", testNamingServiceRegister)
 TEST_ITEM_END
 
 TestData testList[] =
 TEST_ITEM_START
-TEST_ITEM("Test basic function of NacosNamingService's registerService", testNamingServiceRegister)
+TEST_ITEM("Test serialization/deserialization of Business Object", testString2ServiceInfo)
+TEST_ITEM("Test serialization/deserialization of malformed Business Object", testMalformedJson2ServiceInfo)
 TEST_ITEM_END
 
 int main()

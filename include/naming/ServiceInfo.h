@@ -7,6 +7,7 @@
 #include "Constants.h"
 #include "utils/url.h"
 #include "utils/ParamUtils.h"
+#include "naming/Instance.h"
 
 class ServiceInfo
 {
@@ -20,19 +21,19 @@ private:
 
 	NacosString _clusters;
 
-	long _cacheMillis = 1000L;
+	long _cacheMillis;
 
 	//@JSONField(name = "hosts")
 	std::list<Instance> _hosts;
 
-	long _lastRefTime = 0L;
+	long _lastRefTime;
 
 	NacosString _checksum;
 
-	volatile bool _allIPs = false;
+	volatile bool _allIPs;
 
 	public:
-	ServiceInfo() : _checksum(""), _jsonFromServer("")
+	ServiceInfo() : _jsonFromServer(""), _cacheMillis(1000L), _lastRefTime(0L), _checksum(""), _allIPs(false)
 	{
 	}
 
@@ -41,17 +42,13 @@ private:
 		return _allIPs;
 	}
 
-	public void setAllIPs(bool allIPs)
+	void setAllIPs(bool allIPs)
 	{
 		_allIPs = allIPs;
 	}
 
-	ServiceInfo(const NacosString &key) : _checksum(""), _jsonFromServer("")
+	ServiceInfo(const NacosString &key) : _jsonFromServer(""), _cacheMillis(1000L), _lastRefTime(0L), _checksum(""), _allIPs(false)
 	{
-		int maxIndex = 2;
-		int clusterIndex = 1;
-		int serviceNameIndex = 0;
-
 		std::vector<NacosString> segs;
 		ParamUtils::Explode(segs, key, Constants::SERVICE_INFO_SPLITER);
 
@@ -86,7 +83,7 @@ private:
 		gettimeofday(&tp, NULL);
 		long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
-		return ms - lastRefTime > cacheMillis;
+		return ms - _lastRefTime > _cacheMillis;
 	}
 
 	void setHosts(std::list<Instance> &hosts)
@@ -194,13 +191,13 @@ private:
 	//@JSONField(serialize = false)
 	NacosString getKey()
 	{
-		return getKey(name, clusters);
+		return getKey(_name, _clusters);
 	}
 
 	//@JSONField(serialize = false)
 	NacosString getKeyEncoded()
 	{
-		return getKey(urlencode(name), clusters);
+		return getKey(urlencode(_name), _clusters);
 	}
 
 	//@JSONField(serialize = false)

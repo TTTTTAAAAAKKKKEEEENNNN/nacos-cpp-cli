@@ -51,6 +51,11 @@ public:
 	* over threshold（超过server端的限流阈值）
 	*/
 	static const int OVER_THRESHOLD = 503;
+
+	/**
+	* JSON解析時發生錯誤
+	*/
+	static const int INVALID_JSON_FORMAT = 100001;
 };
 
 class NetworkException : public std::exception
